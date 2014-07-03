@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" /><title>Index | 假如这是一本书</title>
+<meta charset="UTF-8" /><title>调整博客 | 假如这是一本书</title>
 <meta name="author" content="吕晓宇">
-<meta name="description" content="None">
+<meta name="description" content="这个博客的式样需要调整，目前遇到的问题有： 文章栏目过于靠左，而不是居中 在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。 2014-7-2 14:38 记： 今天已经解决了这个问题。办法是修改如下文件： sudo vi /usr/local/lib/python2.7/dist-packages/crotal/create_post.py 第14行： post.title = string 修改为： post.title = unicode(string, ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content=""/>
 
@@ -54,35 +54,12 @@ a { color: #0099FF; }
         <div id="content-area" class="clearfix">
             
 <div class="left-area">
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/wo-jia-xiao-qu-kan-zhao-ting-piao-liang">Jul 03,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/07/wo-jia-xiao-qu-kan-zhao-ting-piao-liang">我家小区看着看挺漂亮</a></h1>
-                <hr/>
-                <p>刚才在凤凰网看到的一个图片新闻，点击：<a href="http://news.ifeng.com/a/20140702/40982938_0.shtml#p=1">北京大雨</a></p>
-<p><img alt="小区图片" src="http://y0.ifengimg.com/cmpp/2014/07/02/08/60a5860e-96cd-41b2-9385-9504e5983319.jpg" title="漂亮吧" /></p>
-                <a href="/blog/2014/07/wo-jia-xiao-qu-kan-zhao-ting-piao-liang" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by laszo on <a href="/blog/2014/07/02/None">Jul 02,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/07/02/None">书籍介绍：《深入理解计算机系统》</a></h1>
-                <hr/>
-                <p>豆瓣上的链接：
-http://book.douban.com/subject/5333562/</p>
-                <a href="/blog/2014/07/02/None" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/06/diao-zheng-bo-ke-shi-yang">Jun 30,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/06/diao-zheng-bo-ke-shi-yang">调整博客</a></h1>
-                <hr/>
-                <p>这个博客的式样需要调整，目前遇到的问题有：</p>
+<article class="post entry clearfix">
+    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/06/diao-zheng-bo-ke-shi-yang">Jun 30,2014 </p>
+    <div class="post_content clearfix">
+        <h1 class="title"><a href="/blog/2014/06/diao-zheng-bo-ke-shi-yang">调整博客</a></h1>
+        <hr/>
+        <p>这个博客的式样需要调整，目前遇到的问题有：</p>
 <ul>
 <li>文章栏目过于靠左，而不是居中</li>
 <li>在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。</li>
@@ -109,32 +86,15 @@ http://book.douban.com/subject/5333562/</p>
 这样的话就不是静态站点而是动态的了。也可以现在zybuluo上面写好草稿，
 最后一次性的发布。能够不方便，也好。太方便反而不会去慎重对待了。</li>
 </ul>
-                <a href="/blog/2014/06/diao-zheng-bo-ke-shi-yang" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/06/da-suan-xie-yi-dian-bu-yi-bian-hua-de-dong-xi">Jun 30,2014</p>
+    </div>
+</article>
 
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/06/da-suan-xie-yi-dian-bu-yi-bian-hua-de-dong-xi">打算写一点不易变化的东西</a></h1>
-                <hr/>
-                <p>我最早写博客要追溯到上大学的时候，只有从上大学之后才能够长时间的接触计算机和互联网。
-最早的一个博客是在博客中国，那时候是为了跟两个同学一起跟风时髦，那两个同学是在中国博客网写。
-后来，转行搞计算机之后，在csdn上面也开了一个，保持现在。再后来，觉得csdn上面的也不太爽，
-就在博客园上面又弄了一个，也写了几篇。哦，对了，中间还在donews网也注册过，不记得写了。
-另外，还在blogspot上面注册并写了一点。还有还有，blogger上面似乎也有。十年前左右，是博客比较火
-的时候，最为流行的一个开源博客程序是wordpress，我似乎在wordpress.com还是wordpress.org上面也
-注册过一个。现在有很多人使用<a href="https://pages.github.com/">GitHub Pages</a>创建自己的博客，它提供
-纯粹的静态站点托管，也是一个不错的选择，我在上面也试着建了<a href="http://laszo.github.io/">一个站点</a>。</p>
-<p>现在这些博客纷纷都不常用了，打算建一个自己的网站，记录一下接触到的技术知识。</p>
-                <a href="/blog/2014/06/da-suan-xie-yi-dian-bu-yi-bian-hua-de-dong-xi" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <br/>
-<ul class="paginate clearfix">
-        <li class="current">prev</li>
-    
-    </ul></div>
+<article class="post entry clearfix">
+    </article>
+</div>
+
+<div class="sidebar">
+</div>
         </div>
     </div>
 </div>
