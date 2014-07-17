@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" /><title>主题模型及LSI、PLSI、LDA简介 | 假如这是一本书</title>
+<meta name="author" content="吕晓宇">
+<meta name="description" content="如何从大量文档中自动归纳出每篇文章的主题，是一个很有意思的任务。 1998年，Papadimitriou等人在一篇论文 中提出了LSI的概念，这是一种主题模型（topic model）， 维基百科上面的主题模型词条。 在这篇文章中提出了LSI（潜在语义索引），维基百科词条 潜在语义索引 PLSI指的是概率性潜在语义索引。 2003年，Blei等人提出LDA，这是一种一般化的PLSI，之后其他的主题模型一半是在LDA的基础上改进的。 维基百科隐含狄利克雷分布。 论文地址：Latent Dirichlet ...">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta property="og:site_name" content=""/>
+
+<link rel="stylesheet" href="/css/style.css" type="text/css" />
+<link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+<style>
+#featured .flex-direction-nav a:hover, #video-slider-section .flex-direction-nav a:hover { background-color: #ffb600; }
+#featured_section .active-slide .post-meta, #featured_section .switcher_hover .post-meta, .et_tab_link_hover .post-meta { background: #0099FF; }
+h3.main-title { background-color: #0099FF; -moz-box-shadow: inset 0 0 10px #0099FF; -webkit-box-shadow: inset 0 0 10px #0099FF; box-shadow: inset 0 0 10px #0099FF; border: 1px solid #0099FF; }
+a { color: #0099FF; }
+.et_video_play { background-color: #0099FF; }
+#second-menu > ul > li > a:hover { background-color: #0099FF; }
+#second-menu ul ul li a:hover { background-color: #ffb122; }
+#second-menu ul.nav li ul { background: #0099FF; }
+#second-menu ul ul li a { border-top: 1px solid #0099FF; }
+</style>
+
+</head><body>
+<div id="header" class="container"><div id="logo-area">
+    <a href="/">
+        <h1>假如这是一本书</h1>
+        <p>吕晓宇的博客</p>
+    </a>
+</div></div>
+<div id="menu">
+    <div class="container"><a href="/" class="mobile_nav closed">首页</a>
+<a href="/archive" class="mobile_nav closed">文章列表</a>
+<a href="/about" class="mobile_nav closed">关于</a>
+
+<nav id="second-menu" class="clearfix">
+    <ul id="menu-categories" class="nav">
+                        <li id="" class="menu-item"><a href="/" class="mobile_nav closed">首页</a></li>
+                                <li id="" class="menu-item"><a href="/archive" class="mobile_nav closed">文章列表</a></li>
+                                <li id="" class="menu-item"><a href="/about" class="mobile_nav closed">关于</a></li>
+                    </ul>
+<form action="http://google.com/search" class="search-form" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvxiaoyu.com" />
+    <input class="searchinput" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+</nav></div>
+</div>
+<div class="main-area">
+    <div class="container">
+        <div id="content-area" class="clearfix">
+            
+<div class="left-area">
+<article class="post entry clearfix">
+    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/topic-model">Jul 16,2014 </p>
+    <div class="post_content clearfix">
+        <h1 class="title"><a href="/blog/2014/07/topic-model">主题模型及LSI、PLSI、LDA简介</a></h1>
+        <hr/>
+        <p>如何从大量文档中自动归纳出每篇文章的主题，是一个很有意思的任务。
+1998年，Papadimitriou等人在<a href="http://www.ingentaconnect.com/content/ap/ss/2000/00000061/00000002/art01711">一篇论文</a>
+中提出了LSI的概念，这是一种主题模型（topic model），
+<a href="http://zh.wikipedia.org/wiki/%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8B">维基百科上面的主题模型词条</a>。</p>
+<p>在这篇文章中提出了LSI（潜在语义索引），维基百科词条
+<a href="http://zh.wikipedia.org/wiki/%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8B">潜在语义索引</a></p>
+<p>PLSI指的是概率性潜在语义索引。</p>
+<p>2003年，Blei等人提出LDA，这是一种一般化的PLSI，之后其他的主题模型一半是在LDA的基础上改进的。
+维基百科<a href="http://zh.wikipedia.org/wiki/%E9%9A%90%E5%90%AB%E7%8B%84%E5%88%A9%E5%85%8B%E9%9B%B7%E5%88%86%E9%85%8D">隐含狄利克雷分布</a>。
+论文地址：<a href="http://jmlr.org/papers/v3/blei03a.html">Latent Dirichlet Allocation</a>
+现任百度公司首席科学家的<a href="http://zh.wikipedia.org/wiki/%E5%90%B4%E6%81%A9%E8%BE%BE">吴恩达</a>是论文的作者之一。</p>
+<p>中文方面，丕子网有一个<a href="http://www.zhizhihu.com/html/ytag/%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8B">关于主题模型</a>的系列文章，介绍了不少有价值的信息来源。
+比如，这一篇<a href="http://www.zhizhihu.com/html/y2011/3226.html">收集下2010之前的“基于LDA的Topic Model变形”的论文</a>就介绍了不少这方面的论文。</p>
+<p><a href="http://blog.sina.com.cn/s/blog_9d7bca9f01015580.html">八灵九霖的博客</a>里的一篇文章，虽然篇幅较短，却是最容易理解的一篇文章。</p>
+<p><a href="http://cos.name/">统计之都</a>上面也有一些此方面的论文，搜索一下LDA等词即可搜到，比如<a href="http://cos.name/2013/03/lda-math-text-modeling/">这篇文章</a>。</p>
+<p>我们要提倡创新精神、创造性思维、创造性劳动。比如，上面这许多中文博客，内容都有一定价值，但是没有原创内容，属于对大牛的原创内容的介绍与二次传播。
+我们虽然要写博客记录、介绍和学习大牛的成果，自己也要做一个生产者，通过自己的实践和思考，产生高质量的原创性成果。</p>
+<p>如果想要学习这个领域的最新成果，可以找一下上面几篇大牛论文所发表的期刊和会议，然后看一下这些期刊和会议的最新几期的论文，应该能够了解到该领域最新
+前沿成果。</p>
+    </div>
+</article>
+
+<article class="post entry clearfix">
+    </article>
+</div>
+
+<div class="sidebar">
+</div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="container clearfix">
+        <p id="copyright">&copy; 2014 <a href="/" title="">吕晓宇</a> | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>
+    </div>
+</div></body>
+</html>
