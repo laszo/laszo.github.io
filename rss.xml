@@ -40,7 +40,7 @@
     </item>
         <item>
       <title>主题模型及LSI、PLSI、LDA简介</title>
-      <description>如何从大量文档中自动归纳出每篇文章的主题，是一个很有意思的任务。 1998年，Papadimitriou等人在一篇论文 中提出了LSI的概念，这是一种主题模型（topic model）， 维基百科上面的主题模型词条。 在这篇文章中提出了LSI（潜在语义索引），维基百科词条 潜在语义索引 PLSI指的是概率性潜在语义索引。 2003年，Blei等人提出LDA，这是一种一般化的PLSI，之后其他的主题模型一半是在LDA的基础上改进的。 维基百科隐含狄利克雷分布。 论文地址：Latent Dirichlet A...</description>
+      <description>如何从大量文档中自动归纳出每篇文章的主题，是一个很有意思的任务。 1998年，Papadimitriou等人在一篇论文 中提出了LSI的概念，这是一种主题模型（topic model）， 维基百科上面的主题模型词条。 在这篇文章中提出了LSI（潜在语义索引），维基百科词条 潜在语义索引 PLSI指的是概率性潜在语义索引。跟PLSA是同义语，维基百科上面这两个词也指向同一个页面。 论文下载 LSI从那里来的呢？从LSA而来。 Latent semantic analysis， LSA主页， 论文下载， 还有...</description>
       <link>/blog/2014/07/topic-model</link>
       <pubDate>2014-07-16 17:12:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
