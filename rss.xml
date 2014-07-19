@@ -7,8 +7,48 @@
     <link></link>
 
         <item>
+      <title>咬文嚼字：演绎</title>
+      <description>“演绎”这个词我们平时很少去用，不熟悉的人可能猛地看到这个词，只能根据上下文去推断了。 辞海里面对“演绎”这个词的释义如下： 1 铺陈，推断，阐发：汉儒解经，依经演绎。 2 “演绎推理”的简称。 阐发的意思： 阐述并加以引申发挥 而“演绎推理”的释义如下： 亦称“演绎法”。简称“演绎”。“归纳推理”的对称。从包含一般性知识的前提推出包含特殊性知识的结论的推理。这里所说的一般和特殊都是相对而言的。演绎推理全都是必然性推理。主要的形式是三段论。 在下面的例子中： 爱乐乐团精彩演绎了这首高难度乐曲。 所使用的显...</description>
+      <link>/blog/2014/07/meaning-of-deduce</link>
+      <pubDate>2014-07-19 11:14:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/07/meaning-of-deduce</guid>
+    </item>
+        <item>
+      <title>收藏：关于程序开发工作量与工作量估算的几篇文章</title>
+      <description>Programmer Time Translation Cheatsheet -or- Why Programmers Are Bad at Estimating Times 为什么程序员不擅长估算时间？ How much does it cost to develop an iPhone application? Dear business people, an iOS app actually takes a lot of work! 亲爱的商界精英们，开发一个iOS应用没有那么容易</description>
+      <link>/blog/2014/07/ji-pian-wen-zhai-1</link>
+      <pubDate>2014-07-17 16:50:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/07/ji-pian-wen-zhai-1</guid>
+    </item>
+        <item>
+      <title>关于'寒门再难出贵子'之我见</title>
+      <description>首先，这句话本身是正确的，因为它说的是『难』，什么叫做难呢？就是需要付出更大的努力。 如果它说『寒门不能出贵子』，那么这句话就是错误的。因为，哪怕出现了一个反例，这个『不能』 也是不成立的。 这句话的含义是：寒门出身成长为贵子，要比富贵家庭出身的要困难。 注意，这里只是说难，并没有说到底有多难。在不同的条件下，我们要正确的理解这个难度。比如，如果一个人成功的概率是99.99%，另一个人概率是99.9900001%，似乎前者是比后者难了一点，但难的这一点没什么意义。而如果一个人成功的概率是0.0001%，另...</description>
+      <link>/blog/2014/07/han-men-zai-nan-chu-gui-zi</link>
+      <pubDate>2014-07-17 16:19:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/07/han-men-zai-nan-chu-gui-zi</guid>
+    </item>
+        <item>
+      <title>推荐好书：《算法概论》</title>
+      <description>算法概论（英文名 Algorithms） 豆瓣：http://book.douban.com/subject/1996256/ 引用豆瓣上面一位人士的书评： 算法作为一门学问，有两条正交的线索。一个是算法处理的对象：数、矩阵、集合、串(strings)、排列(permutations)、图(graphs)、表达式(formula)、分布(distributions)，等等。另一个是算法的设计思想：贪婪、分治、动态规划、线性规划、局部搜索(local search)，等等。这两条线索几乎是相互独立的：同一个...</description>
+      <link>/blog/2014/07/book-Algorithms-dasgupta</link>
+      <pubDate>2014-07-17 14:08:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/07/book-Algorithms-dasgupta</guid>
+    </item>
+        <item>
+      <title>收集一下IT领域的中文博客和个人站点</title>
+      <description>收集一下IT领域高水平的中文博客 http://blog.csdn.net/yangliuy/ 机器学习、概率、数据挖掘 http://www.zhizhihu.com/ 群体博客，首页底部收集了一些博客和网站的链接 http://sweetglue.info/ 搞自然语言处理的，博客上都是生活内容 http://freemind.pluskid.org/ 机器学习、程序设计 http://www.xperseverance.net/blogs/ 算法、机器学习及许多其他内容 http://www.xpe...</description>
+      <link>/blog/2014/07/bloggers-and-personal-pages</link>
+      <pubDate>2014-07-17 14:04:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/07/bloggers-and-personal-pages</guid>
+    </item>
+        <item>
       <title>主题模型及LSI、PLSI、LDA简介</title>
-      <description>如何从大量文档中自动归纳出每篇文章的主题，是一个很有意思的任务。 1998年，Papadimitriou等人在一篇论文 中提出了LSI的概念，这是一种主题模型（topic model）， 维基百科上面的主题模型词条。 在这篇文章中提出了LSI（潜在语义索引），维基百科词条 潜在语义索引 PLSI指的是概率性潜在语义索引。 2003年，Blei等人提出LDA，这是一种一般化的PLSI，之后其他的主题模型一半是在LDA的基础上改进的。 维基百科隐含狄利克雷分布。 论文地址：Latent Dirichlet A...</description>
+      <description>如何从大量文档中自动归纳出每篇文章的主题，是一个很有意思的任务。 1998年，Papadimitriou等人在一篇论文 中提出了LSI的概念，这是一种主题模型（topic model）， 维基百科上面的主题模型词条。 在这篇文章中提出了LSI（潜在语义索引），维基百科词条 潜在语义索引 PLSI指的是概率性潜在语义索引。跟PLSA是同义语，维基百科上面这两个词也指向同一个页面。 论文下载 LSI从那里来的呢？从LSA而来。 Latent semantic analysis， LSA主页， 论文下载， 还有...</description>
       <link>/blog/2014/07/topic-model</link>
       <pubDate>2014-07-16 17:12:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100

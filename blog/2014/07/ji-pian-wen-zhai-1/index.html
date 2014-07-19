@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" /><title>调整博客 | 假如这是一本书</title>
+<meta charset="UTF-8" /><title>收藏：关于程序开发工作量与工作量估算的几篇文章 | 假如这是一本书</title>
 <meta name="author" content="吕晓宇">
-<meta name="description" content="这个博客的式样需要调整，目前遇到的问题有： 文章栏目过于靠左，而不是居中 在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。 2014-7-2 14:38 记： 今天已经解决了这个问题。办法是修改如下文件： sudo vi /usr/local/lib/python2.7/dist-packages/crotal/create_post.py 第14行： post.title = string 修改为： post.title = unicode(string, ...">
+<meta name="description" content="Programmer Time Translation Cheatsheet -or- Why Programmers Are Bad at Estimating Times 为什么程序员不擅长估算时间？ How much does it cost to develop an iPhone application? Dear business people, an iOS app actually takes a lot of work! 亲爱的商界精英们，开发一个iOS应用没有那么容易">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content=""/>
 
@@ -55,42 +55,15 @@ a { color: #0099FF; }
             
 <div class="left-area">
 <article class="post entry clearfix">
-    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/06/diao-zheng-bo-ke-shi-yang">Jun 30,2014 </p>
+    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/ji-pian-wen-zhai-1">Jul 17,2014 </p>
     <div class="post_content clearfix">
-        <h1 class="title"><a href="/blog/2014/06/diao-zheng-bo-ke-shi-yang">调整博客</a></h1>
+        <h1 class="title"><a href="/blog/2014/07/ji-pian-wen-zhai-1">收藏：关于程序开发工作量与工作量估算的几篇文章</a></h1>
         <hr/>
-        <p>这个博客的式样需要调整，目前遇到的问题有：</p>
-<ul>
-<li>文章栏目过于靠左，而不是居中</li>
-<li>在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。</li>
-</ul>
-<p>2014-7-2 14:38 记：
-今天已经解决了这个问题。办法是修改如下文件：</p>
-<div class="codehilite"><pre><span class="n">sudo</span> <span class="n">vi</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python2</span><span class="mf">.7</span><span class="o">/</span><span class="n">dist</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">crotal</span><span class="o">/</span><span class="n">create_post</span><span class="p">.</span><span class="n">py</span>
-</pre></div>
-
-
-<p>第14行：</p>
-<div class="codehilite"><pre><span class="n">post</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">string</span>
-</pre></div>
-
-
-<p>修改为：</p>
-<div class="codehilite"><pre><span class="n">post</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<ul>
-<li>
-<p>这是一个纯静态站点，每次编辑文章都要ssh到服务器上操作，实在太不方便了。
-目标是像<a href="https://www.zybuluo.com">这个网站</a>一样能够在线的写作和发布。当然
-这样的话就不是静态站点而是动态的了。也可以现在zybuluo上面写好草稿，
-最后一次性的发布。能够不方便，也好。太方便反而不会去慎重对待了。</p>
-</li>
-<li>
-<p>首页的prev按钮不起作用</p>
-</li>
-</ul>
+        <p><a href="http://java.dzone.com/programmers-are-bad-estimating">Programmer Time Translation Cheatsheet -or- Why Programmers Are Bad at Estimating Times</a></p>
+<p><a href="http://www.csdn.net/article/2012-08-07/2808266">为什么程序员不擅长估算时间？</a></p>
+<p><a href="http://stackoverflow.com/questions/209170/how-much-does-it-cost-to-develop-an-iphone-application">How much does it cost to develop an iPhone application?</a></p>
+<p><a href="http://kentnguyen.com/ios/what-does-it-take-to-make-an-ios-app/">Dear business people, an iOS app actually takes a lot of work!</a></p>
+<p><a href="http://blog.jobbole.com/16546/">亲爱的商界精英们，开发一个iOS应用没有那么容易</a></p>
     </div>
 </article>
 

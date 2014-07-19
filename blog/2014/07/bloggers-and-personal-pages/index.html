@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" /><title>调整博客 | 假如这是一本书</title>
+<meta charset="UTF-8" /><title>收集一下IT领域的中文博客和个人站点 | 假如这是一本书</title>
 <meta name="author" content="吕晓宇">
-<meta name="description" content="这个博客的式样需要调整，目前遇到的问题有： 文章栏目过于靠左，而不是居中 在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。 2014-7-2 14:38 记： 今天已经解决了这个问题。办法是修改如下文件： sudo vi /usr/local/lib/python2.7/dist-packages/crotal/create_post.py 第14行： post.title = string 修改为： post.title = unicode(string, ...">
+<meta name="description" content="收集一下IT领域高水平的中文博客 http://blog.csdn.net/yangliuy/ 机器学习、概率、数据挖掘 http://www.zhizhihu.com/ 群体博客，首页底部收集了一些博客和网站的链接 http://sweetglue.info/ 搞自然语言处理的，博客上都是生活内容 http://freemind.pluskid.org/ 机器学习、程序设计 http://www.xperseverance.net/blogs/ 算法、机器学习及许多其他内容 ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content=""/>
 
@@ -55,42 +55,34 @@ a { color: #0099FF; }
             
 <div class="left-area">
 <article class="post entry clearfix">
-    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/06/diao-zheng-bo-ke-shi-yang">Jun 30,2014 </p>
+    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/bloggers-and-personal-pages">Jul 17,2014 </p>
     <div class="post_content clearfix">
-        <h1 class="title"><a href="/blog/2014/06/diao-zheng-bo-ke-shi-yang">调整博客</a></h1>
+        <h1 class="title"><a href="/blog/2014/07/bloggers-and-personal-pages">收集一下IT领域的中文博客和个人站点</a></h1>
         <hr/>
-        <p>这个博客的式样需要调整，目前遇到的问题有：</p>
-<ul>
-<li>文章栏目过于靠左，而不是居中</li>
-<li>在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。</li>
-</ul>
-<p>2014-7-2 14:38 记：
-今天已经解决了这个问题。办法是修改如下文件：</p>
-<div class="codehilite"><pre><span class="n">sudo</span> <span class="n">vi</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python2</span><span class="mf">.7</span><span class="o">/</span><span class="n">dist</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">crotal</span><span class="o">/</span><span class="n">create_post</span><span class="p">.</span><span class="n">py</span>
-</pre></div>
-
-
-<p>第14行：</p>
-<div class="codehilite"><pre><span class="n">post</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">string</span>
-</pre></div>
-
-
-<p>修改为：</p>
-<div class="codehilite"><pre><span class="n">post</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<ul>
-<li>
-<p>这是一个纯静态站点，每次编辑文章都要ssh到服务器上操作，实在太不方便了。
-目标是像<a href="https://www.zybuluo.com">这个网站</a>一样能够在线的写作和发布。当然
-这样的话就不是静态站点而是动态的了。也可以现在zybuluo上面写好草稿，
-最后一次性的发布。能够不方便，也好。太方便反而不会去慎重对待了。</p>
-</li>
-<li>
-<p>首页的prev按钮不起作用</p>
-</li>
-</ul>
+        <p>收集一下IT领域高水平的中文博客</p>
+<p>http://blog.csdn.net/yangliuy/
+机器学习、概率、数据挖掘</p>
+<p>http://www.zhizhihu.com/
+群体博客，首页底部收集了一些博客和网站的链接</p>
+<p>http://sweetglue.info/
+搞自然语言处理的，博客上都是生活内容</p>
+<p>http://freemind.pluskid.org/
+机器学习、程序设计</p>
+<p>http://www.xperseverance.net/blogs/
+算法、机器学习及许多其他内容
+http://www.xperseverance.net/blogs/tag/prml/
+有许多概率论的内容</p>
+<p>http://diaorui.net/
+中科院数学博士，现就职与谷歌，博客里有不少算法的内容</p>
+<p>http://licstar.net/
+自然语言处理、数据挖掘，参加过不少算法比赛
+<a href="http://licstar.net/archives/262">维基百科简体中文语料的获取</a></p>
+<p>http://www.cs.cmu.edu/~epxing/
+华人cmu教授，机器学习领域</p>
+<p>http://blog.sciencenet.cn/?2984
+李小文院士，号称黄老邪，风格朴实</p>
+<p>http://blog.sciencenet.cn/home.php?mod=space&amp;uid=362400
+李维的博客，信息科学、文本挖掘</p>
     </div>
 </article>
 
