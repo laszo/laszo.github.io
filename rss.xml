@@ -7,6 +7,7 @@
     <link></link>
 
         <item>
+<<<<<<< HEAD
       <title>咬文嚼字：演绎</title>
       <description>“演绎”这个词我们平时很少去用，不熟悉的人可能猛地看到这个词，只能根据上下文去推断了。 辞海里面对“演绎”这个词的释义如下： 1 铺陈，推断，阐发：汉儒解经，依经演绎。 2 “演绎推理”的简称。 阐发的意思： 阐述并加以引申发挥 而“演绎推理”的释义如下： 亦称“演绎法”。简称“演绎”。“归纳推理”的对称。从包含一般性知识的前提推出包含特殊性知识的结论的推理。这里所说的一般和特殊都是相对而言的。演绎推理全都是必然性推理。主要的形式是三段论。 在下面的例子中： 爱乐乐团精彩演绎了这首高难度乐曲。 所使用的显...</description>
       <link>/blog/2014/07/meaning-of-deduce</link>
@@ -15,6 +16,8 @@
       <guid>/blog/2014/07/meaning-of-deduce</guid>
     </item>
         <item>
+=======
+>>>>>>> 4a7a7fac92b50a33821eec3436491542e577db8e
       <title>收藏：关于程序开发工作量与工作量估算的几篇文章</title>
       <description>Programmer Time Translation Cheatsheet -or- Why Programmers Are Bad at Estimating Times 为什么程序员不擅长估算时间？ How much does it cost to develop an iPhone application? Dear business people, an iOS app actually takes a lot of work! 亲爱的商界精英们，开发一个iOS应用没有那么容易</description>
       <link>/blog/2014/07/ji-pian-wen-zhai-1</link>
