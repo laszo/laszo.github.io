@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" /><title>调整博客 | 假如这是一本书</title>
+<meta charset="UTF-8" /><title>调整博客 | 学到老，活到老</title>
 <meta name="author" content="吕晓宇">
 <meta name="description" content="这个博客的式样需要调整，目前遇到的问题有： 文章栏目过于靠左，而不是居中 在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。 2014-7-2 14:38 记： 今天已经解决了这个问题。办法是修改如下文件： sudo vi /usr/local/lib/python2.7/dist-packages/crotal/create_post.py 第14行： post.title = string 修改为： post.title = unicode(string, ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -26,8 +26,8 @@ a { color: #0099FF; }
 </head><body>
 <div id="header" class="container"><div id="logo-area">
     <a href="/">
-        <h1>假如这是一本书</h1>
-        <p>吕晓宇的博客</p>
+        <h1>学到老，活到老</h1>
+        <p>记录思维点滴</p>
     </a>
 </div></div>
 <div id="menu">
