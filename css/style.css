@@ -172,7 +172,7 @@ article.post-content p, .comment-content p, article.page p { padding-bottom: 17p
 #bottom-menu a { font-size: 14px; color: #4b4b4b; text-decoration: none; padding: 0 15px; display: block; }
 #bottom-menu .active  { font-weight: bold; }
 p#copyright { float: center; font-size:12px; color:#4b4b4b; margin-top: -4px; margin-right: 35px; }
-p#copyright a { color:#4b4b4b; font-weight: bold; }
+p#copyright a { color:#4b4b4b; }
 #footer .container { padding: 16px 0 10px 0; }
 
 /*------------------------------------------------*/
