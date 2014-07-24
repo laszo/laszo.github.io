@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" /><title>web.py指定Content-Type | 学到老，活到老</title>
+<meta name="author" content="吕晓宇">
+<meta name="description" content="在开发iOS应用的时候，会用到AFNetworking这个目前非常流行的第三方库。看它的名字就知道， 它封装了iOS开发种常见的网络操作，使用方便、高效。 但是，如果使用web.py作为server端，默认情况下，在运行app的时候，很可能会遇到如下错误： Request failed: unacceptable content-type: text/plain 需要我们在server端代码里，返回请求之前添加如下代码： web.header('Content-Type', 'text/json') ...">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta property="og:site_name" content=""/>
+
+<link rel="stylesheet" href="/css/style.css" type="text/css" />
+<link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+<style>
+#featured .flex-direction-nav a:hover, #video-slider-section .flex-direction-nav a:hover { background-color: #ffb600; }
+#featured_section .active-slide .post-meta, #featured_section .switcher_hover .post-meta, .et_tab_link_hover .post-meta { background: #0099FF; }
+h3.main-title { background-color: #0099FF; -moz-box-shadow: inset 0 0 10px #0099FF; -webkit-box-shadow: inset 0 0 10px #0099FF; box-shadow: inset 0 0 10px #0099FF; border: 1px solid #0099FF; }
+a { color: #0099FF; }
+.et_video_play { background-color: #0099FF; }
+#second-menu > ul > li > a:hover { background-color: #0099FF; }
+#second-menu ul ul li a:hover { background-color: #ffb122; }
+#second-menu ul.nav li ul { background: #0099FF; }
+#second-menu ul ul li a { border-top: 1px solid #0099FF; }
+</style>
+
+</head><body>
+<div id="header" class="container"><div id="logo-area">
+    <a href="/">
+        <h1>学到老，活到老</h1>
+        <p>记录思维点滴</p>
+    </a>
+</div></div>
+<div id="menu">
+    <div class="container"><a href="/" class="mobile_nav closed">首页</a>
+<a href="/archive" class="mobile_nav closed">文章列表</a>
+<a href="/links/page" class="mobile_nav closed">收藏</a>
+<a href="/about" class="mobile_nav closed">关于</a>
+
+<nav id="second-menu" class="clearfix">
+    <ul id="menu-categories" class="nav">
+                        <li id="" class="menu-item"><a href="/" class="mobile_nav closed">首页</a></li>
+                                <li id="" class="menu-item"><a href="/archive" class="mobile_nav closed">文章列表</a></li>
+                                <li id="" class="menu-item"><a href="/links/page" class="mobile_nav closed">收藏</a></li>
+                                <li id="" class="menu-item"><a href="/about" class="mobile_nav closed">关于</a></li>
+                    </ul>
+<form action="http://google.com/search" class="search-form" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvxiaoyu.com" />
+    <input class="searchinput" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+</nav></div>
+</div>
+<div class="main-area">
+    <div class="container">
+        <div id="content-area" class="clearfix">
+            
+<div class="left-area">
+<article class="post entry clearfix">
+    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/web.py-content-type-afnetwork">Jul 24,2014 </p>
+    <div class="post_content clearfix">
+        <h1 class="title"><a href="/blog/2014/07/web.py-content-type-afnetwork">web.py指定Content-Type</a></h1>
+        <hr/>
+        <p>在开发iOS应用的时候，会用到AFNetworking这个目前非常流行的第三方库。看它的名字就知道，
+它封装了iOS开发种常见的网络操作，使用方便、高效。</p>
+<p>但是，如果使用web.py作为server端，默认情况下，在运行app的时候，很可能会遇到如下错误：</p>
+<div class="codehilite"><pre><span class="n">Request</span> <span class="n">failed</span><span class="o">:</span> <span class="n">unacceptable</span> <span class="n">content</span><span class="o">-</span><span class="n">type</span><span class="o">:</span> <span class="n">text</span><span class="o">/</span><span class="n">plain</span>
+</pre></div>
+
+
+<p>需要我们在server端代码里，返回请求之前添加如下代码：</p>
+<div class="codehilite"><pre><span class="n">web</span><span class="p">.</span><span class="n">header</span><span class="p">(</span><span class="err">&#39;</span><span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="err">&#39;</span><span class="p">,</span> <span class="err">&#39;</span><span class="n">text</span><span class="o">/</span><span class="n">json</span><span class="err">&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>原因很简单，阅读<a href="https://github.com/iwasrobbed/Forecastr/blob/master/AFNetworking/AFURLResponseSerialization.m">AFURLResponseSerialization</a>类的代码就会发现，
+AFNetworking会在接受到server端数据之后，检查返回数据的ContenType类型，如果不符合要求，
+就会主动给出出错提示。从这个细节里可以看出，AFNetworking这个库还是比较严谨的。</p>
+    </div>
+</article>
+
+<article class="post entry clearfix">
+    </article>
+</div>
+
+<div class="sidebar">
+</div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="container clearfix" style="float:center;text-align:center;font-size:10pt;color:#000000;">
+      <p id="copyright">
+	<a href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备14033542</a>
+	 | &copy; 2014 吕晓宇 | Powered by 
+	<a href="http://crotal.org" target="_blank">Crotal</a>
+      </p>
+    </div>
+</div></body>
+</html>

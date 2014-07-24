@@ -7,6 +7,14 @@
     <link></link>
 
         <item>
+      <title>web.py指定Content-Type</title>
+      <description>在开发iOS应用的时候，会用到AFNetworking这个目前非常流行的第三方库。看它的名字就知道， 它封装了iOS开发种常见的网络操作，使用方便、高效。 但是，如果使用web.py作为server端，默认情况下，在运行app的时候，很可能会遇到如下错误： Request failed: unacceptable content-type: text/plain 需要我们在server端代码里，返回请求之前添加如下代码： web.header('Content-Type', 'text/json') 原因...</description>
+      <link>/blog/2014/07/web.py-content-type-afnetwork</link>
+      <pubDate>2014-07-24 18:35:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/07/web.py-content-type-afnetwork</guid>
+    </item>
+        <item>
       <title>think big, do small 的几层含义</title>
       <description>美国那边似乎很流行一句话：think big, do small。 我们可以从如下几个角度去理解： 所谓的大处着眼，小处着手。 先易后难，循序渐进。有复杂或者不确定的任务，可以先小规模的进行一些实验性的探索。创业公司讲究要”试错“，精益创业的思路也来源于此。在中国还有一句很著名的话，说的也是这个意思。</description>
       <link>/blog/2014/07/think-big,-do-small</link>
@@ -80,7 +88,7 @@
     </item>
         <item>
       <title>未来五年读书计划</title>
-      <description>最近反思，虽然我比较爱读书，也私下里自诩读了不少书，但总结了一下， 偏重于以下几方面： 计算机技术类 经济类、管理类 个人管理、时间管理、自助、某些实用心理学等 创业方法类 各种小说 所谓成功学、心灵鸡汤等，这一类书最近在中国互联网上被批判的比较厉害 宗教、灵修类，佛学、冥想、瑜伽等相关知识，占星术也可以列在这里面 观察一下上面所列的类目就可发现，我所看的书大都偏向实用性，并且作者鲜有名家。 虽然有一些作者放在当代也可以称之为权威和大家了，几乎代表了现世中该领域 牛人的最高水准，比如《第五项修炼》的作者彼...</description>
+      <description>最近反思，虽然我比较爱读书，也自诩读了不少书，但总结了一下， 偏重于以下几方面： 计算机技术类 经济类、管理类、创业类 个人管理、时间管理、自助、某些实用心理学等 各种小说 所谓成功学、心灵鸡汤等，这一类书最近在中国互联网上被批判的比较厉害 宗教、灵修类，佛学、冥想、瑜伽等相关知识，占星术也可归入此类 观察一下上面所列的类目就可发现，我所看的书大都偏向实用性和娱乐性（娱乐也可以看做一种实用）。 并且，除了小说类，作者鲜有顶级名家。 虽然有一些作者放在当代也可以称之为权威和大家了，几乎代表了现世中该领域 牛...</description>
       <link>/blog/2014/07/wei-lai-wu-nian-du-shu-ji-hua</link>
       <pubDate>2014-07-06 10:33:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
