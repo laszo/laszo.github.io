@@ -7,6 +7,22 @@
     <link></link>
 
         <item>
+      <title>心理学中著名的马车比喻</title>
+      <description>毁三观是一个最近很流行的词，一般用在遇到了什么特别令人惊讶的事情，以至于颠覆了以前的世界观、人生观、价值观。 当然，这往往是一种夸张的说法。但是我在大三的时候的确遇到过这样的事情。在某一期的东吴相对论里面，主持人提到了一个著名的关于心灵与马车的比喻： 柏拉图(Plato)的对话集《斐德诺》中有一个著名的比喻,他把灵魂比喻为一种协合的动力,好像同拉一辆车的两匹飞马和一个驭手,同时把人的灵魂划为三部分--御车人,驯良之马和顽劣之马. 弗洛伊德的三重人格理论似乎为我们的解读提供了线索:劣马代表的是人格系统中的本...</description>
+      <link>/blog/2014/07/ma-che-fu-de-bi-yu</link>
+      <pubDate>2014-07-25 19:11:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/07/ma-che-fu-de-bi-yu</guid>
+    </item>
+        <item>
+      <title>凡人修仙传里的世界观</title>
+      <description>凡人：没有灵根的人 有灵根却没有修炼的人。既然没有法力，一般也归位凡人。 练气期。逐步踏入修仙界，成为真正的修仙者。与凡人有根本区别。 筑基期 渡劫期 低魔世界：唯物主义世界观 高魔世界：高法力者可以改天换地、开天辟地、毁天灭地 我们当前的世界，把眼光放在地球上来看，可以算是高魔世界了，因为核武器可以毁灭地球几十次。改天换地、开天辟地却不能。至少是沾点边了。 如果把眼光放在全宇宙，却还远远不能。 不管是高魔还是低魔，都是有凡人存在的。差别在于这个世界中的顶级智慧者所拥有的能力。</description>
+      <link>/blog/2014/07/fan-ren-xiu-xian-chuan-gao-mo-di-mo</link>
+      <pubDate>2014-07-25 19:09:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/07/fan-ren-xiu-xian-chuan-gao-mo-di-mo</guid>
+    </item>
+        <item>
       <title>web.py指定Content-Type</title>
       <description>在开发iOS应用的时候，会用到AFNetworking这个目前非常流行的第三方库。看它的名字就知道， 它封装了iOS开发种常见的网络操作，使用方便、高效。 但是，如果使用web.py作为server端，默认情况下，在运行app的时候，很可能会遇到如下错误： Request failed: unacceptable content-type: text/plain 需要我们在server端代码里，返回请求之前添加如下代码： web.header('Content-Type', 'text/json') 原因...</description>
       <link>/blog/2014/07/web.py-content-type-afnetwork</link>
