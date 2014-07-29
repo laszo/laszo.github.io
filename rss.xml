@@ -7,6 +7,14 @@
     <link></link>
 
         <item>
+      <title>iOS7中如何根据用户是否登录来决定是否启动Main.storyboard或登录界面</title>
+      <description>从iOS7开始，在xcode中新建一个iOS项目，默认会建立一个Main.storyboard，在项目属性中，app的启动界面默认启动这个storyboard（在general->Main Interface选项）。这样通常是方便我们开发的。减少了大量在ViewController中切换的代码。 但是，如果我们要做一个带有用户系统的app，实现如下功能： app启动的时候判断用户是否已经登录，如果没有登录，显示『登录或注册界面』，如果已经登录，则显示主界面。 我们需要在AppDelegate的applic...</description>
+      <link>/blog/2014/07/ios7-init-check-user-login</link>
+      <pubDate>2014-07-29 10:58:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/07/ios7-init-check-user-login</guid>
+    </item>
+        <item>
       <title>心理学中著名的马车比喻</title>
       <description>毁三观是一个最近很流行的词，一般用在遇到了什么特别令人惊讶的事情，以至于颠覆了以前的世界观、人生观、价值观。 当然，这往往是一种夸张的说法。但是我在大三的时候的确遇到过这样的事情。在某一期的东吴相对论里面，主持人提到了一个著名的关于心灵与马车的比喻： 柏拉图(Plato)的对话集《斐德诺》中有一个著名的比喻,他把灵魂比喻为一种协合的动力,好像同拉一辆车的两匹飞马和一个驭手,同时把人的灵魂划为三部分--御车人,驯良之马和顽劣之马. 弗洛伊德的三重人格理论似乎为我们的解读提供了线索:劣马代表的是人格系统中的本...</description>
       <link>/blog/2014/07/ma-che-fu-de-bi-yu</link>
