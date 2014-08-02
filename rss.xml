@@ -7,8 +7,16 @@
     <link></link>
 
         <item>
+      <title>阅读源代码的方法之讨论</title>
+      <description>阅读和学习源代码是程序员的必备功课，本文来研究一下这项工作有无一定之规。 我们学习和研究源代码按如下边所述步骤进行，自始至终，如果我们的脑子里一直萦绕着如下问题，相比效果会更好： 这个项目为什么会存在？如果我来开发该项目，该怎么做？ 了解这个项目的背景、动机、历史渊源等信息。这不仅有利于理解这个项目存在的意义， 还可以更深刻的理解它为什么会是现在这个样子。比如Emacs是怎么来的，XMPP是怎么来的、如何发展的，等等。 一般来说，了解这些信息从Google或维基百科开始。简单的Google一下，以及阅读一...</description>
+      <link>/blog/2014/08/method-read-source-code</link>
+      <pubDate>2014-08-02 12:13:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/08/method-read-source-code</guid>
+    </item>
+        <item>
       <title>iOS下的XMPP开源库XMPPFramework介绍</title>
-      <description>如果你想开发带有聊天功能的iOS APP，这个XMPPFramework 是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。</description>
+      <description>如果你想开发带有聊天功能的iOS APP，这个XMPPFramework 是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。 首先下载这个库的源代码： git clone https://github.com/robbiehanson/XMPPFramework.git 或者下载源代码的ZIP包。 {tree}()是一个很有用的命令行工具，它能够以树形的方式展现指定目录的结构。 首先我们来查看项目的一级目录： tree -L 1 得到输出： . ├── Authentication ├── Cate...</description>
       <link>/blog/2014/08/xmpp-intro-1</link>
       <pubDate>2014-08-02 10:43:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
