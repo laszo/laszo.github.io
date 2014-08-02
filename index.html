@@ -57,6 +57,17 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/xmpp-intro-1">Aug 02,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/08/xmpp-intro-1">iOS下的XMPP开源库XMPPFramework介绍</a></h1>
+                <hr/>
+                <p>如果你想开发带有聊天功能的iOS APP，这个<a href="https://github.com/robbiehanson/XMPPFramework">XMPPFramework</a>
+是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。</p>
+                <a href="/blog/2014/08/xmpp-intro-1" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/ios7-init-check-user-login">Jul 29,2014</p>
 
             <div class="post_content clearfix">
@@ -64,7 +75,9 @@ a { color: #0099FF; }
                 <hr/>
                 <p>从iOS7开始，在xcode中新建一个iOS项目，默认会建立一个Main.storyboard，在项目属性中，app的启动界面默认启动这个storyboard（在general-&gt;Main Interface选项）。这样通常是方便我们开发的。减少了大量在ViewController中切换的代码。</p>
 <p>但是，如果我们要做一个带有用户系统的app，实现如下功能：</p>
+<blockquote>
 <p>app启动的时候判断用户是否已经登录，如果没有登录，显示『登录或注册界面』，如果已经登录，则显示主界面。</p>
+</blockquote>
 <p>我们需要在AppDelegate的application: didFinishLaunchingWithOptions: 方法中去实现：</p>
 <div class="codehilite"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="n">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
 <span class="p">{</span>
@@ -191,25 +204,6 @@ a { color: #0099FF; }
 AFNetworking会在接受到server端数据之后，检查返回数据的ContenType类型，如果不符合要求，
 就会主动给出出错提示。从这个细节里可以看出，AFNetworking这个库还是比较严谨的。</p>
                 <a href="/blog/2014/07/web.py-content-type-afnetwork" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/think-big,-do-small">Jul 20,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/07/think-big,-do-small">think big, do small 的几层含义</a></h1>
-                <hr/>
-                <p>美国那边似乎很流行一句话：think big, do small。
-我们可以从如下几个角度去理解：</p>
-<ol>
-<li>
-<p>所谓的大处着眼，小处着手。</p>
-</li>
-<li>
-<p>先易后难，循序渐进。有复杂或者不确定的任务，可以先小规模的进行一些实验性的探索。创业公司讲究要”试错“，精益创业的思路也来源于此。在中国还有一句很著名的话，说的也是这个意思。</p>
-</li>
-</ol>
-                <a href="/blog/2014/07/think-big,-do-small" class="more">阅读 &rarr;</a>
             </div>
         </article>
         <br/>

@@ -63,7 +63,9 @@ a { color: #0099FF; }
         <hr/>
         <p>从iOS7开始，在xcode中新建一个iOS项目，默认会建立一个Main.storyboard，在项目属性中，app的启动界面默认启动这个storyboard（在general-&gt;Main Interface选项）。这样通常是方便我们开发的。减少了大量在ViewController中切换的代码。</p>
 <p>但是，如果我们要做一个带有用户系统的app，实现如下功能：</p>
+<blockquote>
 <p>app启动的时候判断用户是否已经登录，如果没有登录，显示『登录或注册界面』，如果已经登录，则显示主界面。</p>
+</blockquote>
 <p>我们需要在AppDelegate的application: didFinishLaunchingWithOptions: 方法中去实现：</p>
 <div class="codehilite"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="n">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
 <span class="p">{</span>
