@@ -57,6 +57,72 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/man-hua-qianxu">Aug 04,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/08/man-hua-qianxu">漫话谦虚的几个层面</a></h1>
+                <hr/>
+                <h2>谦虚的几个层次</h2>
+<p>大家都会谦虚，尤其是中国人，更是每天都在谦虚。到底什么叫做谦虚呢？</p>
+<ol>
+<li>负谦虚，自我夸大其词。本来有三分能力，说成十分。</li>
+<li>不谦虚。实事求是，有多少就说多少。</li>
+<li>出于礼貌、文化习惯，顾忌场合、谈话对象等原因而谦虚。</li>
+<li>由于评价指标不一致而给别人造成谦虚的印象。</li>
+</ol>
+<p>谦虚属于对自我的评价，可以看做人们对技能、财富、美貌、成就等有价值的东西的一种估值。我们平时的估值可以分为两种：</p>
+<ol>
+<li>
+<p>相对指标：由两种相似的对象对比产生价值高低的印象。比如：哎呀，你家孩子比我家的聪明多了！</p>
+</li>
+<li>
+<p>绝对指标：不仅仅是两种事物进行对比，而是放在一定范围内的全局中进行估量。比如：您家孩子的成绩估计在全校也是数一数二的吧。</p>
+</li>
+</ol>
+                <a href="/blog/2014/08/man-hua-qianxu" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/method-read-source-code">Aug 02,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/08/method-read-source-code">阅读源代码的方法之讨论</a></h1>
+                <hr/>
+                <p>阅读和学习源代码是程序员的必备功课，本文来研究一下这项工作有无一定之规。</p>
+<p>我们学习和研究源代码按如下边所述步骤进行，自始至终，如果我们的脑子里一直萦绕着如下问题，相比效果会更好：</p>
+<blockquote>
+<p>这个项目为什么会存在？如果我来开发该项目，该怎么做？</p>
+</blockquote>
+<ol>
+<li>
+<p>了解这个项目的背景、动机、历史渊源等信息。这不仅有利于理解这个项目存在的意义， 还可以更深刻的理解它为什么会是现在这个样子。比如Emacs是怎么来的，XMPP是怎么来的、如何发展的，等等。 一般来说，了解这些信息从Google或维基百科开始。简单的Google一下，以及阅读一下项目相关的Wiki词条， 就能迅速了解一些概况，Google和维基百科也会提供了大量的链接和进一步阅读的文献资料，顺藤摸瓜的走下去， 会有更深入的理解。深入到什么程度，要看你自己的兴趣和时间了。</p>
+</li>
+<li>
+<p>查看项目结构。首先看该项目的README文件，然后看它的目录结构。 项目顶级目录下的二级目录和文件、以及它们的命名，是重要的架构信息。优秀的项目，它的方法、类、文件、包等 代码元素的组织方式也必然是良好的，对这些代码元素的命名也必然是良好的。研究项目的目录结构和文件命名， 可以帮助我们迅速掌握该项目的开发者、架构师（如果多人开发的话）对于该项目的设计思想。</p>
+</li>
+<li>
+<p>当你浏览了所有的二级目录和三级目录（如果有的话）之后，下一步就可以看项目中的头文件（'.h'）了。 从头文件里可以看到这个类/包的对外的接口。如果说项目的目录结构和命名体现了设计思想，那么头文件就体现了 这些设计思想如何落地，可以视为设计思想的子思想。</p>
+</li>
+<li>
+<p>当你浏览了项目的目录结构以及头文件以后，终于轮到看具体的实现代码（.c、.cpp、.m）了。
+ 这些代码体现了设计思想的具体实现。如果我们在使用该项目的时候遇到问题、或者需要修改BUG，估计看的最多的就是 这些文件了。</p>
+</li>
+</ol>
+<p>虽然具体的实现代码是项目的实质部分，但是如果不了解项目的背景、结构、设计思想等信息，就无从了解具体细节， 程序开发的老手会自发自觉的按照上述1、2、3、4这个顺序进行研究和学习。这些步骤可能会来回穿插、交替、迭代的循环进行。 而新手，则会跳过前三个步骤，直接进入第四步。 这就好像没有带着地图、GPS等工具，走在一个陌生的、没有路标的大城市里，最大的可能是：</p>
+<blockquote>
+<p>Lost yourself.</p>
+</blockquote>
+<p>新手之所以会如此做的原因，除了浮躁之外，还因为他们的实践太少，阅读项目、尤其是大型项目的源代码的量很小。 他们接触的项目，很可能是如下几类：</p>
+<ol>
+<li>只有几个文件的简单项目，小型网站或信息管理系统</li>
+<li>基于“已经很高层的库”之上的二次开发、甚至三次开发的项目</li>
+<li>虽然接触了大型项目，只是修改简单的BUG、添加功能等维护性工作</li>
+</ol>
+<p>这样的程序实践是不会有架构的概念的。相反，如果经常阅读大型项目的人，即便没有理论指导， 也会在实践中被迫、自发的摸索出一条类似于上述过程的工作方法的。</p>
+                <a href="/blog/2014/08/method-read-source-code" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/xmpp-intro-1">Aug 02,2014</p>
 
             <div class="post_content clearfix">
@@ -64,6 +130,54 @@ a { color: #0099FF; }
                 <hr/>
                 <p>如果你想开发带有聊天功能的iOS APP，这个<a href="https://github.com/robbiehanson/XMPPFramework">XMPPFramework</a>
 是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。</p>
+<p>首先下载这个库的源代码：</p>
+<div class="codehilite"><pre><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="o">:</span><span class="c1">//github.com/robbiehanson/XMPPFramework.git</span>
+</pre></div>
+
+
+<p>或者下载源代码的<a href="https://github.com/robbiehanson/XMPPFramework/archive/master.zip">ZIP包</a>。
+{tree}()是一个很有用的命令行工具，它能够以树形的方式展现指定目录的结构。
+首先我们来查看项目的一级目录：</p>
+<div class="codehilite"><pre><span class="n">tree</span> <span class="o">-</span><span class="n">L</span> <span class="mi">1</span>
+</pre></div>
+
+
+<p>得到输出：</p>
+<div class="codehilite"><pre><span class="p">.</span>
+<span class="err">├──</span> <span class="n">Authentication</span>
+<span class="err">├──</span> <span class="n">Categories</span>
+<span class="err">├──</span> <span class="n">Core</span>
+<span class="err">├──</span> <span class="n">Extensions</span>
+<span class="err">├──</span> <span class="n">README</span><span class="p">.</span><span class="n">markdown</span>
+<span class="err">├──</span> <span class="n">Sample_XMPPFramework</span><span class="p">.</span><span class="n">h</span>
+<span class="err">├──</span> <span class="n">Utilities</span>
+<span class="err">├──</span> <span class="n">Vendor</span>
+<span class="err">├──</span> <span class="n">Xcode</span>
+<span class="err">└──</span> <span class="n">copying</span><span class="p">.</span><span class="n">txt</span>
+</pre></div>
+
+
+<p>顶级目录里共有10个目录和文件，其中3个文件，7个文件夹。三个文件分别是:</p>
+<ol>
+<li>README.markdown：介绍了该项目的内容，并给出链接，指向项目概览、安装方法等。其中项目概览是我们尤其应该仔细阅读的文件。</li>
+<li>Sample_XMPPFramework.h：给出例子，说明头文件的引用请客</li>
+<li>copying.txt：版权信息，该项目基于BSD Style License和BSD License。</li>
+</ol>
+<p>三个文件都很简单，接下来概览这7个文件夹，稍后逐一详细研究：</p>
+<ol>
+<li>Authentication：即便不看该目录的内容，顾名思义，也可以推测这里面包含用户身份验证、鉴权等相关类和方法。</li>
+<li>Categories：category 是 Objective-C 的一种语言机制，允许我们通过给一个类添加方法来扩充这个类。这里面应该包含了对苹果官方库中某些类的扩展。</li>
+<li>Core：这里面当然是最核心的项目类了，使我们要重点研究的。</li>
+<li>Extensions：扩展有两层含义：a, Objective-C 的一种语言机制，类似于category；b，XMPP协议的扩展，一般称为XEP，<a href="http://xmpp.org/xmpp-protocols/xmpp-extensions/">XMPP Extensions</a>。这里的Extensions指的是后者。</li>
+<li>Utilities：存放一些使用工具类。很多项目都会有这个文件夹。</li>
+<li>Vendor：保存了该项目使用的第三方库</li>
+<li>Xcode：里面有一些Demo项目和测试用例，举例说明该库的使用方法。</li>
+</ol>
+<p>接下来，可以有如下两个选择，先后顺序无所谓：</p>
+<ol>
+<li>浏览Xcode目录里面的项目，简单浏览Demo代码，编译运行一下，有一个直观的印象。</li>
+<li>浏览Core目录，较深入的研究里面的目录结构和头文件。看看这里面的类对同级其他目录里的文件的引用情况，这样会对项目的架构层级产生概念。一般来说，其他目录里的文件都是为这里面的类服务的。</li>
+</ol>
                 <a href="/blog/2014/08/xmpp-intro-1" class="more">阅读 &rarr;</a>
             </div>
         </article>
@@ -118,94 +232,6 @@ a { color: #0099FF; }
                 <a href="/blog/2014/07/ma-che-fu-de-bi-yu" class="more">阅读 &rarr;</a>
             </div>
         </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/fan-ren-xiu-xian-chuan-gao-mo-di-mo">Jul 25,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/07/fan-ren-xiu-xian-chuan-gao-mo-di-mo">凡人修仙传里的世界观</a></h1>
-                <hr/>
-                <p>我们都喜欢看电影、看电视、看小说，因为它们带给了我们不一样的人生体验，
-让我们体验到了不一样的世界，听到了不一样的故事。</p>
-<p>作为读者，我们可能没有注意到的是，任何一个故事都是发生在一个特定的世界中，
-这个世界作为故事的背景，限定了故事里的规则和事情发展的可能性。</p>
-<p>正如《故事》所说：</p>
-<blockquote>
-<p>一个故事就是一个世界。
-要描述全宇宙，你是个菜鸟。要描述你家的厨房，你就是全世界最好的。</p>
-</blockquote>
-<p>写实类的当代小说，它的世界观直接沿用我们现在所处的现实世界。除此之外，
-任何一个故事所在的世界都有与现实不一样的地方。最容易辨认的是科幻、
-魔幻、玄幻、武侠、修仙等类型的小说。区别是人们获得力量的方式不同。</p>
-<p>这里有一个低魔世界、高魔世界的概念。</p>
-<p>它的评判标准是，这个世界的顶级人物是否能够单凭个人的能力对外在世界产生重大影响。
-对外在世界的影响越大，则越接近高魔世界；影响越小，则越接近低魔世界。</p>
-<p>这种影响又可以分为三种，毁灭、创造、改变。在最高魔的世界里，个人的能力有可能对
-其所处的整个宇宙产生影响：</p>
-<ul>
-<li>毁灭：毁天灭地。</li>
-<li>改变：改天换地</li>
-<li>创造：开天辟地</li>
-</ul>
-<p>而在最低魔的世界，比如说我们的现实世界，如果不借助工具，个人的能力是非常小的：</p>
-<ul>
-<li>毁灭：能撅断小树枝，拍死老鼠、掐死兔子，前提是你得比他们跑得快</li>
-<li>改变：不用工具的话只能捏泥巴</li>
-<li>创造：可以盖石头屋子</li>
-</ul>
-<p>当然了，你可以借助工具和科技。相应的，这样的世界叫做低科技世界、高科技世界。</p>
-<p>可以翻山倒海、毁天灭地、改天换地、开天辟地。</p>
-<p>我曾经非常向往凡人修仙传这样的世界，这样就可以一心修仙了，省的像现在这样杂念过多。
-后来回头又一想，在修仙世界，如果我是一个没有灵根的凡人可就糟糕了。
-现实的世界，是多元化的成功，无论你擅长科研、体育、画画、唱歌等等，
-只要做的好，都可以成功。修仙世界可就是纯粹的一元化成功了，任你其他方面
-再厉害，法力低微终究是不行的。</p>
-<ol>
-<li>凡人：没有灵根的人</li>
-<li>
-<p>有灵根却没有修炼的人。既然没有法力，一般也归位凡人。</p>
-</li>
-<li>
-<p>练气期。逐步踏入修仙界，成为真正的修仙者。与凡人有根本区别。</p>
-</li>
-<li>
-<p>筑基期</p>
-</li>
-<li>
-<p>渡劫期</p>
-</li>
-</ol>
-<p>低魔世界：唯物主义世界观</p>
-<p>高魔世界：高法力者可以改天换地、开天辟地、毁天灭地</p>
-<p>我们当前的世界，把眼光放在地球上来看，可以算是高魔世界了，因为核武器可以毁灭地球几十次。改天换地、开天辟地却不能。至少是沾点边了。</p>
-<p>如果把眼光放在全宇宙，却还远远不能。</p>
-<p>不管是高魔还是低魔，都是有凡人存在的。差别在于这个世界中的顶级智慧者所拥有的能力。</p>
-                <a href="/blog/2014/07/fan-ren-xiu-xian-chuan-gao-mo-di-mo" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/web.py-content-type-afnetwork">Jul 24,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/07/web.py-content-type-afnetwork">web.py指定Content-Type</a></h1>
-                <hr/>
-                <p>在开发iOS应用的时候，会用到AFNetworking这个目前非常流行的第三方库。看它的名字就知道，
-它封装了iOS开发种常见的网络操作，使用方便、高效。</p>
-<p>但是，如果使用web.py作为server端，默认情况下，在运行app的时候，很可能会遇到如下错误：</p>
-<div class="codehilite"><pre><span class="n">Request</span> <span class="n">failed</span><span class="o">:</span> <span class="n">unacceptable</span> <span class="n">content</span><span class="o">-</span><span class="n">type</span><span class="o">:</span> <span class="n">text</span><span class="o">/</span><span class="n">plain</span>
-</pre></div>
-
-
-<p>需要我们在server端代码里，返回请求之前添加如下代码：</p>
-<div class="codehilite"><pre><span class="n">web</span><span class="p">.</span><span class="n">header</span><span class="p">(</span><span class="err">&#39;</span><span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="err">&#39;</span><span class="p">,</span> <span class="err">&#39;</span><span class="n">text</span><span class="o">/</span><span class="n">json</span><span class="err">&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<p>原因很简单，阅读<a href="https://github.com/iwasrobbed/Forecastr/blob/master/AFNetworking/AFURLResponseSerialization.m">AFURLResponseSerialization</a>类的代码就会发现，
-AFNetworking会在接受到server端数据之后，检查返回数据的ContenType类型，如果不符合要求，
-就会主动给出出错提示。从这个细节里可以看出，AFNetworking这个库还是比较严谨的。</p>
-                <a href="/blog/2014/07/web.py-content-type-afnetwork" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
         <br/>
 <ul class="paginate clearfix">
         <li class="current">prev</li>
@@ -213,6 +239,7 @@ AFNetworking会在接受到server端数据之后，检查返回数据的ContenTy
                                         <li class="current">1</li>
                                             <li><a href="/blog/page/2">2</a></li>
                                             <li><a href="/blog/page/3">3</a></li>
+                                            <li><a href="/blog/page/4">4</a></li>
                         <!-- <li><a href="#">prev</a></li> -->
             <li><a href="/blog/page/2">next</a></li>
         </ul></div>
