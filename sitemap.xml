@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<<<<<<< HEAD
         <url><loc>lvxiaoyu.com/blog/2014/08/man-hua-qianxu
     </loc>
     <lastmod>2014-08-04</lastmod>
     <priority>1.0</priority>
 </url>
     <url><loc>lvxiaoyu.com/blog/2014/08/method-read-source-code
+=======
+        <url><loc>lvxiaoyu.com/blog/2014/08/method-read-source-code
+>>>>>>> c890a2f81dc71b3befca8d5143eeca4ef0b7453c
     </loc>
     <lastmod>2014-08-02</lastmod>
     <priority>1.0</priority>
