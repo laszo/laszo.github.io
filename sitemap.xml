@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<<<<<<< HEAD
         <url><loc>lvxiaoyu.com/blog/2014/08/07/jing-ti-shen-tong-jiao-yu
     </loc>
     <lastmod>2014-08-07</lastmod>
@@ -11,16 +12,34 @@
     <priority>1.0</priority>
 </url>
     <url><loc>lvxiaoyu.com/blog/2014/08/07/ru-he-zhang-wo-app-tui-guang-de-ji-neng
+=======
+<<<<<<< HEAD
+        <url><loc>lvxiaoyu.com/blog/2014/08/07/ru-he-zhang-wo-app-tui-guang-de-ji-neng
+>>>>>>> 8b7377121342899e2d501dfac0553fe02cec2f22
     </loc>
     <lastmod>2014-08-07</lastmod>
     <priority>1.0</priority>
 </url>
     <url><loc>lvxiaoyu.com/blog/2014/08/04/man-hua-qianxu
+<<<<<<< HEAD
+=======
+=======
+        <url><loc>lvxiaoyu.com/blog/2014/08/man-hua-qianxu
+>>>>>>> 0f79242db35334778997942481ec37147cdcad98
+>>>>>>> 8b7377121342899e2d501dfac0553fe02cec2f22
     </loc>
     <lastmod>2014-08-04</lastmod>
     <priority>1.0</priority>
 </url>
+<<<<<<< HEAD
     <url><loc>lvxiaoyu.com/blog/2014/08/02/method-read-source-code
+=======
+<<<<<<< HEAD
+    <url><loc>lvxiaoyu.com/blog/2014/08/02/method-read-source-code
+=======
+    <url><loc>lvxiaoyu.com/blog/2014/08/method-read-source-code
+>>>>>>> 0f79242db35334778997942481ec37147cdcad98
+>>>>>>> 8b7377121342899e2d501dfac0553fe02cec2f22
     </loc>
     <lastmod>2014-08-02</lastmod>
     <priority>1.0</priority>
