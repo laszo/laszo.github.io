@@ -57,6 +57,98 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/02/xmpp-intro-1">Aug 02,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/08/02/xmpp-intro-1">iOS下的XMPP开源库XMPPFramework介绍</a></h1>
+                <hr/>
+                <p>如果你想开发带有聊天功能的iOS APP，这个<a href="https://github.com/robbiehanson/XMPPFramework">XMPPFramework</a>
+是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。</p>
+<p>首先下载这个库的源代码：</p>
+<div class="codehilite"><pre><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="o">:</span><span class="c1">//github.com/robbiehanson/XMPPFramework.git</span>
+</pre></div>
+
+
+<p>或者下载源代码的<a href="https://github.com/robbiehanson/XMPPFramework/archive/master.zip">ZIP包</a>。
+{tree}()是一个很有用的命令行工具，它能够以树形的方式展现指定目录的结构。
+首先我们来查看项目的一级目录：</p>
+<div class="codehilite"><pre><span class="n">tree</span> <span class="o">-</span><span class="n">L</span> <span class="mi">1</span>
+</pre></div>
+
+
+<p>得到输出：</p>
+<div class="codehilite"><pre><span class="p">.</span>
+<span class="err">├──</span> <span class="n">Authentication</span>
+<span class="err">├──</span> <span class="n">Categories</span>
+<span class="err">├──</span> <span class="n">Core</span>
+<span class="err">├──</span> <span class="n">Extensions</span>
+<span class="err">├──</span> <span class="n">README</span><span class="p">.</span><span class="n">markdown</span>
+<span class="err">├──</span> <span class="n">Sample_XMPPFramework</span><span class="p">.</span><span class="n">h</span>
+<span class="err">├──</span> <span class="n">Utilities</span>
+<span class="err">├──</span> <span class="n">Vendor</span>
+<span class="err">├──</span> <span class="n">Xcode</span>
+<span class="err">└──</span> <span class="n">copying</span><span class="p">.</span><span class="n">txt</span>
+</pre></div>
+
+
+<p>顶级目录里共有10个目录和文件，其中3个文件，7个文件夹。三个文件分别是:</p>
+<ol>
+<li>README.markdown：介绍了该项目的内容，并给出链接，指向项目概览、安装方法等。其中项目概览是我们尤其应该仔细阅读的文件。</li>
+<li>Sample_XMPPFramework.h：给出例子，说明头文件的引用请客</li>
+<li>copying.txt：版权信息，该项目基于BSD Style License和BSD License。</li>
+</ol>
+<p>三个文件都很简单，接下来概览这7个文件夹，稍后逐一详细研究：</p>
+<ol>
+<li>Authentication：即便不看该目录的内容，顾名思义，也可以推测这里面包含用户身份验证、鉴权等相关类和方法。</li>
+<li>Categories：category 是 Objective-C 的一种语言机制，允许我们通过给一个类添加方法来扩充这个类。这里面应该包含了对苹果官方库中某些类的扩展。</li>
+<li>Core：这里面当然是最核心的项目类了，使我们要重点研究的。</li>
+<li>Extensions：扩展有两层含义：a, Objective-C 的一种语言机制，类似于category；b，XMPP协议的扩展，一般称为XEP，<a href="http://xmpp.org/xmpp-protocols/xmpp-extensions/">XMPP Extensions</a>。这里的Extensions指的是后者。</li>
+<li>Utilities：存放一些使用工具类。很多项目都会有这个文件夹。</li>
+<li>Vendor：保存了该项目使用的第三方库</li>
+<li>Xcode：里面有一些Demo项目和测试用例，举例说明该库的使用方法。</li>
+</ol>
+<p>接下来，可以有如下两个选择，先后顺序无所谓：</p>
+<ol>
+<li>浏览Xcode目录里面的项目，简单浏览Demo代码，编译运行一下，有一个直观的印象。</li>
+<li>浏览Core目录，较深入的研究里面的目录结构和头文件。看看这里面的类对同级其他目录里的文件的引用情况，这样会对项目的架构层级产生概念。一般来说，其他目录里的文件都是为这里面的类服务的。</li>
+</ol>
+                <a href="/blog/2014/08/02/xmpp-intro-1" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/ios7-init-check-user-login">Jul 29,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/07/ios7-init-check-user-login">iOS7中如何根据用户是否登录来决定是否启动Main.storyboard或登录界面</a></h1>
+                <hr/>
+                <p>从iOS7开始，在xcode中新建一个iOS项目，默认会建立一个Main.storyboard，在项目属性中，app的启动界面默认启动这个storyboard（在general-&gt;Main Interface选项）。这样通常是方便我们开发的。减少了大量在ViewController中切换的代码。</p>
+<p>但是，如果我们要做一个带有用户系统的app，实现如下功能：</p>
+<blockquote>
+<p>app启动的时候判断用户是否已经登录，如果没有登录，显示『登录或注册界面』，如果已经登录，则显示主界面。</p>
+</blockquote>
+<p>我们需要在AppDelegate的application: didFinishLaunchingWithOptions: 方法中去实现：</p>
+<div class="codehilite"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="n">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
+<span class="p">{</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">window</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIWindow</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">initWithFrame</span><span class="o">:</span><span class="p">[[</span><span class="n">UIScreen</span> <span class="n">mainScreen</span><span class="p">]</span> <span class="n">bounds</span><span class="p">]];</span>
+    <span class="k">if</span> <span class="p">([</span><span class="n">user</span> <span class="n">logined</span><span class="p">])</span> <span class="p">{</span>        
+        <span class="n">UIStoryboard</span> <span class="o">*</span><span class="n">storyBoard</span><span class="o">=</span><span class="p">[</span><span class="n">UIStoryboard</span> <span class="n">storyboardWithName</span><span class="o">:</span><span class="s">@&quot;Main&quot;</span> <span class="n">bundle</span><span class="o">:</span><span class="nb">nil</span><span class="p">];</span>
+        <span class="n">mainTabBarController</span> <span class="o">*</span><span class="n">mainVC</span> <span class="o">=</span> <span class="p">[</span><span class="n">storyBoard</span> <span class="n">instantiateInitialViewController</span><span class="p">];</span>                
+        <span class="n">self</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">rootViewController</span> <span class="o">=</span> <span class="n">mainVC</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="n">LoginPage</span> <span class="o">*</span><span class="n">loginPage</span> <span class="o">=</span> <span class="p">[[</span><span class="n">LoginPage</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>        
+        <span class="n">self</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">rootViewController</span> <span class="o">=</span> <span class="n">loginPage</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>这也是在iOS6及其以前的版本中的默认做法。</p>
+                <a href="/blog/2014/07/ios7-init-check-user-login" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/ma-che-fu-de-bi-yu">Jul 25,2014</p>
 
             <div class="post_content clearfix">
@@ -160,52 +252,6 @@ a { color: #0099FF; }
 AFNetworking会在接受到server端数据之后，检查返回数据的ContenType类型，如果不符合要求，
 就会主动给出出错提示。从这个细节里可以看出，AFNetworking这个库还是比较严谨的。</p>
                 <a href="/blog/2014/07/24/web.py-content-type-afnetwork" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/think-big,-do-small">Jul 20,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/07/think-big,-do-small">think big, do small 的几层含义</a></h1>
-                <hr/>
-                <p>美国那边似乎很流行一句话：think big, do small。
-我们可以从如下几个角度去理解：</p>
-<ol>
-<li>
-<p>所谓的大处着眼，小处着手。</p>
-</li>
-<li>
-<p>先易后难，循序渐进。有复杂或者不确定的任务，可以先小规模的进行一些实验性的探索。创业公司讲究要”试错“，精益创业的思路也来源于此。在中国还有一句很著名的话，说的也是这个意思。</p>
-</li>
-</ol>
-                <a href="/blog/2014/07/think-big,-do-small" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/ke-fu-du-shu-de-zhang-ai">Jul 19,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/07/ke-fu-du-shu-de-zhang-ai">克服读书的障碍</a></h1>
-                <hr/>
-                <p>很多人都想要读书，但往往读了一点就放弃了，特别是大部头的书，或者是具有一定难度和深度的书。</p>
-<p>我认为，其中的一个原因，是读大部头书籍时带来的挫败感和无力感。</p>
-<p>这个挫败感是从哪里来的呢？这来自于读书之前过高的期望。
-很多人在拿到书的时候，总是想要一下子读完，或者几天就读完，然后『迅速获取该书所带来的好处』。
-刚拿到书时，前几次阅读，在高期望的刺激下进行了过量的阅读。
-这种过高的阅读量，大大超过了读者自己的脑力、基础知识能够接受的程度。
-这时候，潜意识里会发出疲劳、拒绝阅读的信号，很快，无力感、挫败感、以及对该书的抵触心理接踵而至。
-久而久之，他们会产生这样的自我暗示：『我天生就不是读书的料』。</p>
-<p>我们会发现，大部分人，终其一生只有一个职业。大部分人是能够熟悉和精通自己专业的知识和技能。也许他们也想学一下别的专业的知识和技能，但是成功的却很少。为什么有能力学好自己的专业却学不好别的专业呢？</p>
-<p>因为他们在学习本专业的时候接受的是系统的教育，而工作以后再学习其他专业的时候就不得不自我教育、自我学习了。</p>
-<p>所谓的系统训练，会把原本庞大的知识体系分门别类，分成一系列子学科。
-单一的子学科，再按照章节、课时进行划分。这样，每一个时间段只学习一小块内容，就不会感觉太难了，至少是可以被平均脑力水平的人接受了。</p>
-<p>所以，如果我们想要自学点什么东西，最好是：</p>
-<p>1，要有合理的期望，任何想要速成的心理都是不现实的</p>
-<p>2，制定阶段性的小目标，每实现一次就是一次成功。</p>
-<p>其实，不只是读书，任何有一定难度的事情都要分析并分解之，然后逐步完成。
-每个人都有要学习的欲望、改变现状的欲望。这时候，是否有能力对任务进行分解、计划、执行、记录、反馈，就成了成功的关键。</p>
-<p>幸运的是，这是一种可以掌握的技能。关于这方面更多的讨论，可以参见<a href="http://book.douban.com/subject/10773358/">《意志力》</a>这本书。</p>
-                <a href="/blog/2014/07/ke-fu-du-shu-de-zhang-ai" class="more">阅读 &rarr;</a>
             </div>
         </article>
         <br/>
