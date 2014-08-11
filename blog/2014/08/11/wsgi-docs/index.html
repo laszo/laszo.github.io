@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" /><title>wsgi相关文章收集 | 学到老，活到老</title>
+<meta name="author" content="吕晓宇">
+<meta name="description" content="PEP 333 -- Python Web Server Gateway Interface v1.0 、 CGI，FastCGI，WSGI，flup，spawn-fcgi之间的关系 、 Python WSGI服务器大乱斗（Rev.2） 、 wsgi.org 、 WSGI、flup、fastcgi、web.py的关系中 Mr.J的评论： WSGI是python的接口规范，这个规范是针对WEB服务器和python应用（框架等）的交互的。FASTCGI则是两者底层的通信协议的规范。 ...">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta property="og:site_name" content=""/>
+
+<link rel="stylesheet" href="/css/style.css" type="text/css" />
+<link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+<style>
+#featured .flex-direction-nav a:hover, #video-slider-section .flex-direction-nav a:hover { background-color: #ffb600; }
+#featured_section .active-slide .post-meta, #featured_section .switcher_hover .post-meta, .et_tab_link_hover .post-meta { background: #0099FF; }
+h3.main-title { background-color: #0099FF; -moz-box-shadow: inset 0 0 10px #0099FF; -webkit-box-shadow: inset 0 0 10px #0099FF; box-shadow: inset 0 0 10px #0099FF; border: 1px solid #0099FF; }
+a { color: #0099FF; }
+.et_video_play { background-color: #0099FF; }
+#second-menu > ul > li > a:hover { background-color: #0099FF; }
+#second-menu ul ul li a:hover { background-color: #ffb122; }
+#second-menu ul.nav li ul { background: #0099FF; }
+#second-menu ul ul li a { border-top: 1px solid #0099FF; }
+</style>
+
+</head><body>
+<div id="header" class="container"><div id="logo-area">
+    <a href="/">
+        <h1>学到老，活到老</h1>
+        <p>记录思维点滴</p>
+    </a>
+</div></div>
+<div id="menu">
+    <div class="container"><a href="/" class="mobile_nav closed">首页</a>
+<a href="/archive" class="mobile_nav closed">文章列表</a>
+<a href="/links/page" class="mobile_nav closed">收藏</a>
+<a href="/about" class="mobile_nav closed">关于</a>
+
+<nav id="second-menu" class="clearfix">
+    <ul id="menu-categories" class="nav">
+                        <li id="" class="menu-item"><a href="/" class="mobile_nav closed">首页</a></li>
+                                <li id="" class="menu-item"><a href="/archive" class="mobile_nav closed">文章列表</a></li>
+                                <li id="" class="menu-item"><a href="/links/page" class="mobile_nav closed">收藏</a></li>
+                                <li id="" class="menu-item"><a href="/about" class="mobile_nav closed">关于</a></li>
+                    </ul>
+<form action="http://google.com/search" class="search-form" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvxiaoyu.com" />
+    <input class="searchinput" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+</nav></div>
+</div>
+<div class="main-area">
+    <div class="container">
+        <div id="content-area" class="clearfix">
+            
+<div class="left-area">
+<article class="post entry clearfix">
+    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/11/wsgi-docs">Aug 11,2014 </p>
+    <div class="post_content clearfix">
+        <h1 class="title"><a href="/blog/2014/08/11/wsgi-docs">wsgi相关文章收集</a></h1>
+        <hr/>
+        <p><a href="http://legacy.python.org/dev/peps/pep-0333/">PEP 333 -- Python Web Server Gateway Interface v1.0</a>
+、
+<a href="http://lihuipeng.blog.51cto.com/3064864/890573">CGI，FastCGI，WSGI，flup，spawn-fcgi之间的关系</a>
+、
+<a href="http://www.oschina.net/question/25940_10751">Python WSGI服务器大乱斗（Rev.2）</a>
+、
+<a href="http://wsgi.readthedocs.org/en/latest/">wsgi.org</a>
+、
+<a href="http://www.douban.com/note/13508388/">WSGI、flup、fastcgi、web.py的关系</a>中 Mr.J的评论：</p>
+<blockquote>
+<p>WSGI是python的接口规范，这个规范是针对WEB服务器和python应用（框架等）的交互的。FASTCGI则是两者底层的通信协议的规范。</p>
+</blockquote>
+<p><a href="http://blog.ez2learn.com/2010/01/27/introduction-to-wsgi/">化整為零的次世代網頁開發標準: WSGI</a>
+、
+<a href="http://blog.csdn.net/five3/article/details/7732832">nginx[+spawn-fcgi]+flup+webpy服务搭建</a>
+、
+<a href="http://my.oschina.net/junn/blog/280799">概念了解：CGI，FastCGI，PHP-CGI与PHP-FPM</a>
+、
+<a href="http://zsl-oo7.blog.163.com/blog/static/353297032013111510441430/">WSGI 是什么 以及如何使用</a>
+、
+<a href="http://developer.51cto.com/art/201010/229615_all.htm">快速部署Python应用：Nginx+uWSGI配置详解</a>
+、
+<a href="https://github.com/lzjun567/note/blob/master/note/python/wsgi.md">深入理解WSGI</a>
+、
+<a href="http://uwsgi-docs.readthedocs.org/en/latest/Options.html">uwsgi-docs</a>
+、
+<a href="http://mdba.cn/?p=109">Nginx+uWSGI安装与配置</a>
+、
+<a href="http://webpython.codepoint.net/wsgi_tutorial">WSGI Tutorial</a>
+、
+<a href="http://wiki.woodpecker.org.cn/moin/WSGI">啄木鸟社区wiki的WSGI页面（有大量链接）</a>
+、
+<a href="http://nichol.as/benchmark-of-python-web-servers">Benchmark of Python WSGI Servers(2010)</a>
+、
+<a href="http://linluxiang.iteye.com/blog/799163">wsgi初探</a>
+、
+<a href="http://www.cnblogs.com/holbrook/archive/2012/02/25/2357337.html">戏说WSGI（Python Web服务网关接口）</a>：</p>
+<blockquote>
+<p>WSGI是马里奥在探索管道的时候发现的一种连接件，它非常简单，入口处提供一个start_response，用于回流（回调，callback），入口会连接到出口的一个函数，并传递environ字典和start_response作为参数；而出口处的函数先是调用start_response并传递status和header，然后再返回content。由于这段心法有些拗口，马里奥演示了唯一的招式，并声明其实所有的招式都可以从这招中演化出来：[code]</p>
+<p>马里奥还发现，WSGI其实可以串联起来，为了区分，马里奥将下水管的入口叫做web server，只能接受外界的请求并调用下一段管件的函数；中间的管件叫做middleware，既可以接收上一段管件的请求，又可以调用下一段管件的函数；管道的终点叫做web app，只能被上一段管件调用。</p>
+</blockquote>
+<p><a href="http://blog.csdn.net/sraing/article/details/8455242"> WSGI的理解（转载）</a>
+、
+<a href="http://blog.csdn.net/on_1y/article/details/18803563">WSGI 简介</a></p>
+    </div>
+</article>
+
+<article class="post entry clearfix">
+    </article>
+</div>
+
+<div class="sidebar">
+</div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="container clearfix" style="float:center;text-align:center;font-size:10pt;color:#000000;">
+      <p id="copyright">
+	<a href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备14033542</a>
+	 | &copy; 2014 吕晓宇 | Powered by 
+	<a href="http://crotal.org" target="_blank">Crotal</a>
+      </p>
+    </div>
+</div></body>
+</html>
