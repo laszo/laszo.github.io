@@ -151,14 +151,6 @@
       <guid>/blog/2014/07/17/book-Algorithms-dasgupta</guid>
     </item>
         <item>
-      <title>收集一下IT领域的中文博客和个人站点</title>
-      <description>收集一下IT领域高水平的中文博客 http://blog.csdn.net/yangliuy/ 机器学习、概率、数据挖掘 http://www.zhizhihu.com/ 群体博客，首页底部收集了一些博客和网站的链接 http://sweetglue.info/ 搞自然语言处理的，博客上都是生活内容 http://freemind.pluskid.org/ 机器学习、程序设计 http://www.xperseverance.net/blogs/ 算法、机器学习及许多其他内容 http://www.xpe...</description>
-      <link>/blog/2014/07/17/bloggers-and-personal-pages</link>
-      <pubDate>2014-07-17 14:04:00 +0800</pubDate>
-      2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/07/17/bloggers-and-personal-pages</guid>
-    </item>
-        <item>
       <title>主题模型及LSI、PLSI、LDA简介</title>
       <description>如何从大量文档中自动归纳出每篇文章的主题，是一个很有意思的任务。 1998年，Papadimitriou等人在一篇论文 中提出了LSI的概念，这是一种主题模型（topic model）， 维基百科上面的主题模型词条。 在这篇文章中提出了LSI（潜在语义索引），维基百科词条 潜在语义索引 PLSI指的是概率性潜在语义索引。跟PLSA是同义语，维基百科上面这两个词也指向同一个页面。 论文下载 LSI从那里来的呢？从LSA而来。 Latent semantic analysis， LSA主页， 论文下载， 还有...</description>
       <link>/blog/2014/07/topic-model</link>
