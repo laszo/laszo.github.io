@@ -7,6 +7,14 @@
     <link></link>
 
         <item>
+      <title>mac 安装 nginx 过程中的提示信息</title>
+      <description>mac 下安装nginx： brew install nginx 安装中的提示信息： localhost:test-pub laszo$ brew install nginx ==> Installing nginx dependency: pcre ==> Downloading https://downloads.sf.net/project/machomebrew/Bottles/pcre-8.35.mavericks.bottle.tar. ############################...</description>
+      <link>/blog/2014/08/11/mac-install-nginx-info-out</link>
+      <pubDate>2014-08-11 11:44:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/08/11/mac-install-nginx-info-out</guid>
+    </item>
+        <item>
       <title>应当警惕'神童教育'</title>
       <description>有很多孩子小时候展现了超出一般的智力水准，这当然是好事情，谁不希望自己的孩子聪明呢？ 但是，如果神童在幼年时承受了外界不一样的眼光、过多的厚望、带来很大的压力；同时，没有接受心理健康、情绪管理、人际关系等常识性教育，小小年纪就一头扎在理工科的学习甚至研究上，往往不会得到希望的结果。比如当年的“第一神童”宁铂，就读于中国科技大学少年班，相关经历可以点击上面的链接了解。与他同班的张亚勤，是当时相对受关注较少的，反而是获得了整个少年班所有人中最大的成就。 还有，百度百科：谢彦波的介绍： “人际关系这一课，心理健...</description>
       <link>/blog/2014/08/07/jing-ti-shen-tong-jiao-yu</link>

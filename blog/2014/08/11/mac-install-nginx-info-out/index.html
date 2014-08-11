@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" /><title>mac 安装 nginx 过程中的提示信息 | 学到老，活到老</title>
+<meta name="author" content="吕晓宇">
+<meta name="description" content="mac 下安装nginx： brew install nginx 安装中的提示信息： localhost:test-pub laszo$ brew install nginx ==> Installing nginx dependency: pcre ==> Downloading https://downloads.sf.net/project/machomebrew/Bottles/pcre-8.35.mavericks.bottle.tar. ...">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta property="og:site_name" content=""/>
+
+<link rel="stylesheet" href="/css/style.css" type="text/css" />
+<link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+<style>
+#featured .flex-direction-nav a:hover, #video-slider-section .flex-direction-nav a:hover { background-color: #ffb600; }
+#featured_section .active-slide .post-meta, #featured_section .switcher_hover .post-meta, .et_tab_link_hover .post-meta { background: #0099FF; }
+h3.main-title { background-color: #0099FF; -moz-box-shadow: inset 0 0 10px #0099FF; -webkit-box-shadow: inset 0 0 10px #0099FF; box-shadow: inset 0 0 10px #0099FF; border: 1px solid #0099FF; }
+a { color: #0099FF; }
+.et_video_play { background-color: #0099FF; }
+#second-menu > ul > li > a:hover { background-color: #0099FF; }
+#second-menu ul ul li a:hover { background-color: #ffb122; }
+#second-menu ul.nav li ul { background: #0099FF; }
+#second-menu ul ul li a { border-top: 1px solid #0099FF; }
+</style>
+
+</head><body>
+<div id="header" class="container"><div id="logo-area">
+    <a href="/">
+        <h1>学到老，活到老</h1>
+        <p>记录思维点滴</p>
+    </a>
+</div></div>
+<div id="menu">
+    <div class="container"><a href="/" class="mobile_nav closed">首页</a>
+<a href="/archive" class="mobile_nav closed">文章列表</a>
+<a href="/links/page" class="mobile_nav closed">收藏</a>
+<a href="/about" class="mobile_nav closed">关于</a>
+
+<nav id="second-menu" class="clearfix">
+    <ul id="menu-categories" class="nav">
+                        <li id="" class="menu-item"><a href="/" class="mobile_nav closed">首页</a></li>
+                                <li id="" class="menu-item"><a href="/archive" class="mobile_nav closed">文章列表</a></li>
+                                <li id="" class="menu-item"><a href="/links/page" class="mobile_nav closed">收藏</a></li>
+                                <li id="" class="menu-item"><a href="/about" class="mobile_nav closed">关于</a></li>
+                    </ul>
+<form action="http://google.com/search" class="search-form" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvxiaoyu.com" />
+    <input class="searchinput" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+</nav></div>
+</div>
+<div class="main-area">
+    <div class="container">
+        <div id="content-area" class="clearfix">
+            
+<div class="left-area">
+<article class="post entry clearfix">
+    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/11/mac-install-nginx-info-out">Aug 11,2014 </p>
+    <div class="post_content clearfix">
+        <h1 class="title"><a href="/blog/2014/08/11/mac-install-nginx-info-out">mac 安装 nginx 过程中的提示信息</a></h1>
+        <hr/>
+        <p>mac 下安装nginx：</p>
+<div class="codehilite"><pre><span class="n">brew</span> <span class="n">install</span> <span class="n">nginx</span>
+</pre></div>
+
+
+<p>安装中的提示信息：</p>
+<div class="codehilite"><pre><span class="n">localhost</span><span class="o">:</span><span class="n">test</span><span class="o">-</span><span class="n">pub</span> <span class="n">laszo$</span> <span class="n">brew</span> <span class="n">install</span> <span class="n">nginx</span>
+<span class="o">==&gt;</span> <span class="n">Installing</span> <span class="n">nginx</span> <span class="n">dependency</span><span class="o">:</span> <span class="n">pcre</span>
+<span class="o">==&gt;</span> <span class="n">Downloading</span> <span class="n">https</span><span class="o">://</span><span class="n">downloads</span><span class="o">.</span><span class="na">sf</span><span class="o">.</span><span class="na">net</span><span class="sr">/project/machomebrew/Bottles/</span><span class="n">pcre</span><span class="o">-</span><span class="mf">8.35</span><span class="o">.</span><span class="na">mavericks</span><span class="o">.</span><span class="na">bottle</span><span class="o">.</span><span class="na">tar</span><span class="o">.</span>
+<span class="err">########################################################################</span> <span class="mf">100.0</span><span class="o">%</span>
+<span class="o">==&gt;</span> <span class="n">Pouring</span> <span class="n">pcre</span><span class="o">-</span><span class="mf">8.35</span><span class="o">.</span><span class="na">mavericks</span><span class="o">.</span><span class="na">bottle</span><span class="o">.</span><span class="na">tar</span><span class="o">.</span><span class="na">gz</span>
+<span class="err">🍺</span>  <span class="sr">/usr/local/Cellar/pcre/</span><span class="mf">8.35</span><span class="o">:</span> <span class="mi">146</span> <span class="n">files</span><span class="o">,</span> <span class="mf">5.8</span><span class="n">M</span>
+<span class="o">==&gt;</span> <span class="n">Installing</span> <span class="n">nginx</span>
+<span class="o">==&gt;</span> <span class="n">Downloading</span> <span class="n">https</span><span class="o">://</span><span class="n">downloads</span><span class="o">.</span><span class="na">sf</span><span class="o">.</span><span class="na">net</span><span class="sr">/project/machomebrew/Bottles/</span><span class="n">nginx</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_1</span><span class="o">.</span><span class="na">mavericks</span><span class="o">.</span><span class="na">bottle</span><span class="o">.</span>
+<span class="err">########################################################################</span> <span class="mf">100.0</span><span class="o">%</span>
+<span class="o">==&gt;</span> <span class="n">Pouring</span> <span class="n">nginx</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_1</span><span class="o">.</span><span class="na">mavericks</span><span class="o">.</span><span class="na">bottle</span><span class="o">.</span><span class="na">tar</span><span class="o">.</span><span class="na">gz</span>
+<span class="o">==&gt;</span> <span class="n">Caveats</span>
+<span class="n">Docroot</span> <span class="k">is</span><span class="o">:</span> <span class="sr">/usr/local/var/</span><span class="n">www</span>
+
+<span class="n">The</span> <span class="k">default</span> <span class="n">port</span> <span class="n">has</span> <span class="n">been</span> <span class="kd">set</span> <span class="k">in</span> <span class="sr">/usr/local/etc/nginx/</span><span class="n">nginx</span><span class="o">.</span><span class="na">conf</span> <span class="n">to</span> <span class="mi">8080</span> <span class="n">so</span> <span class="n">that</span>
+<span class="n">nginx</span> <span class="n">can</span> <span class="n">run</span> <span class="n">without</span> <span class="n">sudo</span><span class="o">.</span>
+
+<span class="n">To</span> <span class="n">have</span> <span class="n">launchd</span> <span class="n">start</span> <span class="n">nginx</span> <span class="n">at</span> <span class="n">login</span><span class="o">:</span>
+    <span class="n">ln</span> <span class="o">-</span><span class="n">sfv</span> <span class="sr">/usr/local/opt/nginx/*.plist ~/Library/</span><span class="n">LaunchAgents</span>
+<span class="n">Then</span> <span class="n">to</span> <span class="n">load</span> <span class="n">nginx</span> <span class="n">now</span><span class="o">:</span>
+    <span class="n">launchctl</span> <span class="n">load</span> <span class="o">~/</span><span class="n">Library</span><span class="sr">/LaunchAgents/</span><span class="n">homebrew</span><span class="o">.</span><span class="na">mxcl</span><span class="o">.</span><span class="na">nginx</span><span class="o">.</span><span class="na">plist</span>
+<span class="n">Or</span><span class="o">,</span> <span class="k">if</span> <span class="n">you</span> <span class="n">don</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">want</span><span class="o">/</span><span class="n">need</span> <span class="n">launchctl</span><span class="o">,</span> <span class="n">you</span> <span class="n">can</span> <span class="n">just</span> <span class="n">run</span><span class="o">:</span>
+    <span class="n">nginx</span>
+<span class="o">==&gt;</span> <span class="n">Summary</span>
+<span class="err">🍺</span>  <span class="sr">/usr/local/Cellar/nginx/</span><span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_1</span><span class="o">:</span> <span class="mi">7</span> <span class="n">files</span><span class="o">,</span> <span class="mi">912</span><span class="n">K</span>
+</pre></div>
+    </div>
+</article>
+
+<article class="post entry clearfix">
+    </article>
+</div>
+
+<div class="sidebar">
+</div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="container clearfix" style="float:center;text-align:center;font-size:10pt;color:#000000;">
+      <p id="copyright">
+	<a href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备14033542</a>
+	 | &copy; 2014 吕晓宇 | Powered by 
+	<a href="http://crotal.org" target="_blank">Crotal</a>
+      </p>
+    </div>
+</div></body>
+</html>
