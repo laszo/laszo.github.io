@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <url><loc>lvxiaoyu.com/blog/2014/08/11/wsgi-docs
+        <url><loc>lvxiaoyu.com/blog/2014/08/19/mac-install-redis-info
+    </loc>
+    <lastmod>2014-08-19</lastmod>
+    <priority>1.0</priority>
+</url>
+    <url><loc>lvxiaoyu.com/blog/2014/08/19/SSL-info-docs
+    </loc>
+    <lastmod>2014-08-19</lastmod>
+    <priority>1.0</priority>
+</url>
+    <url><loc>lvxiaoyu.com/blog/2014/08/19/jin-qi-xiang-fa-0819
+    </loc>
+    <lastmod>2014-08-19</lastmod>
+    <priority>1.0</priority>
+</url>
+    <url><loc>lvxiaoyu.com/blog/2014/08/11/wsgi-docs
     </loc>
     <lastmod>2014-08-11</lastmod>
     <priority>1.0</priority>
@@ -90,7 +105,7 @@
     <lastmod>2014-07-17</lastmod>
     <priority>1.0</priority>
 </url>
-    <url><loc>lvxiaoyu.com/blog/2014/07/han-men-zai-nan-chu-gui-zi
+    <url><loc>lvxiaoyu.com/blog/2014/07/17/han-men-zai-nan-chu-gui-zi
     </loc>
     <lastmod>2014-07-17</lastmod>
     <priority>1.0</priority>
@@ -100,7 +115,7 @@
     <lastmod>2014-07-17</lastmod>
     <priority>1.0</priority>
 </url>
-    <url><loc>lvxiaoyu.com/blog/2014/07/topic-model
+    <url><loc>lvxiaoyu.com/blog/2014/07/16/topic-model
     </loc>
     <lastmod>2014-07-16</lastmod>
     <priority>1.0</priority>
@@ -110,7 +125,7 @@
     <lastmod>2014-07-14</lastmod>
     <priority>1.0</priority>
 </url>
-    <url><loc>lvxiaoyu.com/blog/2014/07/wei-lai-wu-nian-du-shu-ji-hua
+    <url><loc>lvxiaoyu.com/blog/2014/07/06/wei-lai-wu-nian-du-shu-ji-hua
     </loc>
     <lastmod>2014-07-06</lastmod>
     <priority>1.0</priority>

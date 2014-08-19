@@ -7,6 +7,30 @@
     <link></link>
 
         <item>
+      <title>mac 安装 redis 过程信息</title>
+      <description>$ brew install redis ==> Downloading https://downloads.sf.net/project/machomebrew/Bottles/redis-2.8.13.mavericks.bottle.t ######################################################################## 100.0% ==> Pouring redis-2.8.13.mavericks.bottle.tar.gz ==> ...</description>
+      <link>/blog/2014/08/19/mac-install-redis-info</link>
+      <pubDate>2014-08-19 17:08:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/08/19/mac-install-redis-info</guid>
+    </item>
+        <item>
+      <title>SSL相关知识汇总</title>
+      <description>维基：传输层安全协议 、 SSL解释汇总-百度文库 、 https、SSL与数字证书介绍</description>
+      <link>/blog/2014/08/19/SSL-info-docs</link>
+      <pubDate>2014-08-19 17:05:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/08/19/SSL-info-docs</guid>
+    </item>
+        <item>
+      <title>近期一些思维片段0819</title>
+      <description>很多词汇存在误用 有的词汇有很多含义。人们在表达的时候，虽然用的是同一词汇，寓意却不一样。 最被滥用的一个词可能就是“爱”了。 “喜欢”分为很多层面，程度不同。一个人对另一个人说“喜欢”，有可能说的人是一种层面，听的人觉得是另外一个层面。 软件工程师有不少是脚本小子 脚本小子这个词是用来指某些黑客的，参看该维基词条。 但它的内在含义在软件开发者中也可以适用。 他们常常从某些网站上复制脚本代码，然后到处粘贴，却并不一定明白他们的方法与原理。他们钦慕于黑客的能力与探索精神，但与黑客所不同的是，脚本小子通常只是...</description>
+      <link>/blog/2014/08/19/jin-qi-xiang-fa-0819</link>
+      <pubDate>2014-08-19 16:58:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/08/19/jin-qi-xiang-fa-0819</guid>
+    </item>
+        <item>
       <title>wsgi相关文章收集</title>
       <description>PEP 333 -- Python Web Server Gateway Interface v1.0 、 CGI，FastCGI，WSGI，flup，spawn-fcgi之间的关系 、 Python WSGI服务器大乱斗（Rev.2） 、 wsgi.org 、 WSGI、flup、fastcgi、web.py的关系中 Mr.J的评论： WSGI是python的接口规范，这个规范是针对WEB服务器和python应用（框架等）的交互的。FASTCGI则是两者底层的通信协议的规范。 化整為零的次世代網頁開發標...</description>
       <link>/blog/2014/08/11/wsgi-docs</link>
@@ -153,10 +177,10 @@
         <item>
       <title>关于'寒门再难出贵子'之我见</title>
       <description>首先，这句话本身是正确的，因为它说的是『难』，什么叫做难呢？就是需要付出更大的努力。 如果它说『寒门不能出贵子』，那么这句话就是错误的。因为，哪怕出现了一个反例，这个『不能』 也是不成立的。 这句话的含义是：寒门出身成长为贵子，要比富贵家庭出身的要困难。 注意，这里只是说难，并没有说到底有多难。在不同的条件下，我们要正确的理解这个难度。比如，如果一个人成功的概率是99.99%，另一个人概率是99.9900001%，似乎前者是比后者难了一点，但难的这一点没什么意义。而如果一个人成功的概率是0.0001%，另...</description>
-      <link>/blog/2014/07/han-men-zai-nan-chu-gui-zi</link>
+      <link>/blog/2014/07/17/han-men-zai-nan-chu-gui-zi</link>
       <pubDate>2014-07-17 16:19:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/07/han-men-zai-nan-chu-gui-zi</guid>
+      <guid>/blog/2014/07/17/han-men-zai-nan-chu-gui-zi</guid>
     </item>
         <item>
       <title>推荐好书：《算法概论》</title>
@@ -169,10 +193,10 @@
         <item>
       <title>主题模型及LSI、PLSI、LDA简介</title>
       <description>如何从大量文档中自动归纳出每篇文章的主题，是一个很有意思的任务。 1998年，Papadimitriou等人在一篇论文 中提出了LSI的概念，这是一种主题模型（topic model）， 维基百科上面的主题模型词条。 在这篇文章中提出了LSI（潜在语义索引），维基百科词条 潜在语义索引 PLSI指的是概率性潜在语义索引。跟PLSA是同义语，维基百科上面这两个词也指向同一个页面。 论文下载 LSI从那里来的呢？从LSA而来。 Latent semantic analysis， LSA主页， 论文下载， 还有...</description>
-      <link>/blog/2014/07/topic-model</link>
+      <link>/blog/2014/07/16/topic-model</link>
       <pubDate>2014-07-16 17:12:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/07/topic-model</guid>
+      <guid>/blog/2014/07/16/topic-model</guid>
     </item>
         <item>
       <title>浅析悲观思维模式及对策</title>
@@ -185,10 +209,10 @@
         <item>
       <title>未来五年读书计划</title>
       <description>最近反思，虽然我比较爱读书，也自诩读了不少书，但总结了一下， 偏重于以下几方面： 计算机技术类 经济类、管理类、创业类 个人管理、时间管理、自助、某些实用心理学等 各种小说 所谓成功学、心灵鸡汤等，这一类书最近在中国互联网上被批判的比较厉害 宗教、灵修类，佛学、冥想、瑜伽等相关知识，占星术也可归入此类 观察一下上面所列的类目就可发现，我所看的书大都偏向实用性和娱乐性（娱乐也可以看做一种实用）。 并且，除了小说类，作者鲜有顶级名家。 虽然有一些作者放在当代也可以称之为权威和大家了，几乎代表了现世中该领域 牛...</description>
-      <link>/blog/2014/07/wei-lai-wu-nian-du-shu-ji-hua</link>
+      <link>/blog/2014/07/06/wei-lai-wu-nian-du-shu-ji-hua</link>
       <pubDate>2014-07-06 10:33:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/07/wei-lai-wu-nian-du-shu-ji-hua</guid>
+      <guid>/blog/2014/07/06/wei-lai-wu-nian-du-shu-ji-hua</guid>
     </item>
         <item>
       <title>我家小区看着看挺漂亮</title>
