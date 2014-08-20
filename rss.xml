@@ -7,6 +7,14 @@
     <link></link>
 
         <item>
+      <title>视差滚动 parallax scrolling 介绍</title>
+      <description>近几年我们看到很多网页采用一种“整屏幕滚动”的设计方式，这种方式的属于叫做视差滚动（Parallax scrolling）。如果你去腾讯官网下载过PC版QQ，能看到PC版QQ的下载页就是采用这种网页。 类似这样的网页还有很多，比如啪啪的主页、MacPro官网介绍等等。 国外在这方面有很多优秀的网站，这里有两个汇总： 20 Best Websites with Parallax Scrolling of 2013、 46 great examples of parallax scrolling websit...</description>
+      <link>/blog/2014/08/20/intro-parallax-scrolling</link>
+      <pubDate>2014-08-20 17:36:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/08/20/intro-parallax-scrolling</guid>
+    </item>
+        <item>
       <title>mac 安装 redis 过程信息</title>
       <description>$ brew install redis ==> Downloading https://downloads.sf.net/project/machomebrew/Bottles/redis-2.8.13.mavericks.bottle.t ######################################################################## 100.0% ==> Pouring redis-2.8.13.mavericks.bottle.tar.gz ==> ...</description>
       <link>/blog/2014/08/19/mac-install-redis-info</link>
@@ -153,10 +161,10 @@
         <item>
       <title>克服读书的障碍</title>
       <description>很多人都想要读书，但往往读了一点就放弃了，特别是大部头的书，或者是具有一定难度和深度的书。 我认为，其中的一个原因，是读大部头书籍时带来的挫败感和无力感。 这个挫败感是从哪里来的呢？这来自于读书之前过高的期望。 很多人在拿到书的时候，总是想要一下子读完，或者几天就读完，然后『迅速获取该书所带来的好处』。 刚拿到书时，前几次阅读，在高期望的刺激下进行了过量的阅读。 这种过高的阅读量，大大超过了读者自己的脑力、基础知识能够接受的程度。 这时候，潜意识里会发出疲劳、拒绝阅读的信号，很快，无力感、挫败感、以及对该...</description>
-      <link>/blog/2014/07/ke-fu-du-shu-de-zhang-ai</link>
+      <link>/blog/2014/07/19/ke-fu-du-shu-de-zhang-ai</link>
       <pubDate>2014-07-19 21:58:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/07/ke-fu-du-shu-de-zhang-ai</guid>
+      <guid>/blog/2014/07/19/ke-fu-du-shu-de-zhang-ai</guid>
     </item>
         <item>
       <title>咬文嚼字：演绎</title>
