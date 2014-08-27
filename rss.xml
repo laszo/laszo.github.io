@@ -7,6 +7,14 @@
     <link></link>
 
         <item>
+      <title>iOS 开发中报错unable to dequeue a cell with identifier Cell - must register a nib or a class for the identifier or connect a prototype cell in a storyboard 的解决方法</title>
+      <description>在iOS开发中，如果遇到错误： unable to dequeue a cell with identifier Cell - must register a nib or a class for the identif ier or connect a prototype cell in a storyboard 可以试试下面的解决方法。 将如下代码： ··· UITableViewCell cell = [tableView dequeueReusableCellWithIdentifier:Cell...</description>
+      <link>/blog/2014/08/27/ios-error-unable-to-dequeue-a-cell-with-identifier-Cell</link>
+      <pubDate>2014-08-27 17:14:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/08/27/ios-error-unable-to-dequeue-a-cell-with-identifier-Cell</guid>
+    </item>
+        <item>
       <title>视差滚动 parallax scrolling 介绍</title>
       <description>近几年我们看到很多网页采用一种“整屏幕滚动”的设计方式，这种方式的属于叫做视差滚动（Parallax scrolling）。 国外在这方面有很多优秀的网站，这里有几个汇总： 60多个超炫的视差滚动效果网站设计欣赏、 20 Best Websites with Parallax Scrolling of 2013、 46 great examples of parallax scrolling websites。 其中Life of Pi - Movie，用炫目的效果展现了《少年派的奇幻旅行》这部电影的拍摄...</description>
       <link>/blog/2014/08/20/intro-parallax-scrolling</link>
