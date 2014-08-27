@@ -68,14 +68,17 @@ a { color: #0099FF; }
 
 
 <p>可以试试下面的解决方法。</p>
-<p>将如下代码：
-···
-UITableViewCell <em>cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-···
-修改为如下代码：
-···
- UITableViewCell </em>cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-···</p>
+<p>将如下代码：</p>
+<div class="codehilite"><pre><span class="n">UITableViewCell</span> <span class="o">*</span><span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">tableView</span> <span class="n">dequeueReusableCellWithIdentifier</span><span class="o">:</span><span class="n">CellIdentifier</span> <span class="n">forIndexPath</span><span class="o">:</span><span class="n">indexPath</span><span class="p">];</span>
+</pre></div>
+
+
+<p>修改为如下代码：</p>
+<div class="codehilite"><pre> <span class="n">UITableViewCell</span> <span class="o">*</span><span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">tableView</span> <span class="n">dequeueReusableCellWithIdentifier</span><span class="o">:</span><span class="n">CellIdentifier</span><span class="p">];</span>
+</pre></div>
+
+
+<p>解决方法来自<a href="http://stackoverflow.com/questions/19084274/xcode-unable-to-dequeue-a-cell-with-identifier">stackoverflow</a></p>
                 <a href="/blog/2014/08/27/ios-error-unable-to-dequeue-a-cell-with-identifier-Cell" class="more">阅读 &rarr;</a>
             </div>
         </article>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" /><title>iOS 开发中报错unable to dequeue a cell with identifier Cell - must register a nib or a class for the identifier or connect a prototype cell in a storyboard 的解决方法 | 学到老，活到老</title>
 <meta name="author" content="吕晓宇">
-<meta name="description" content="在iOS开发中，如果遇到错误： unable to dequeue a cell with identifier Cell - must register a nib or a class for the identif ier or connect a prototype cell in a storyboard 可以试试下面的解决方法。 将如下代码： ··· UITableViewCell cell = [tableView ...">
+<meta name="description" content="在iOS开发中，如果遇到错误： unable to dequeue a cell with identifier Cell - must register a nib or a class for the identif ier or connect a prototype cell in a storyboard 可以试试下面的解决方法。 将如下代码： UITableViewCell *cell = [tableView ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content=""/>
 
@@ -67,14 +67,17 @@ a { color: #0099FF; }
 
 
 <p>可以试试下面的解决方法。</p>
-<p>将如下代码：
-···
-UITableViewCell <em>cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-···
-修改为如下代码：
-···
- UITableViewCell </em>cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-···</p>
+<p>将如下代码：</p>
+<div class="codehilite"><pre><span class="n">UITableViewCell</span> <span class="o">*</span><span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">tableView</span> <span class="n">dequeueReusableCellWithIdentifier</span><span class="o">:</span><span class="n">CellIdentifier</span> <span class="n">forIndexPath</span><span class="o">:</span><span class="n">indexPath</span><span class="p">];</span>
+</pre></div>
+
+
+<p>修改为如下代码：</p>
+<div class="codehilite"><pre> <span class="n">UITableViewCell</span> <span class="o">*</span><span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">tableView</span> <span class="n">dequeueReusableCellWithIdentifier</span><span class="o">:</span><span class="n">CellIdentifier</span><span class="p">];</span>
+</pre></div>
+
+
+<p>解决方法来自<a href="http://stackoverflow.com/questions/19084274/xcode-unable-to-dequeue-a-cell-with-identifier">stackoverflow</a></p>
     </div>
 </article>
 
