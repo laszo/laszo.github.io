@@ -57,6 +57,88 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/11/mac-install-nginx-info-out">Aug 11,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/08/11/mac-install-nginx-info-out">mac 安装 nginx 过程中的提示信息</a></h1>
+                <hr/>
+                <p>mac 下安装nginx：</p>
+<div class="codehilite"><pre><span class="n">brew</span> <span class="n">install</span> <span class="n">nginx</span>
+</pre></div>
+
+
+<p>安装中的提示信息：</p>
+<div class="codehilite"><pre><span class="n">localhost</span><span class="o">:</span><span class="n">test</span><span class="o">-</span><span class="n">pub</span> <span class="n">laszo$</span> <span class="n">brew</span> <span class="n">install</span> <span class="n">nginx</span>
+<span class="o">==&gt;</span> <span class="n">Installing</span> <span class="n">nginx</span> <span class="n">dependency</span><span class="o">:</span> <span class="n">pcre</span>
+<span class="o">==&gt;</span> <span class="n">Downloading</span> <span class="n">https</span><span class="o">://</span><span class="n">downloads</span><span class="o">.</span><span class="na">sf</span><span class="o">.</span><span class="na">net</span><span class="sr">/project/machomebrew/Bottles/</span><span class="n">pcre</span><span class="o">-</span><span class="mf">8.35</span><span class="o">.</span><span class="na">mavericks</span><span class="o">.</span><span class="na">bottle</span><span class="o">.</span><span class="na">tar</span><span class="o">.</span>
+<span class="err">########################################################################</span> <span class="mf">100.0</span><span class="o">%</span>
+<span class="o">==&gt;</span> <span class="n">Pouring</span> <span class="n">pcre</span><span class="o">-</span><span class="mf">8.35</span><span class="o">.</span><span class="na">mavericks</span><span class="o">.</span><span class="na">bottle</span><span class="o">.</span><span class="na">tar</span><span class="o">.</span><span class="na">gz</span>
+<span class="err">🍺</span>  <span class="sr">/usr/local/Cellar/pcre/</span><span class="mf">8.35</span><span class="o">:</span> <span class="mi">146</span> <span class="n">files</span><span class="o">,</span> <span class="mf">5.8</span><span class="n">M</span>
+<span class="o">==&gt;</span> <span class="n">Installing</span> <span class="n">nginx</span>
+<span class="o">==&gt;</span> <span class="n">Downloading</span> <span class="n">https</span><span class="o">://</span><span class="n">downloads</span><span class="o">.</span><span class="na">sf</span><span class="o">.</span><span class="na">net</span><span class="sr">/project/machomebrew/Bottles/</span><span class="n">nginx</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_1</span><span class="o">.</span><span class="na">mavericks</span><span class="o">.</span><span class="na">bottle</span><span class="o">.</span>
+<span class="err">########################################################################</span> <span class="mf">100.0</span><span class="o">%</span>
+<span class="o">==&gt;</span> <span class="n">Pouring</span> <span class="n">nginx</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_1</span><span class="o">.</span><span class="na">mavericks</span><span class="o">.</span><span class="na">bottle</span><span class="o">.</span><span class="na">tar</span><span class="o">.</span><span class="na">gz</span>
+<span class="o">==&gt;</span> <span class="n">Caveats</span>
+<span class="n">Docroot</span> <span class="k">is</span><span class="o">:</span> <span class="sr">/usr/local/var/</span><span class="n">www</span>
+
+<span class="n">The</span> <span class="k">default</span> <span class="n">port</span> <span class="n">has</span> <span class="n">been</span> <span class="kd">set</span> <span class="k">in</span> <span class="sr">/usr/local/etc/nginx/</span><span class="n">nginx</span><span class="o">.</span><span class="na">conf</span> <span class="n">to</span> <span class="mi">8080</span> <span class="n">so</span> <span class="n">that</span>
+<span class="n">nginx</span> <span class="n">can</span> <span class="n">run</span> <span class="n">without</span> <span class="n">sudo</span><span class="o">.</span>
+
+<span class="n">To</span> <span class="n">have</span> <span class="n">launchd</span> <span class="n">start</span> <span class="n">nginx</span> <span class="n">at</span> <span class="n">login</span><span class="o">:</span>
+    <span class="n">ln</span> <span class="o">-</span><span class="n">sfv</span> <span class="sr">/usr/local/opt/nginx/*.plist ~/Library/</span><span class="n">LaunchAgents</span>
+<span class="n">Then</span> <span class="n">to</span> <span class="n">load</span> <span class="n">nginx</span> <span class="n">now</span><span class="o">:</span>
+    <span class="n">launchctl</span> <span class="n">load</span> <span class="o">~/</span><span class="n">Library</span><span class="sr">/LaunchAgents/</span><span class="n">homebrew</span><span class="o">.</span><span class="na">mxcl</span><span class="o">.</span><span class="na">nginx</span><span class="o">.</span><span class="na">plist</span>
+<span class="n">Or</span><span class="o">,</span> <span class="k">if</span> <span class="n">you</span> <span class="n">don</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">want</span><span class="o">/</span><span class="n">need</span> <span class="n">launchctl</span><span class="o">,</span> <span class="n">you</span> <span class="n">can</span> <span class="n">just</span> <span class="n">run</span><span class="o">:</span>
+    <span class="n">nginx</span>
+<span class="o">==&gt;</span> <span class="n">Summary</span>
+<span class="err">🍺</span>  <span class="sr">/usr/local/Cellar/nginx/</span><span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_1</span><span class="o">:</span> <span class="mi">7</span> <span class="n">files</span><span class="o">,</span> <span class="mi">912</span><span class="n">K</span>
+</pre></div>
+                <a href="/blog/2014/08/11/mac-install-nginx-info-out" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/07/jing-ti-shen-tong-jiao-yu">Aug 07,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/08/07/jing-ti-shen-tong-jiao-yu">应当警惕'神童教育'</a></h1>
+                <hr/>
+                <p>有很多孩子小时候展现了超出一般的智力水准，这当然是好事情，谁不希望自己的孩子聪明呢？</p>
+<p>但是，如果神童在幼年时承受了外界不一样的眼光、过多的厚望、带来很大的压力；同时，没有接受心理健康、情绪管理、人际关系等常识性教育，小小年纪就一头扎在理工科的学习甚至研究上，往往不会得到希望的结果。比如当年的“第一神童”<a href="http://baike.baidu.com/view/1074656.htm?fr=aladdin">宁铂</a>，就读于中国科技大学少年班，相关经历可以点击上面的链接了解。与他同班的张亚勤，是当时相对受关注较少的，反而是获得了整个少年班所有人中最大的成就。</p>
+<p>还有，<a href="http://baike.baidu.com/subview/1477993/14674080.htm?fr=aladdin">百度百科：谢彦波</a>的介绍：</p>
+<blockquote>
+<p>“人际关系这一课，心理健康这一课，整个班级的孩子都落下了，他的问题就尤其严重。”汪惠迪老师说，“他们在上学时没能养成好的心态，没有平常心。这种缺陷不是一时的，而是终生的。”与此对应的是，一些当年的少年班成员承认，他们至今仍缺少人际关系方面的能力。“这是没办法的事情，”少年班同学秦禄昌说，“一旦过了那个年龄，这一课就永远补不上了。”
+1982年，谢彦波提前一年大学毕业，15岁在中科院理论物理研究所跟随于渌院士读硕士，18岁又跟随中科院副院长周光召院士读博士，被看好在20岁前获得博士学位。不过，这段最为春风得意的时光，却成为他人生转折的开始。
+“他没能处理好和导师的关系，博士拿不下来，”汪惠迪说，“于是转而去美国读博士。”
+在美国普林斯顿大学，谢彦波可谓因祸得福，得以跟随大名鼎鼎的菲利普·安德森教授学习，后者在1976年因为在凝聚态物理研究方面取得突破而获得了诺贝尔物理奖。在沃德罗普的著作《复杂》中，这位教授被描述为一个深邃而傲气的人。
+对安德森来说，谢彦波的性格中有着令人无法容忍之处，那就是比他本人还要傲气。
+“我的论文不讨他的喜欢，”谢彦波说，“写的是他的理论的不对。”
+在普林斯顿的中国同学圈子里，谢彦波与导师不睦，渐渐成为公开的秘密。</p>
+</blockquote>
+<p>还有，<a href="http://baike.baidu.com/view/1074656.htm?fr=aladdin">百度百科：宁铂</a>的介绍：</p>
+<blockquote>
+<p>不能否认的是，“神童”梦里面，往往包含着父母们“望子成龙”、“望女成凤”的朴素理想。不过，这一朴素理想，往往是一种包裹着爱和好心的危险。一般来说，虽说“神童”的智力开发较早或智商较高，但一个人的成长、成功和成名，更多的是后天不懈努力和勤奋拼搏的结果。现代研究表明，情商比智商更重要，相对于高智商，好的人际关系、健全的人格心理、足够的自信心和快速的适应能力对个人成功更有裨益。</p>
+</blockquote>
+<p>这样的故事，给我们教育自己的孩子带来了很多启示和反思，敲响了警钟。</p>
+<h3>一、拔苗助长不如因势利导</h3>
+<p>近几年越来越感觉到，事物的发展有其内在的规律，很多事情是急不来的。如果掌握了事物内在的规律，因势利导，大有可能会成功。拔苗助长，则往往适得其反。</p>
+<blockquote>
+<p>与其拔苗助长，不如因势利导。</p>
+</blockquote>
+<p>正如雷军前一段所说的：</p>
+<blockquote>
+<p>不要用战术上的勤奋来掩盖战略上的懒惰。</p>
+</blockquote>
+<p>拔苗助长正是战术上勤奋、战略上懒惰；掌握事物规律，因势利导，则是战略上的勤奋。</p>
+<h3>二、情绪问题的重要性</h3>
+<p>从上面神童们的故事我们可以看到，这些神童大多情商低下。情商，在成功的要素里，拥有“一票否决权”，情商不及格，干别的事情很难成功。因为你的大脑经常会被情绪问题占据，无法有效思考和工作，完成简单的事情都会费劲，当然更难以做出什么重大成就来了。</p>
+<p>好比一台计算机，虽然拥有超强的CPU、高速高容量的内存，但是它的电压不稳，经常断电、死机、宕机、卡顿、延迟等，那我们就很难用它做什么长期的事情。</p>
+<p>如果能够解决情绪问题，智商才能够排上用场，发挥它应有的作用——分析问题、解决问题，创造杰出的作品等等。</p>
+<h3>三、你要看他自己喜不喜欢</h3>
+<p>虽然神童智商较高，适合搞理工学科，特别是数学、理论物理等，但是人家喜欢吗？万一人家喜欢画画呢？万一人家喜欢体操呢？我们应当尊重每个人自己的选择，不应当有“浪费”、“物尽其用”这样的想法。这是一种耍流氓的行为。</p>
+                <a href="/blog/2014/08/07/jing-ti-shen-tong-jiao-yu" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/07/xie-dong-xi-de-mu-biao-du-zhe">Aug 07,2014</p>
 
             <div class="post_content clearfix">
@@ -197,105 +279,6 @@ a { color: #0099FF; }
 </ol>
 <p>上述几条，除了负谦虚之外，其他几条并无境界高低之分，视具体情况而定。</p>
                 <a href="/blog/2014/08/04/man-hua-qianxu" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/02/method-read-source-code">Aug 02,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/08/02/method-read-source-code">阅读源代码的方法之讨论</a></h1>
-                <hr/>
-                <p>阅读和学习源代码是程序员的必备功课，本文来研究一下这项工作有无一定之规。</p>
-<p>我们学习和研究源代码按如下边所述步骤进行，自始至终，如果我们的脑子里一直萦绕着如下问题，相比效果会更好：</p>
-<blockquote>
-<p>这个项目为什么会存在？如果我来开发该项目，该怎么做？</p>
-</blockquote>
-<ol>
-<li>
-<p>了解这个项目的背景、动机、历史渊源等信息。这不仅有利于理解这个项目存在的意义， 还可以更深刻的理解它为什么会是现在这个样子。比如Emacs是怎么来的，XMPP是怎么来的、如何发展的，等等。 一般来说，了解这些信息从Google或维基百科开始。简单的Google一下，以及阅读一下项目相关的Wiki词条， 就能迅速了解一些概况，Google和维基百科也会提供了大量的链接和进一步阅读的文献资料，顺藤摸瓜的走下去， 会有更深入的理解。深入到什么程度，要看你自己的兴趣和时间了。</p>
-</li>
-<li>
-<p>查看项目结构。首先看该项目的README文件，然后看它的目录结构。 项目顶级目录下的二级目录和文件、以及它们的命名，是重要的架构信息。优秀的项目，它的方法、类、文件、包等 代码元素的组织方式也必然是良好的，对这些代码元素的命名也必然是良好的。研究项目的目录结构和文件命名， 可以帮助我们迅速掌握该项目的开发者、架构师（如果多人开发的话）对于该项目的设计思想。</p>
-</li>
-<li>
-<p>当你浏览了所有的二级目录和三级目录（如果有的话）之后，下一步就可以看项目中的头文件（'.h'）了。 从头文件里可以看到这个类/包的对外的接口。如果说项目的目录结构和命名体现了设计思想，那么头文件就体现了 这些设计思想如何落地，可以视为设计思想的子思想。</p>
-</li>
-<li>
-<p>当你浏览了项目的目录结构以及头文件以后，终于轮到看具体的实现代码（.c、.cpp、.m）了。
- 这些代码体现了设计思想的具体实现。如果我们在使用该项目的时候遇到问题、或者需要修改BUG，估计看的最多的就是 这些文件了。</p>
-</li>
-</ol>
-<p>虽然具体的实现代码是项目的实质部分，但是如果不了解项目的背景、结构、设计思想等信息，就无从了解具体细节， 程序开发的老手会自发自觉的按照上述1、2、3、4这个顺序进行研究和学习。这些步骤可能会来回穿插、交替、迭代的循环进行。 而新手，则会跳过前三个步骤，直接进入第四步。 这就好像没有带着地图、GPS等工具，走在一个陌生的、没有路标的大城市里，最大的可能是：</p>
-<blockquote>
-<p>Lost yourself.</p>
-</blockquote>
-<p>新手之所以会如此做的原因，除了浮躁之外，还因为他们的实践太少，阅读项目、尤其是大型项目的源代码的量很小。 他们接触的项目，很可能是如下几类：</p>
-<ol>
-<li>只有几个文件的简单项目，小型网站或信息管理系统</li>
-<li>基于“已经很高层的库”之上的二次开发、甚至三次开发的项目</li>
-<li>虽然接触了大型项目，只是修改简单的BUG、添加功能等维护性工作</li>
-</ol>
-<p>这样的程序实践是不会有架构的概念的。相反，如果经常阅读大型项目的人，即便没有理论指导， 也会在实践中被迫、自发的摸索出一条类似于上述过程的工作方法的。</p>
-                <a href="/blog/2014/08/02/method-read-source-code" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/02/xmpp-intro-1">Aug 02,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/08/02/xmpp-intro-1">iOS下的XMPP开源库XMPPFramework介绍</a></h1>
-                <hr/>
-                <p>如果你想开发带有聊天功能的iOS APP，这个<a href="https://github.com/robbiehanson/XMPPFramework">XMPPFramework</a>
-是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。</p>
-<p>首先下载这个库的源代码：</p>
-<div class="codehilite"><pre><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="o">:</span><span class="c1">//github.com/robbiehanson/XMPPFramework.git</span>
-</pre></div>
-
-
-<p>或者下载源代码的<a href="https://github.com/robbiehanson/XMPPFramework/archive/master.zip">ZIP包</a>。
-{tree}()是一个很有用的命令行工具，它能够以树形的方式展现指定目录的结构。
-首先我们来查看项目的一级目录：</p>
-<div class="codehilite"><pre><span class="n">tree</span> <span class="o">-</span><span class="n">L</span> <span class="mi">1</span>
-</pre></div>
-
-
-<p>得到输出：</p>
-<div class="codehilite"><pre><span class="p">.</span>
-<span class="err">├──</span> <span class="n">Authentication</span>
-<span class="err">├──</span> <span class="n">Categories</span>
-<span class="err">├──</span> <span class="n">Core</span>
-<span class="err">├──</span> <span class="n">Extensions</span>
-<span class="err">├──</span> <span class="n">README</span><span class="p">.</span><span class="n">markdown</span>
-<span class="err">├──</span> <span class="n">Sample_XMPPFramework</span><span class="p">.</span><span class="n">h</span>
-<span class="err">├──</span> <span class="n">Utilities</span>
-<span class="err">├──</span> <span class="n">Vendor</span>
-<span class="err">├──</span> <span class="n">Xcode</span>
-<span class="err">└──</span> <span class="n">copying</span><span class="p">.</span><span class="n">txt</span>
-</pre></div>
-
-
-<p>顶级目录里共有10个目录和文件，其中3个文件，7个文件夹。三个文件分别是:</p>
-<ol>
-<li>README.markdown：介绍了该项目的内容，并给出链接，指向项目概览、安装方法等。其中项目概览是我们尤其应该仔细阅读的文件。</li>
-<li>Sample_XMPPFramework.h：给出例子，说明头文件的引用请客</li>
-<li>copying.txt：版权信息，该项目基于BSD Style License和BSD License。</li>
-</ol>
-<p>三个文件都很简单，接下来概览这7个文件夹，稍后逐一详细研究：</p>
-<ol>
-<li>Authentication：即便不看该目录的内容，顾名思义，也可以推测这里面包含用户身份验证、鉴权等相关类和方法。</li>
-<li>Categories：category 是 Objective-C 的一种语言机制，允许我们通过给一个类添加方法来扩充这个类。这里面应该包含了对苹果官方库中某些类的扩展。</li>
-<li>Core：这里面当然是最核心的项目类了，使我们要重点研究的。</li>
-<li>Extensions：扩展有两层含义：a, Objective-C 的一种语言机制，类似于category；b，XMPP协议的扩展，一般称为XEP，<a href="http://xmpp.org/xmpp-protocols/xmpp-extensions/">XMPP Extensions</a>。这里的Extensions指的是后者。</li>
-<li>Utilities：存放一些使用工具类。很多项目都会有这个文件夹。</li>
-<li>Vendor：保存了该项目使用的第三方库</li>
-<li>Xcode：里面有一些Demo项目和测试用例，举例说明该库的使用方法。</li>
-</ol>
-<p>接下来，可以有如下两个选择，先后顺序无所谓：</p>
-<ol>
-<li>浏览Xcode目录里面的项目，简单浏览Demo代码，编译运行一下，有一个直观的印象。</li>
-<li>浏览Core目录，较深入的研究里面的目录结构和头文件。看看这里面的类对同级其他目录里的文件的引用情况，这样会对项目的架构层级产生概念。一般来说，其他目录里的文件都是为这里面的类服务的。</li>
-</ol>
-                <a href="/blog/2014/08/02/xmpp-intro-1" class="more">阅读 &rarr;</a>
             </div>
         </article>
         <br/>
