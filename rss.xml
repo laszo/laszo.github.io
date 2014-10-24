@@ -8,7 +8,7 @@
 
         <item>
       <title>编译Android系统源代码的步骤</title>
-      <description>本文简要介绍编译安卓系统源代码所需要的步骤、工具、下载地址等。源码分为两部分：安卓系统源代码(AOSP, Android Open Source Project)和安卓内核所使用的linux源代码。 安卓源代码的编译环境推荐使用Ubuntu系统，可以从sjtu下载。可以使用最新的64位版本。 下载安装虚拟机VirtualBox。 使用vbox安装ubuntu，并安装如下包： sudo apt-get install git-core gnupg flex bison gperf libsdl-dev li...</description>
+      <description>本文简要介绍编译安卓系统源代码所需要的步骤、工具、下载地址等。主要参考了《Android系统源代码情景分析》。 源码分为两部分：安卓系统源代码(AOSP, Android Open Source Project)和安卓内核所使用的linux源代码。 安卓源代码的编译环境推荐使用Ubuntu系统，可以从sjtu下载。可以使用最新的64位版本。 下载安装虚拟机VirtualBox。 使用vbox安装ubuntu，并安装如下包： sudo apt-get install git-core gnupg flex ...</description>
       <link>/blog/2014/10/24/compile-android-source-code-enviroment</link>
       <pubDate>2014-10-24 15:33:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
