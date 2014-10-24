@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" /><title>编译Android系统源代码的步骤 | 学到老，活到老</title>
+<meta name="author" content="吕晓宇">
+<meta name="description" content="本文简要介绍编译安卓系统源代码所需要的步骤、工具、下载地址等。 安卓源代码的编译环境推荐使用Ubuntu系统，可以从sjtu下载。可以使用最新的64位版本。 下载安装虚拟机VirtualBox。 使用vbox安装ubuntu，并安装如下包： sudo apt-get install git-core gnupg flex bison gperf libsdl-dev libesd0-dev libwxgtk2.6-dev build-essential zip curl valgrind ...">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta property="og:site_name" content=""/>
+
+<link rel="stylesheet" href="/css/style.css" type="text/css" />
+<link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+<style>
+#featured .flex-direction-nav a:hover, #video-slider-section .flex-direction-nav a:hover { background-color: #ffb600; }
+#featured_section .active-slide .post-meta, #featured_section .switcher_hover .post-meta, .et_tab_link_hover .post-meta { background: #0099FF; }
+h3.main-title { background-color: #0099FF; -moz-box-shadow: inset 0 0 10px #0099FF; -webkit-box-shadow: inset 0 0 10px #0099FF; box-shadow: inset 0 0 10px #0099FF; border: 1px solid #0099FF; }
+a { color: #0099FF; }
+.et_video_play { background-color: #0099FF; }
+#second-menu > ul > li > a:hover { background-color: #0099FF; }
+#second-menu ul ul li a:hover { background-color: #ffb122; }
+#second-menu ul.nav li ul { background: #0099FF; }
+#second-menu ul ul li a { border-top: 1px solid #0099FF; }
+</style>
+
+</head><body>
+<div id="header" class="container"><div id="logo-area">
+    <a href="/">
+        <h1>学到老，活到老</h1>
+        <p>上士闻道，勤而行之；中士闻道，若存若亡；下士闻道，大笑之</p>
+    </a>
+</div></div>
+<div id="menu">
+    <div class="container"><a href="/" class="mobile_nav closed">首页</a>
+<a href="/archive" class="mobile_nav closed">文章列表</a>
+<a href="/links/page" class="mobile_nav closed">收藏</a>
+<a href="/about" class="mobile_nav closed">关于</a>
+
+<nav id="second-menu" class="clearfix">
+    <ul id="menu-categories" class="nav">
+                        <li id="" class="menu-item"><a href="/" class="mobile_nav closed">首页</a></li>
+                                <li id="" class="menu-item"><a href="/archive" class="mobile_nav closed">文章列表</a></li>
+                                <li id="" class="menu-item"><a href="/links/page" class="mobile_nav closed">收藏</a></li>
+                                <li id="" class="menu-item"><a href="/about" class="mobile_nav closed">关于</a></li>
+                    </ul>
+<form action="http://google.com/search" class="search-form" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvxiaoyu.com" />
+    <input class="searchinput" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+</nav></div>
+</div>
+<div class="main-area">
+    <div class="container">
+        <div id="content-area" class="clearfix">
+            
+<div class="left-area">
+<article class="post entry clearfix">
+    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/24/compile-android-source-code-enviroment">Oct 24,2014 </p>
+    <div class="post_content clearfix">
+        <h1 class="title"><a href="/blog/2014/10/24/compile-android-source-code-enviroment">编译Android系统源代码的步骤</a></h1>
+        <hr/>
+        <p>本文简要介绍编译安卓系统源代码所需要的步骤、工具、下载地址等。</p>
+<ol>
+<li>安卓源代码的编译环境推荐使用Ubuntu系统，可以从<a href="http://ftp.sjtu.edu.cn/ubuntu-cd/">sjtu</a>下载。可以使用最新的64位版本。</li>
+<li>下载安装虚拟机<a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a>。</li>
+<li>使用vbox安装ubuntu，并安装如下包：</li>
+</ol>
+<div class="codehilite"><pre><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">git</span><span class="o">-</span><span class="n">core</span> <span class="n">gnupg</span> <span class="n">flex</span> <span class="n">bison</span> <span class="n">gperf</span> <span class="n">libsdl</span><span class="o">-</span><span class="n">dev</span> <span class="n">libesd0</span><span class="o">-</span><span class="n">dev</span> <span class="n">libwxgtk2</span><span class="mf">.6</span><span class="o">-</span><span class="n">dev</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">zip</span> <span class="n">curl</span> <span class="n">valgrind</span>
+</pre></div>
+
+
+<ol>
+<li>安装repo工具：</li>
+</ol>
+<div class="codehilite"><pre><span class="n">wget</span> <span class="n">https</span><span class="o">:</span><span class="c1">//dl-ssl.google.com/dl/googlesource/git-repo/repo</span>
+<span class="n">chmod</span> <span class="n">a</span><span class="o">+</span><span class="n">x</span> <span class="n">repo</span>
+<span class="n">sudo</span> <span class="n">mv</span> <span class="n">repo</span> <span class="o">/</span><span class="n">bin</span><span class="o">/</span>
+</pre></div>
+
+
+<ol>
+<li>下载源代码：</li>
+</ol>
+<div class="codehilite"><pre><span class="n">mkdir</span> <span class="n">android</span><span class="p">;</span>
+<span class="n">cd</span> <span class="n">android</span><span class="p">;</span>
+<span class="n">repo</span> <span class="n">init</span> <span class="o">-</span><span class="n">u</span> <span class="n">https</span><span class="o">:</span><span class="c1">//android.googlesource.com/platform/manifest</span>
+<span class="n">repo</span> <span class="n">sync</span>
+</pre></div>
+
+
+<ol>
+<li>编译源代码：</li>
+</ol>
+<div class="codehilite"><pre><span class="n">make</span>
+</pre></div>
+
+
+<ol>
+<li>使用安卓模拟器来运行编译出来的代码：</li>
+</ol>
+<div class="codehilite"><pre><span class="o">~/</span><span class="n">android</span><span class="o">/</span><span class="n">out</span><span class="o">/</span><span class="n">host</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="n">x86</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">emulator</span>
+</pre></div>
+
+
+<p>如果运行模拟器报错：</p>
+<div class="codehilite"><pre><span class="n">SDL</span> <span class="n">init</span> <span class="n">failure</span><span class="p">,</span> <span class="n">reason</span> <span class="n">is</span><span class="o">:</span> <span class="n">No</span> <span class="n">available</span> <span class="n">video</span> <span class="n">device</span>
+</pre></div>
+
+
+<p>可以参照<a href="http://blog.sina.com.cn/s/blog_66c16c980101g5qj.html">这篇帖子</a>所说的方法安装依赖包。</p>
+<h2>接下来可以编译android所使用的linux内核源代码</h2>
+<p>1.</p>
+<div class="codehilite"><pre><span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="err">$</span><span class="n">PATH</span><span class="o">:~/</span><span class="n">android</span><span class="o">-</span><span class="mf">2.3.1</span><span class="o">/</span><span class="n">prebuilt</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="n">x86</span><span class="o">/</span><span class="n">toolchain</span><span class="o">/</span><span class="n">arm</span><span class="o">-</span><span class="n">eabi</span><span class="o">-</span><span class="mf">4.4.3</span><span class="o">/</span><span class="n">bin</span>
+</pre></div>
+
+
+<p>1.</p>
+<div class="codehilite"><pre><span class="n">make</span> <span class="n">goldfish_defconfig</span>
+<span class="n">make</span>
+</pre></div>
+    </div>
+</article>
+
+<article class="post entry clearfix">
+    </article>
+</div>
+
+<div class="sidebar">
+</div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="container clearfix" style="float:center;text-align:center;font-size:10pt;color:#000000;">
+      <p id="copyright">
+	<a href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备14033542</a>
+	 | &copy; 2014 吕晓宇 | Powered by 
+	<a href="http://crotal.org" target="_blank">Crotal</a>
+      </p>
+    </div>
+</div></body>
+</html>
