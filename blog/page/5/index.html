@@ -57,6 +57,40 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/07/xie-dong-xi-de-mu-biao-du-zhe">Aug 07,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/08/07/xie-dong-xi-de-mu-biao-du-zhe">写东西的目标读者</a></h1>
+                <hr/>
+                <p>我们写东西，比如博客、文档、报告、计划等，假想的读者不应该是如下：</p>
+<blockquote>
+<p>跟你同领域、并且水平与你相当或者比你高的人。</p>
+</blockquote>
+<p>而应该是如下：</p>
+<blockquote>
+<p>与你同处在一个大领域，且具有一般水平的人。</p>
+</blockquote>
+<p>在这里，领域的大小划分视具体情况而定。比如我的硕士论文是关于镜头分割，这是一个很细的方向。往外扩展，它属于视频处理领域，视频处理又属于信号/图像处理，信号/图像处理又属于计算机科学，计算机学科属于工科，工科广义上来说又属于科学的一种，凡是“反映现实世界各种现象的客观规律的知识体系”都可以归入科学里面去，而科学，又属于人类文明、文化的产物之一。</p>
+<p>领域之间，从小到大的包含关系如下：</p>
+<blockquote>
+<p>镜头分割-&gt;视频处理-&gt;图像处理-&gt;计算机科学-&gt;工科-&gt;科学-&gt;文化</p>
+</blockquote>
+<p>上面的划分并非精确，只是为了笼统说明领域大小范围的概念，用以说明写文章所针对的读者群的大小。</p>
+<p>比如我要写镜头分割方面的知识介绍，最低标准应当能够让了解图像处理基本知识的人能够看懂、并有所收获。不能满足此标准则文章毫无意义，纯属自娱自乐。</p>
+<p>稍扩大一点，及格的水准应当让了解计算机学科一般知识的人能看懂。</p>
+<p>再扩大，如果你的文章能够让一个普通理工科背景的人、甚至任何一个具有一般阅读能力的人都能够看的明白，那就更好了。这至少说明了两件事：</p>
+<ol>
+<li>你对你要介绍的知识的掌握已经有了相当的了解。</li>
+<li>你的表达能力还不错。</li>
+</ol>
+<p>爱因斯坦曾经说过：</p>
+<blockquote>
+<p>如果你无法用简单的方法来解释某事物的话，那么你对该事情就没有充分地理解。</p>
+</blockquote>
+                <a href="/blog/2014/08/07/xie-dong-xi-de-mu-biao-du-zhe" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/07/ru-he-zhang-wo-app-tui-guang-de-ji-neng">Aug 07,2014</p>
 
             <div class="post_content clearfix">
@@ -262,39 +296,6 @@ a { color: #0099FF; }
 <li>浏览Core目录，较深入的研究里面的目录结构和头文件。看看这里面的类对同级其他目录里的文件的引用情况，这样会对项目的架构层级产生概念。一般来说，其他目录里的文件都是为这里面的类服务的。</li>
 </ol>
                 <a href="/blog/2014/08/02/xmpp-intro-1" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/29/ios7-init-check-user-login">Jul 29,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/07/29/ios7-init-check-user-login">iOS7中如何根据用户是否登录来决定是否启动Main.storyboard或登录界面</a></h1>
-                <hr/>
-                <p>从iOS7开始，在xcode中新建一个iOS项目，默认会建立一个Main.storyboard，在项目属性中，app的启动界面默认启动这个storyboard（在general-&gt;Main Interface选项）。这样通常是方便我们开发的。减少了大量在ViewController中切换的代码。</p>
-<p>但是，如果我们要做一个带有用户系统的app，实现如下功能：</p>
-<blockquote>
-<p>app启动的时候判断用户是否已经登录，如果没有登录，显示『登录或注册界面』，如果已经登录，则显示主界面。</p>
-</blockquote>
-<p>我们需要在AppDelegate的application: didFinishLaunchingWithOptions: 方法中去实现：</p>
-<div class="codehilite"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="n">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
-<span class="p">{</span>
-    <span class="n">self</span><span class="p">.</span><span class="n">window</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIWindow</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">initWithFrame</span><span class="o">:</span><span class="p">[[</span><span class="n">UIScreen</span> <span class="n">mainScreen</span><span class="p">]</span> <span class="n">bounds</span><span class="p">]];</span>
-    <span class="k">if</span> <span class="p">([</span><span class="n">user</span> <span class="n">logined</span><span class="p">])</span> <span class="p">{</span>        
-        <span class="n">UIStoryboard</span> <span class="o">*</span><span class="n">storyBoard</span><span class="o">=</span><span class="p">[</span><span class="n">UIStoryboard</span> <span class="n">storyboardWithName</span><span class="o">:</span><span class="s">@&quot;Main&quot;</span> <span class="n">bundle</span><span class="o">:</span><span class="nb">nil</span><span class="p">];</span>
-        <span class="n">mainTabBarController</span> <span class="o">*</span><span class="n">mainVC</span> <span class="o">=</span> <span class="p">[</span><span class="n">storyBoard</span> <span class="n">instantiateInitialViewController</span><span class="p">];</span>                
-        <span class="n">self</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">rootViewController</span> <span class="o">=</span> <span class="n">mainVC</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="p">{</span>
-        <span class="n">LoginPage</span> <span class="o">*</span><span class="n">loginPage</span> <span class="o">=</span> <span class="p">[[</span><span class="n">LoginPage</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>        
-        <span class="n">self</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">rootViewController</span> <span class="o">=</span> <span class="n">loginPage</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>这也是在iOS6及其以前的版本中的默认做法。</p>
-                <a href="/blog/2014/07/29/ios7-init-check-user-login" class="more">阅读 &rarr;</a>
             </div>
         </article>
         <br/>
