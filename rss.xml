@@ -7,6 +7,14 @@
     <link></link>
 
         <item>
+      <title>努力的方向</title>
+      <description>今天在zite上看了一篇帖子，上面讲到要运营一个好的博客，最最核心的步骤还是要成为某个话题的专家。 我们每个人，最有可能成为专家的领域当然是自己的工作领域。 我目前的工作领域是服务端技术，再扩大点是整个技术栈。应当努力在这个领域成为专家，这不是最高要求，而是基本要求。总结起来，所有的工作都围绕这下面这个问题展开： 如何构建并维护好一个网站/APP? 为了实现整个目标，包括但不限于如下几个方面： 硬件：可以自己购买硬件，也可以使用云 服务器：一般都是linux web服务器：apache nginx 服务端...</description>
+      <link>/blog/2014/10/28/many-things-to-do-and-where</link>
+      <pubDate>2014-10-28 10:07:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/10/28/many-things-to-do-and-where</guid>
+    </item>
+        <item>
       <title>编译Android系统源代码的步骤</title>
       <description>本文简要介绍编译安卓系统源代码所需要的步骤、工具、下载地址等。主要参考了《Android系统源代码情景分析》。 源码分为两部分：安卓系统源代码(AOSP, Android Open Source Project)和安卓内核所使用的linux源代码。 安卓源代码的编译环境推荐使用Ubuntu系统，可以从sjtu下载。可以使用最新的64位版本。 下载安装虚拟机VirtualBox。 使用vbox安装ubuntu，并安装如下包： sudo apt-get install git-core gnupg flex ...</description>
       <link>/blog/2014/10/24/compile-android-source-code-enviroment</link>
