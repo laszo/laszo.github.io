@@ -91,46 +91,42 @@ a { color: #0099FF; }
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/30/shapes-of-data-and-its-flows">Oct 30,2014</p>
 
             <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/10/30/shapes-of-data-and-its-flows">shapes of data and its flows</a></h1>
+                <h1 class="title"><a href="/blog/2014/10/30/shapes-of-data-and-its-flows">从全栈的角度看待性能问题</a></h1>
                 <hr/>
                 <p>昨天列举了Carlos Bueno[https://www.facebook.com/cmb]著名的<a href="https://www.facebook.com/note.php?note_id=461505383919">The Full Stack</a>文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。</p>
 <p>一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。</p>
 <p>一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。</p>
-<h5>数据的形状/特征/要素/属性</h5>
+<h4>数据的形状/特征/要素/属性/指标（The shape of the data）</h4>
 <ul>
 <li>
-<p>数据量</p>
+<p>数据量（Working data size）：就是网站拥有的全部数据的大小。对于一个视频网站来说，Working data就是它提供的全部视频。对于一个新闻网站来说，就是拥有的全部新闻数据。</p>
 </li>
 <li>
-<p>平均请求大小</p>
+<p>平均请求大小（Average request size）：用户的一次操作涉及到的数据量。不用的应用，这个数字差别很大。如果是一个新闻网站，用户点击某一条新闻进行阅读时，传输的数据量就是这篇新闻网页的大小，从几百K到几M不等。如果是视频网站，用户点击观看一个电影，传输的数据量可能会有几百M。</p>
 </li>
 <li>
-<p>请求频率</p>
+<p>请求频率（Request rate）：用户操作的频繁程度。如果是在线阅读，用户可能几分钟才操作一下；如果是游戏，那就非常频繁了。</p>
 </li>
 <li>
-<p>修改频率</p>
+<p>修改频率（Mutation rate）：数据的增加、删除、编辑的量大小。</p>
 </li>
 <li>
-<p>一致性</p>
+<p>一致性（Consistency）：数据修改之后，修改的传输速度。如果一个用户发布了一条微博，另一个用户多快能够看到？</p>
 </li>
 <li>
-<p>位置</p>
+<p>位置（Locality）：用户是否更热衷于其中一部分内容，而对其他内容兴趣比较低？比如热门视频、热门微博等。</p>
 </li>
 <li>
-<p>延迟</p>
+<p>计算（Computation）：应用需要进行大量计算吗？如果是一个博客网站，显然不需要什么计算。</p>
 </li>
 <li>
-<p>竞争/争用</p>
+<p>延迟（Latency）：用户操作之后，系统多快能够做出响应？</p>
+</li>
+<li>
+<p>竞争/争用（Contention）：系统瓶颈在哪里？是否会出现争用资源的情况？</p>
 </li>
 </ul>
-<h5>硬件的速度等级</h5>
-<ol>
-<li>寄存器和CPU缓存：1纳秒</li>
-<li>内存：10^2</li>
-<li>SSD（固态硬盘）：10^5</li>
-<li>磁盘（机械硬盘）：10^7</li>
-<li>网络：：10^6 到 ：10^9</li>
-</ol>
+<p>文章的后半部分以一个虚构的视频网站为例，用上述指标进行了分析和建模。在最后，作者指出，利用这些指标，对系统进行简化，有利于理解理解系统的全局（big picture）。这样一个big picture提供了你进一步探究性能问题的切入点。</p>
                 <a href="/blog/2014/10/30/shapes-of-data-and-its-flows" class="more">阅读 &rarr;</a>
             </div>
         </article>
