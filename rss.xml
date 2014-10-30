@@ -23,20 +23,20 @@
       <guid>/blog/2014/10/30/find-your-own-fate-book</guid>
     </item>
         <item>
-      <title>bian que jian cai huan gong</title>
-      <description></description>
-      <link>/blog/2014/10/30/bian-que-jian-cai-huan-gong</link>
-      <pubDate>2014-10-30 09:17:00 +0800</pubDate>
-      2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/10/30/bian-que-jian-cai-huan-gong</guid>
-    </item>
-        <item>
       <title>从全栈看待性能问题</title>
       <description>昨天列举了Carlos Bueno著名的The Full Stack文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。 一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。 一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。 数据的形状/特征/要素/属性/指标（The shape of the data） 数据量（Working data size）：就是网站拥有...</description>
       <link>/blog/2014/10/30/shapes-of-data-and-its-flows</link>
       <pubDate>2014-10-30 09:17:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
       <guid>/blog/2014/10/30/shapes-of-data-and-its-flows</guid>
+    </item>
+        <item>
+      <title>《扁鹊见蔡桓公》给我们的启示</title>
+      <description>扁鹊见蔡桓公，立有间，扁鹊曰：“君有疾在腠理，不治将恐深。”桓侯曰：“寡人无疾。”扁鹊出，桓侯曰：“医之好治不病以为功！” 居十日，扁鹊复见，曰：“君之病在肌肤，不治将益深。”桓侯不应。扁鹊出，桓侯又不悦。 居十日，扁鹊复见，曰：“君之病在肠胃，不治将益深。”桓侯又不应。扁鹊出，桓侯又不悦。 居十日，扁鹊望桓侯而还走。桓侯故使人问之，扁鹊曰：“疾在腠理，汤熨之所及也；在肌肤，针石之所及也；在肠胃，火齐之所及也；在骨髓，司命之所属，无奈何也。今在骨髓，臣是以无请也。” 居五日，桓侯体痛，使人索扁鹊，已逃秦矣...</description>
+      <link>/blog/2014/10/30/bian-que-jian-cai-huan-gong</link>
+      <pubDate>2014-10-30 09:17:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/10/30/bian-que-jian-cai-huan-gong</guid>
     </item>
         <item>
       <title>全栈工程师（full stack engineer）的概念</title>
