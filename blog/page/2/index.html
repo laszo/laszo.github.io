@@ -57,6 +57,122 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/24/compile-android-source-code-enviroment">Oct 24,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/10/24/compile-android-source-code-enviroment">编译Android系统源代码的步骤</a></h1>
+                <hr/>
+                <p>本文简要介绍编译安卓系统源代码所需要的步骤、工具、下载地址等。主要参考了《Android系统源代码情景分析》。
+源码分为两部分：安卓系统源代码(AOSP, Android Open Source Project)和安卓内核所使用的linux源代码。</p>
+<ol>
+<li>安卓源代码的编译环境推荐使用Ubuntu系统，可以从<a href="http://ftp.sjtu.edu.cn/ubuntu-cd/">sjtu</a>下载。可以使用最新的64位版本。</li>
+<li>下载安装虚拟机<a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a>。</li>
+<li>使用vbox安装ubuntu，并安装如下包：</li>
+</ol>
+<div class="codehilite"><pre><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">git</span><span class="o">-</span><span class="n">core</span> <span class="n">gnupg</span> <span class="n">flex</span> <span class="n">bison</span> <span class="n">gperf</span> <span class="n">libsdl</span><span class="o">-</span><span class="n">dev</span> <span class="n">libesd0</span><span class="o">-</span><span class="n">dev</span> <span class="n">libwxgtk2</span><span class="mf">.6</span><span class="o">-</span><span class="n">dev</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">zip</span> <span class="n">curl</span> <span class="n">valgrind</span>
+</pre></div>
+
+
+<ol>
+<li>安装repo工具：</li>
+</ol>
+<div class="codehilite"><pre><span class="n">wget</span> <span class="n">https</span><span class="o">:</span><span class="c1">//dl-ssl.google.com/dl/googlesource/git-repo/repo</span>
+<span class="n">chmod</span> <span class="n">a</span><span class="o">+</span><span class="n">x</span> <span class="n">repo</span>
+<span class="n">sudo</span> <span class="n">mv</span> <span class="n">repo</span> <span class="o">/</span><span class="n">bin</span><span class="o">/</span>
+</pre></div>
+
+
+<ol>
+<li>下载源代码：</li>
+</ol>
+<div class="codehilite"><pre><span class="n">mkdir</span> <span class="n">android</span><span class="p">;</span>
+<span class="n">cd</span> <span class="n">android</span><span class="p">;</span>
+<span class="n">repo</span> <span class="n">init</span> <span class="o">-</span><span class="n">u</span> <span class="n">https</span><span class="o">:</span><span class="c1">//android.googlesource.com/platform/manifest</span>
+<span class="n">repo</span> <span class="n">sync</span>
+</pre></div>
+
+
+<ol>
+<li>编译源代码：</li>
+</ol>
+<div class="codehilite"><pre><span class="n">make</span>
+</pre></div>
+
+
+<ol>
+<li>使用安卓模拟器来运行编译出来的代码：</li>
+</ol>
+<div class="codehilite"><pre><span class="o">~/</span><span class="n">android</span><span class="o">/</span><span class="n">out</span><span class="o">/</span><span class="n">host</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="n">x86</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">emulator</span>
+</pre></div>
+
+
+<p>如果运行模拟器报错：</p>
+<div class="codehilite"><pre><span class="n">SDL</span> <span class="n">init</span> <span class="n">failure</span><span class="p">,</span> <span class="n">reason</span> <span class="n">is</span><span class="o">:</span> <span class="n">No</span> <span class="n">available</span> <span class="n">video</span> <span class="n">device</span>
+</pre></div>
+
+
+<p>可以参照<a href="http://blog.sina.com.cn/s/blog_66c16c980101g5qj.html">这篇帖子</a>所说的方法安装依赖包。</p>
+<h2>接下来可以编译android所使用的linux内核源代码</h2>
+<div class="codehilite"><pre><span class="n">mkdir</span> <span class="n">kernel</span><span class="p">;</span> <span class="n">cd</span> <span class="n">kernel</span><span class="p">;</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">http</span><span class="o">:</span><span class="c1">//android.googlesource.com/kernel/goldfish.git</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">remotes</span><span class="o">/</span><span class="n">origin</span><span class="o">/</span><span class="n">android</span><span class="o">-</span><span class="n">goldfish</span><span class="o">-</span><span class="mf">2.6.29</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="err">$</span><span class="n">PATH</span><span class="o">:~/</span><span class="n">android</span><span class="o">-</span><span class="mf">2.3.1</span><span class="o">/</span><span class="n">prebuilt</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="n">x86</span><span class="o">/</span><span class="n">toolchain</span><span class="o">/</span><span class="n">arm</span><span class="o">-</span><span class="n">eabi</span><span class="o">-</span><span class="mf">4.4.3</span><span class="o">/</span><span class="n">bin</span>
+</pre></div>
+
+
+<p>1.</p>
+<div class="codehilite"><pre><span class="n">make</span> <span class="n">goldfish_defconfig</span>
+<span class="n">make</span>
+</pre></div>
+                <a href="/blog/2014/10/24/compile-android-source-code-enviroment" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/24/mac-os-maven-config">Oct 24,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/10/24/mac-os-maven-config">Mac os 下面Java和Maven配置</a></h1>
+                <hr/>
+                <p>首先，mac os系统的终端是bash，配置文件放在 “~/.bash_profile” 而不是 “~/.profile”，如果你在后者里面更改环境变量，是不起作用的。</p>
+<ol>
+<li>
+<p>下载jdk并安装，地址：<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Oracle Java SE Download</a></p>
+</li>
+<li>
+<p>下载maven，地址：<a href="http://maven.apache.org/download.cgi">Apache Maven</a></p>
+</li>
+<li>
+<p>修改配置文件，添加如下内容：</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span class="n">export</span> <span class="n">JAVA_HOME</span><span class="o">=/</span><span class="n">System</span><span class="o">/</span><span class="n">Library</span><span class="o">/</span><span class="n">Frameworks</span><span class="o">/</span><span class="n">JavaVM</span><span class="p">.</span><span class="n">framework</span><span class="o">/</span><span class="n">Versions</span><span class="o">/</span><span class="n">CurrentJDK</span><span class="o">/</span><span class="n">Home</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s">&quot;$PATH:$HOME/.rvm/bin&quot;</span> <span class="err">#</span> <span class="n">Add</span> <span class="n">RVM</span> <span class="n">to</span> <span class="n">PATH</span> <span class="k">for</span> <span class="n">scripting</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="err">$</span><span class="n">JAVA_HOME</span><span class="o">/</span><span class="n">bin</span><span class="o">:</span><span class="err">$</span><span class="n">PATH</span>
+<span class="n">export</span> <span class="n">M2_HOME</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">maven</span><span class="o">-</span><span class="mf">3.2.3</span>
+<span class="n">export</span> <span class="n">M2</span><span class="o">=</span><span class="err">$</span><span class="n">M2_HOME</span><span class="o">/</span><span class="n">bin</span>
+<span class="n">export</span> <span class="n">MAVEN_OPTS</span><span class="o">=</span><span class="s">&quot;-Xms256m -Xmx512m&quot;</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="err">$</span><span class="n">M2</span><span class="o">:</span><span class="err">$</span><span class="n">PATH</span>
+</pre></div>
+
+
+<p>参考：</p>
+<p>http://maven.apache.org/download.cgi</p>
+<p>http://www.oracle.com/technetwork/cn/community/java/apache-maven-getting-started-1-406235-zhs.html</p>
+                <a href="/blog/2014/10/24/mac-os-maven-config" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/21/my-new-nexus-5">Oct 21,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/10/21/my-new-nexus-5">入手一部Nexus 5</a></h1>
+                <hr/>
+                <p>安卓的源代码只能编译运行在nexus设备上。
+可以自己定制安卓源码编译安装到nexus上，就像编译linux内核代码一样。</p>
+                <a href="/blog/2014/10/21/my-new-nexus-5" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/09/09/breaking-bad">Sep 09,2014</p>
 
             <div class="post_content clearfix">
@@ -86,52 +202,6 @@ a { color: #0099FF; }
 陈寿说他“弘毅宽厚，知人待士”。</p>
 <p>水浒里的头号暖男，宋江。</p>
                 <a href="/blog/2014/09/02/ye-shuo-nuan-nan" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/09/02/shang-shi-wen-dao-qin-er-xing-zhi">Sep 02,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/09/02/shang-shi-wen-dao-qin-er-xing-zhi">上士闻道，勤而行之；中士闻道，若存若亡；下士闻道，大笑之</a></h1>
-                <hr/>
-                <p>这是《道德经》上的一句话。</p>
-<p><a href="http://www.jiaoyou.com/diary_6381_77.html">这里</a>有一篇博文。</p>
-                <a href="/blog/2014/09/02/shang-shi-wen-dao-qin-er-xing-zhi" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/09/02/nan-ren-nei-xin-shen-chu-zhu-zhao-yi-ge-xiao-nan-hai">Sep 02,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/09/02/nan-ren-nei-xin-shen-chu-zhu-zhao-yi-ge-xiao-nan-hai">男人内心深处住着一个小男孩</a></h1>
-                <hr/>
-                <p>知乎上面有人问：<a href="http://www.zhihu.com/question/21700285">如何成为一名优秀的女朋友</a></p>
-<p>下面的这个答案获得了最高票，两千多个赞同：</p>
-<blockquote>
-<p>保护他内心的小男孩</p>
-</blockquote>
-                <a href="/blog/2014/09/02/nan-ren-nei-xin-shen-chu-zhu-zhao-yi-ge-xiao-nan-hai" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/09/02/nan-hai-yu-nan-ren-de-si-zhong-xin-li-mo-xing">Sep 02,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/09/02/nan-hai-yu-nan-ren-de-si-zhong-xin-li-mo-xing">男孩与男人的四种心理模型</a></h1>
-                <hr/>
-                <p>阅读《国王,武士,祭司,诗人》一书：</p>
-<blockquote>
-<p>我们经常会听到一些男人”把握不住“自己。
-这是因为,他的心智凌乱不堪,不同的内心组成部分七零八落。
-一个把握不住自己的男人,通常是因为他还没有机会经过一次成人的犀利，
-去体验作为男人最深处的结构。
-于是，他仍旧是个男孩 - 这并不是因为他还想当个孩子，
-而是因为没有人在他的生活中出现，向他展示一条由男孩气质到男人气质的转换的路。
-没有人出现，指引他去开启内心成熟雄性的所有可能性。<br />
-                           --Moore &amp; Gillette</p>
-</blockquote>
-<p>英文名为《King, Warrior, Magician, Lover: Rediscovering the Archetypes of the Mature Masculine》的著作原作者为Robert Moore和Douglas Gillette,Moore原为芝加哥神学院的教授，主攻心理学和宗教，Gillette则是世界灵性研究所的创始人之一。</p>
-                <a href="/blog/2014/09/02/nan-hai-yu-nan-ren-de-si-zhong-xin-li-mo-xing" class="more">阅读 &rarr;</a>
             </div>
         </article>
         <br/>
