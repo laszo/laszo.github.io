@@ -57,6 +57,82 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/30/shapes-of-data-and-its-flows">Oct 30,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/10/30/shapes-of-data-and-its-flows">从全栈看待性能问题</a></h1>
+                <hr/>
+                <p>昨天列举了<a href="https://www.facebook.com/cmb">Carlos Bueno</a>著名的<a href="https://www.facebook.com/note.php?note_id=461505383919">The Full Stack</a>文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。</p>
+<p>一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。</p>
+<p>一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。</p>
+<h4>数据的形状/特征/要素/属性/指标（The shape of the data）</h4>
+<ul>
+<li>
+<p>数据量（Working data size）：就是网站拥有的全部数据的大小。对于一个视频网站来说，Working data就是它提供的全部视频。对于一个新闻网站来说，就是拥有的全部新闻数据。</p>
+</li>
+<li>
+<p>平均请求大小（Average request size）：用户的一次操作涉及到的数据量。不用的应用，这个数字差别很大。如果是一个新闻网站，用户点击某一条新闻进行阅读时，传输的数据量就是这篇新闻网页的大小，从几百K到几M不等。如果是视频网站，用户点击观看一个电影，传输的数据量可能会有几百M。</p>
+</li>
+<li>
+<p>请求频率（Request rate）：用户操作的频繁程度。如果是在线阅读，用户可能几分钟才操作一下；如果是游戏，那就非常频繁了。</p>
+</li>
+<li>
+<p>修改频率（Mutation rate）：数据的增加、删除、编辑的量大小。</p>
+</li>
+<li>
+<p>一致性（Consistency）：数据修改之后，修改的传输速度。如果一个用户发布了一条微博，另一个用户多快能够看到？</p>
+</li>
+<li>
+<p>位置（Locality）：用户是否更热衷于其中一部分内容，而对其他内容兴趣比较低？比如热门视频、热门微博等。</p>
+</li>
+<li>
+<p>计算（Computation）：应用需要进行大量计算吗？如果是一个博客网站，显然不需要什么计算。</p>
+</li>
+<li>
+<p>延迟（Latency）：用户操作之后，系统多快能够做出响应？</p>
+</li>
+<li>
+<p>竞争/争用（Contention）：系统瓶颈在哪里？是否会出现争用资源的情况？</p>
+</li>
+</ul>
+<p>文章的后半部分以一个虚构的视频网站为例，用上述指标进行了分析和建模。在最后，作者指出，利用这些指标，对系统进行简化，有利于理解理解系统的全局（big picture）。这样一个big picture提供了你进一步探究性能问题的切入点。</p>
+                <a href="/blog/2014/10/30/shapes-of-data-and-its-flows" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/28/be-a-full-stack-engineer">Oct 28,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/10/28/be-a-full-stack-engineer">全栈工程师（full stack engineer）的概念</a></h1>
+                <hr/>
+                <p>看了一下昨天写的东西，所列的清单其实就是要成为全栈工程师。
+成为全栈工程师/全栈开发者（full stack engineer/full stack developer）可以说是我们每个技术人员技术发展的最终目标之一。</p>
+<p>简单说来，全栈就是要我们熟练掌握技术系统的全部环节。</p>
+<p>下面是收集的一些资料。</p>
+<p><a href="https://www.facebook.com/note.php?note_id=461505383919">The Full Stack, Part I</a></p>
+<p><a href="http://calendar.perfplanet.com/2010/the-full-stack/">The Full Stack</a>，根上一篇内容一样。</p>
+<p><a href="http://www.laurencegellert.com/2012/08/what-is-a-full-stack-developer/">What is a Full Stack developer?</a></p>
+<p><a href="http://www.forbes.com/sites/oreillymedia/2014/04/11/full-stack-developer-is-a-tall-order-bordering-on-unicorn-territory/">Developers Need To Broaden Their Range</a></p>
+<p><a href="http://forge38.com/blog/2008/06/full-stack-web-developers/">full-stack programmer</a></p>
+<p><a href="http://www.quora.com/What-does-the-term-full-stack-programmer-mean">What-does-the-term-full-stack-programmer-mean</a></p>
+<p><a href="http://alchemycs.github.io/2011/07/20/What_Is_A_Full_Stack_Web_Developer_-_Part_1_of_3.html">What Is A Full Stack Web Developer - Part 1 of 3</a></p>
+<p><a href="http://blog.cloudbees.com/2012/09/the-full-stack-developer.html">the-full-stack-developer</a></p>
+<p><a href="http://www.smashingmagazine.com/2013/11/21/introduction-to-full-stack-javascript/">An Introduction To Full-Stack JavaScript</a></p>
+<p>现在有很多公司都声称要招聘full stack的工程师。
+这里有一个stackoverflow的招聘岗位，介绍在微软环境下的full-stack。
+<a href="http://careers.stackoverflow.com/jobs/34229/full-stack-web-developer-stack-exchange">Full-Stack Web Developer</a></p>
+<p>还有一些资料，说的是系统架构，其实也是关于full stack的内容。
+<a href="http://blog.csdn.net/wuwei1984100/article/details/25744671">构建高并发高可用的电商平台架构实践</a></p>
+<p><a href="http://www.oschina.net/translate/the-architecture-twitter-uses-to-deal-with-150m-active-users">Twitter 高并发高可用架构</a></p>
+<p><a href="http://highscalability.com/blog/2013/7/8/the-architecture-twitter-uses-to-deal-with-150m-active-users.html">The Architecture Twitter Uses To Deal With 150M Active Users, 300K QPS, A 22 MB/S Firehose, And Send Tweets In Under 5 Seconds</a>，这是上一篇的英文原文。</p>
+<p>整个<a href="http://highscalability.com/">High Scalability网站</a>都是跟系统架构、高性能有关的内容。</p>
+<p><a href="http://tech.it168.com/zt/sa/">it168的软件架构学习专题</a>也总结了很多资料。</p>
+<p>根据这些内容，以及我自己的理解，画了下面一张图：</p>
+<p><img alt="fullstackpng" src="http://www.lvxiaoyu.com/images/fullstack.png" /></p>
+                <a href="/blog/2014/10/28/be-a-full-stack-engineer" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/28/many-things-to-do-and-where">Oct 28,2014</p>
 
             <div class="post_content clearfix">
@@ -201,28 +277,6 @@ a { color: #0099FF; }
 <p>http://maven.apache.org/download.cgi</p>
 <p>http://www.oracle.com/technetwork/cn/community/java/apache-maven-getting-started-1-406235-zhs.html</p>
                 <a href="/blog/2014/10/24/mac-os-maven-config" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/21/my-new-nexus-5">Oct 21,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/10/21/my-new-nexus-5">入手一部Nexus 5</a></h1>
-                <hr/>
-                <p>安卓的源代码只能编译运行在nexus设备上。
-可以自己定制安卓源码编译安装到nexus上，就像编译linux内核代码一样。</p>
-                <a href="/blog/2014/10/21/my-new-nexus-5" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/09/09/breaking-bad">Sep 09,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/09/09/breaking-bad">推荐美剧：绝命毒师(breaking bad)</a></h1>
-                <hr/>
-                <p><a href="http://tv.sohu.com/item/NDU1ODY=.html">搜狐视频链接</a></p>
-<p>表现了一个男人内心的矛盾与挣扎，多看看有利于男人心智成熟。</p>
-                <a href="/blog/2014/09/09/breaking-bad" class="more">阅读 &rarr;</a>
             </div>
         </article>
         <br/>

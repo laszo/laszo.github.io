@@ -7,12 +7,36 @@
     <link></link>
 
         <item>
+      <title>CoreData的概念介绍与学习资料汇总</title>
+      <description>CoreData是iOS开发中的一个重要部分，它可以看做是ORM模型在iOS系统中的实现。 Introduction to Core Data Programming Guide是苹果官方的文档。 Tim Roadley的文章Avoiding Ten Big Mistakes iOS Developers Make with Core Data介绍了在使用coredata的过程中应当注意和避免的问题。</description>
+      <link>/blog/2014/11/03/core-data-study</link>
+      <pubDate>2014-11-03 17:50:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/11/03/core-data-study</guid>
+    </item>
+        <item>
+      <title>javac mvn ant mmg 等java构建工具的介绍与使用</title>
+      <description>这几项工具都是构建java或android项目的常用工具。值得学习一下，会从命令行操作。</description>
+      <link>/blog/2014/11/02/javac-mvn-ant-mmg-deng-java-gou-jian-gong-ju-de-jie-shao-yu-shi-yong</link>
+      <pubDate>2014-11-02 22:14:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/11/02/javac-mvn-ant-mmg-deng-java-gou-jian-gong-ju-de-jie-shao-yu-shi-yong</guid>
+    </item>
+        <item>
       <title>new word to me the Sneakernet</title>
       <description>查看维基百科的解释。 http://en.wikipedia.org/wiki/Sneakernet</description>
       <link>/blog/2014/10/30/new-word-to-me-the-Sneakernet</link>
       <pubDate>2014-10-30 09:35:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
       <guid>/blog/2014/10/30/new-word-to-me-the-Sneakernet</guid>
+    </item>
+        <item>
+      <title>《扁鹊见蔡桓公》给我们的启示</title>
+      <description>我们上中学的时候学过一篇课文《扁鹊见蔡桓公》，虽然那时候能够背下来，但是对其中的意思并无领会。多年以后，在生活和工作中经历的一些事，对文章有了更深的认识。 扁鹊见蔡桓公，立有间，扁鹊曰：“君有疾在腠理，不治将恐深。”桓侯曰：“寡人无疾。” 扁鹊出，桓侯曰：“医之好治不病以为功！” 居十日，扁鹊复见，曰：“君之病在肌肤，不治将益深。”桓侯不应。扁鹊出，桓侯又不悦。 居十日，扁鹊复见，曰：“君之病在肠胃，不治将益深。”桓侯又不应。扁鹊出，桓侯又不悦。 居十日，扁鹊望桓侯而还走。桓侯故使人问之，扁鹊曰：“疾在腠...</description>
+      <link>/blog/2014/10/30/bian-que-jian-cai-huan-gong</link>
+      <pubDate>2014-10-30 09:17:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/10/30/bian-que-jian-cai-huan-gong</guid>
     </item>
         <item>
       <title>find your own fate book</title>
@@ -29,14 +53,6 @@
       <pubDate>2014-10-30 09:17:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
       <guid>/blog/2014/10/30/shapes-of-data-and-its-flows</guid>
-    </item>
-        <item>
-      <title>《扁鹊见蔡桓公》给我们的启示</title>
-      <description>我们上中学的时候学过一篇课文《扁鹊见蔡桓公》，虽然那时候能够背下来，但是对其中的意思并无领会。多年以后，在生活和工作中经历的一些事，对文章有了更深的认识。 扁鹊见蔡桓公，立有间，扁鹊曰：“君有疾在腠理，不治将恐深。”桓侯曰：“寡人无疾。” 扁鹊出，桓侯曰：“医之好治不病以为功！” 居十日，扁鹊复见，曰：“君之病在肌肤，不治将益深。”桓侯不应。扁鹊出，桓侯又不悦。 居十日，扁鹊复见，曰：“君之病在肠胃，不治将益深。”桓侯又不应。扁鹊出，桓侯又不悦。 居十日，扁鹊望桓侯而还走。桓侯故使人问之，扁鹊曰：“疾在腠...</description>
-      <link>/blog/2014/10/30/bian-que-jian-cai-huan-gong</link>
-      <pubDate>2014-10-30 09:17:00 +0800</pubDate>
-      2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/10/30/bian-que-jian-cai-huan-gong</guid>
     </item>
         <item>
       <title>全栈工程师（full stack engineer）的概念</title>
