@@ -57,6 +57,32 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/11/04/ios-dev-error-No-provisioning-profiles-with-a-valid-signing-identity">Nov 04,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/11/04/ios-dev-error-No-provisioning-profiles-with-a-valid-signing-identity">ios开发中报错 No provisioning profiles with a valid signing identity 或 Your account already has a valid certificate</a></h1>
+                <hr/>
+                <p>如果你在多台mac上开发ios app，在遇到下面的错误时：</p>
+<div class="codehilite"><pre><span class="n">No</span> <span class="n">provisioning</span> <span class="n">profiles</span> <span class="n">with</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">signing</span> <span class="n">identity</span> 
+</pre></div>
+
+
+<p>可以尝试在“钥匙链”中删除所有ios开发相关的证书。再次在设备上调试app时，可能会遇到如下错误：</p>
+<div class="codehilite"><pre><span class="n">Your</span> <span class="n">account</span> <span class="n">already</span> <span class="n">has</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">certificate</span>
+</pre></div>
+
+
+<p>这时应在另一台mac上面，导出证书，并导入到报错的电脑上，如此应该可以解决问题。</p>
+<p>导出方法：</p>
+<ol>
+<li>打开xcode，打开preferences</li>
+<li>在accounts一栏，选择相关的apple id，点击 view details</li>
+<li>导出所有的 singing identities 和 provisioning profiles。</li>
+</ol>
+                <a href="/blog/2014/11/04/ios-dev-error-No-provisioning-profiles-with-a-valid-signing-identity" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/11/04/yuan-ren-de-sheng-huo-fang-shi-cai-shi-zui-shi-he-ren-xing-de-fang-shi">Nov 04,2014</p>
 
             <div class="post_content clearfix">
@@ -116,49 +142,6 @@ a { color: #0099FF; }
                 <p>查看维基百科的解释。</p>
 <p>http://en.wikipedia.org/wiki/Sneakernet</p>
                 <a href="/blog/2014/10/30/new-word-to-me-the-Sneakernet" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/10/30/shapes-of-data-and-its-flows">Oct 30,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/10/30/shapes-of-data-and-its-flows">从全栈看待性能问题</a></h1>
-                <hr/>
-                <p>昨天列举了<a href="https://www.facebook.com/cmb">Carlos Bueno</a>著名的<a href="https://www.facebook.com/note.php?note_id=461505383919">The Full Stack</a>文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。</p>
-<p>一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。</p>
-<p>一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。</p>
-<h4>数据的形状/特征/要素/属性/指标（The shape of the data）</h4>
-<ul>
-<li>
-<p>数据量（Working data size）：就是网站拥有的全部数据的大小。对于一个视频网站来说，Working data就是它提供的全部视频。对于一个新闻网站来说，就是拥有的全部新闻数据。</p>
-</li>
-<li>
-<p>平均请求大小（Average request size）：用户的一次操作涉及到的数据量。不用的应用，这个数字差别很大。如果是一个新闻网站，用户点击某一条新闻进行阅读时，传输的数据量就是这篇新闻网页的大小，从几百K到几M不等。如果是视频网站，用户点击观看一个电影，传输的数据量可能会有几百M。</p>
-</li>
-<li>
-<p>请求频率（Request rate）：用户操作的频繁程度。如果是在线阅读，用户可能几分钟才操作一下；如果是游戏，那就非常频繁了。</p>
-</li>
-<li>
-<p>修改频率（Mutation rate）：数据的增加、删除、编辑的量大小。</p>
-</li>
-<li>
-<p>一致性（Consistency）：数据修改之后，修改的传输速度。如果一个用户发布了一条微博，另一个用户多快能够看到？</p>
-</li>
-<li>
-<p>位置（Locality）：用户是否更热衷于其中一部分内容，而对其他内容兴趣比较低？比如热门视频、热门微博等。</p>
-</li>
-<li>
-<p>计算（Computation）：应用需要进行大量计算吗？如果是一个博客网站，显然不需要什么计算。</p>
-</li>
-<li>
-<p>延迟（Latency）：用户操作之后，系统多快能够做出响应？</p>
-</li>
-<li>
-<p>竞争/争用（Contention）：系统瓶颈在哪里？是否会出现争用资源的情况？</p>
-</li>
-</ul>
-<p>文章的后半部分以一个虚构的视频网站为例，用上述指标进行了分析和建模。在最后，作者指出，利用这些指标，对系统进行简化，有利于理解理解系统的全局（big picture）。这样一个big picture提供了你进一步探究性能问题的切入点。</p>
-                <a href="/blog/2014/10/30/shapes-of-data-and-its-flows" class="more">阅读 &rarr;</a>
             </div>
         </article>
         <br/>

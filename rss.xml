@@ -7,6 +7,14 @@
     <link></link>
 
         <item>
+      <title>ios开发中报错 No provisioning profiles with a valid signing identity 或 Your account already has a valid certificate</title>
+      <description>如果你在多台mac上开发ios app，在遇到下面的错误时： No provisioning profiles with a valid signing identity 可以尝试在“钥匙链”中删除所有ios开发相关的证书。再次在设备上调试app时，可能会遇到如下错误： Your account already has a valid certificate 这时应在另一台mac上面，导出证书，并导入到报错的电脑上，如此应该可以解决问题。 导出方法： 打开xcode，打开preferences 在acco...</description>
+      <link>/blog/2014/11/04/ios-dev-error-No-provisioning-profiles-with-a-valid-signing-identity</link>
+      <pubDate>2014-11-04 17:41:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/11/04/ios-dev-error-No-provisioning-profiles-with-a-valid-signing-identity</guid>
+    </item>
+        <item>
       <title>原人的生活方式才是最适合人性的方式</title>
       <description>最近在看《全球通史》，关于人类的起源和发展的部分，有如下要点： 人类的原人时代经历了几百万年。 原人时代的食物来源主要是从环境中采集，任何含有营养并且能消化的东西都可以作为食物。 食物采集时代，人类的工作时间大概只有十分之一。其余时间就是闲着，休息或打发时间。 原人居无定所，并不固定在一个地方生活。 我的看法： 目前人类的基因与原人是完全一致的。 从生物对环境适应性的角度看，原人的生活方式持续了几百万年，那么原人的基因应该是符合此种生活方式的。 现在的人类的基因，不管是生理上还是思想上，相对于“现代生活方...</description>
       <link>/blog/2014/11/04/yuan-ren-de-sheng-huo-fang-shi-cai-shi-zui-shi-he-ren-xing-de-fang-shi</link>
