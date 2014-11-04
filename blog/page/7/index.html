@@ -57,6 +57,46 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/02/method-read-source-code">Aug 02,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/08/02/method-read-source-code">阅读源代码的方法之讨论</a></h1>
+                <hr/>
+                <p>阅读和学习源代码是程序员的必备功课，本文来研究一下这项工作有无一定之规。</p>
+<p>我们学习和研究源代码按如下边所述步骤进行，自始至终，如果我们的脑子里一直萦绕着如下问题，相比效果会更好：</p>
+<blockquote>
+<p>这个项目为什么会存在？如果我来开发该项目，该怎么做？</p>
+</blockquote>
+<ol>
+<li>
+<p>了解这个项目的背景、动机、历史渊源等信息。这不仅有利于理解这个项目存在的意义， 还可以更深刻的理解它为什么会是现在这个样子。比如Emacs是怎么来的，XMPP是怎么来的、如何发展的，等等。 一般来说，了解这些信息从Google或维基百科开始。简单的Google一下，以及阅读一下项目相关的Wiki词条， 就能迅速了解一些概况，Google和维基百科也会提供了大量的链接和进一步阅读的文献资料，顺藤摸瓜的走下去， 会有更深入的理解。深入到什么程度，要看你自己的兴趣和时间了。</p>
+</li>
+<li>
+<p>查看项目结构。首先看该项目的README文件，然后看它的目录结构。 项目顶级目录下的二级目录和文件、以及它们的命名，是重要的架构信息。优秀的项目，它的方法、类、文件、包等 代码元素的组织方式也必然是良好的，对这些代码元素的命名也必然是良好的。研究项目的目录结构和文件命名， 可以帮助我们迅速掌握该项目的开发者、架构师（如果多人开发的话）对于该项目的设计思想。</p>
+</li>
+<li>
+<p>当你浏览了所有的二级目录和三级目录（如果有的话）之后，下一步就可以看项目中的头文件（'.h'）了。 从头文件里可以看到这个类/包的对外的接口。如果说项目的目录结构和命名体现了设计思想，那么头文件就体现了 这些设计思想如何落地，可以视为设计思想的子思想。</p>
+</li>
+<li>
+<p>当你浏览了项目的目录结构以及头文件以后，终于轮到看具体的实现代码（.c、.cpp、.m）了。
+ 这些代码体现了设计思想的具体实现。如果我们在使用该项目的时候遇到问题、或者需要修改BUG，估计看的最多的就是 这些文件了。</p>
+</li>
+</ol>
+<p>虽然具体的实现代码是项目的实质部分，但是如果不了解项目的背景、结构、设计思想等信息，就无从了解具体细节， 程序开发的老手会自发自觉的按照上述1、2、3、4这个顺序进行研究和学习。这些步骤可能会来回穿插、交替、迭代的循环进行。 而新手，则会跳过前三个步骤，直接进入第四步。 这就好像没有带着地图、GPS等工具，走在一个陌生的、没有路标的大城市里，最大的可能是：</p>
+<blockquote>
+<p>Lost yourself.</p>
+</blockquote>
+<p>新手之所以会如此做的原因，除了浮躁之外，还因为他们的实践太少，阅读项目、尤其是大型项目的源代码的量很小。 他们接触的项目，很可能是如下几类：</p>
+<ol>
+<li>只有几个文件的简单项目，小型网站或信息管理系统</li>
+<li>基于“已经很高层的库”之上的二次开发、甚至三次开发的项目</li>
+<li>虽然接触了大型项目，只是修改简单的BUG、添加功能等维护性工作</li>
+</ol>
+<p>这样的程序实践是不会有架构的概念的。相反，如果经常阅读大型项目的人，即便没有理论指导， 也会在实践中被迫、自发的摸索出一条类似于上述过程的工作方法的。</p>
+                <a href="/blog/2014/08/02/method-read-source-code" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/08/02/xmpp-intro-1">Aug 02,2014</p>
 
             <div class="post_content clearfix">
@@ -228,30 +268,6 @@ a { color: #0099FF; }
 <p>如果把眼光放在全宇宙，却还远远不能。</p>
 <p>不管是高魔还是低魔，都是有凡人存在的。差别在于这个世界中的顶级智慧者所拥有的能力。</p>
                 <a href="/blog/2014/07/25/fan-ren-xiu-xian-chuan-gao-mo-di-mo" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/07/24/web.py-content-type-afnetwork">Jul 24,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/07/24/web.py-content-type-afnetwork">web.py指定Content-Type</a></h1>
-                <hr/>
-                <p>在开发iOS应用的时候，会用到AFNetworking这个目前非常流行的第三方库。看它的名字就知道，
-它封装了iOS开发种常见的网络操作，使用方便、高效。</p>
-<p>但是，如果使用web.py作为server端，默认情况下，在运行app的时候，很可能会遇到如下错误：</p>
-<div class="codehilite"><pre><span class="n">Request</span> <span class="n">failed</span><span class="o">:</span> <span class="n">unacceptable</span> <span class="n">content</span><span class="o">-</span><span class="n">type</span><span class="o">:</span> <span class="n">text</span><span class="o">/</span><span class="n">plain</span>
-</pre></div>
-
-
-<p>需要我们在server端代码里，返回请求之前添加如下代码：</p>
-<div class="codehilite"><pre><span class="n">web</span><span class="p">.</span><span class="n">header</span><span class="p">(</span><span class="err">&#39;</span><span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="err">&#39;</span><span class="p">,</span> <span class="err">&#39;</span><span class="n">text</span><span class="o">/</span><span class="n">json</span><span class="err">&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<p>原因很简单，阅读<a href="https://github.com/iwasrobbed/Forecastr/blob/master/AFNetworking/AFURLResponseSerialization.m">AFURLResponseSerialization</a>类的代码就会发现，
-AFNetworking会在接受到server端数据之后，检查返回数据的ContenType类型，如果不符合要求，
-就会主动给出出错提示。从这个细节里可以看出，AFNetworking这个库还是比较严谨的。</p>
-                <a href="/blog/2014/07/24/web.py-content-type-afnetwork" class="more">阅读 &rarr;</a>
             </div>
         </article>
         <br/>
