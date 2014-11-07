@@ -7,6 +7,14 @@
     <link></link>
 
         <item>
+      <title>监视linux服务器运行状态与性能</title>
+      <description>我们在使用服务器的时候，当然希望能随时监控服务器的运行状态、系统负载等信息，便于找出系统瓶颈，并且在硬件配置快要不够用的时候及时进行扩展。 下面这篇文章给出了20种有可能会帮助我们的工具。 20 Command Line Tools to Monitor Linux Performance 下面这篇文章给出了25个，当然它们有很多是重复的。 Top 25 Best Linux Performance Monitoring and Debugging Tools 还有下面这篇文章有助于我们理解CPU负载的相...</description>
+      <link>/blog/2014/11/07/monitor-linux-performance</link>
+      <pubDate>2014-11-07 15:15:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/11/07/monitor-linux-performance</guid>
+    </item>
+        <item>
       <title>ios开发中报错 No provisioning profiles with a valid signing identity 或 Your account already has a valid certificate</title>
       <description>如果你在多台mac上开发ios app，在遇到下面的错误时： No provisioning profiles with a valid signing identity 可以尝试在“钥匙链”中删除所有ios开发相关的证书。再次在设备上调试app时，可能会遇到如下错误： Your account already has a valid certificate 这时应在另一台mac上面，导出证书，并导入到报错的电脑上，如此应该可以解决问题。 导出方法： 打开xcode，打开preferences 在acco...</description>
       <link>/blog/2014/11/04/ios-dev-error-No-provisioning-profiles-with-a-valid-signing-identity</link>
@@ -47,12 +55,12 @@
       <guid>/blog/2014/10/30/new-word-to-me-the-Sneakernet</guid>
     </item>
         <item>
-      <title>从全栈看待性能问题</title>
-      <description>昨天列举了Carlos Bueno著名的The Full Stack文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。 一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。 一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。 数据的形状/特征/要素/属性/指标（The shape of the data） 数据量（Working data size）：就是网站拥有...</description>
-      <link>/blog/2014/10/30/shapes-of-data-and-its-flows</link>
+      <title>find your own fate book</title>
+      <description></description>
+      <link>/blog/2014/10/30/find-your-own-fate-book</link>
       <pubDate>2014-10-30 09:17:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/10/30/shapes-of-data-and-its-flows</guid>
+      <guid>/blog/2014/10/30/find-your-own-fate-book</guid>
     </item>
         <item>
       <title>《扁鹊见蔡桓公》给我们的启示</title>
@@ -63,12 +71,12 @@
       <guid>/blog/2014/10/30/bian-que-jian-cai-huan-gong</guid>
     </item>
         <item>
-      <title>find your own fate book</title>
-      <description></description>
-      <link>/blog/2014/10/30/find-your-own-fate-book</link>
+      <title>从全栈看待性能问题</title>
+      <description>昨天列举了Carlos Bueno著名的The Full Stack文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。 一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。 一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。 数据的形状/特征/要素/属性/指标（The shape of the data） 数据量（Working data size）：就是网站拥有...</description>
+      <link>/blog/2014/10/30/shapes-of-data-and-its-flows</link>
       <pubDate>2014-10-30 09:17:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/10/30/find-your-own-fate-book</guid>
+      <guid>/blog/2014/10/30/shapes-of-data-and-its-flows</guid>
     </item>
         <item>
       <title>全栈工程师（full stack engineer）的概念</title>

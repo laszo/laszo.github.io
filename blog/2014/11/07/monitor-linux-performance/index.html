@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" /><title>监视linux服务器运行状态与性能 | 学到老，活到老</title>
+<meta name="author" content="吕晓宇">
+<meta name="description" content="我们在使用服务器的时候，当然希望能随时监控服务器的运行状态、系统负载等信息，便于找出系统瓶颈，并且在硬件配置快要不够用的时候及时进行扩展。 下面这篇文章给出了20种有可能会帮助我们的工具。 20 Command Line Tools to Monitor Linux Performance 下面这篇文章给出了25个，当然它们有很多是重复的。 Top 25 Best Linux Performance Monitoring and Debugging Tools ...">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta property="og:site_name" content=""/>
+
+<link rel="stylesheet" href="/css/style.css" type="text/css" />
+<link rel="stylesheet" href="/css/pygments.css" type="text/css" />
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+<style>
+#featured .flex-direction-nav a:hover, #video-slider-section .flex-direction-nav a:hover { background-color: #ffb600; }
+#featured_section .active-slide .post-meta, #featured_section .switcher_hover .post-meta, .et_tab_link_hover .post-meta { background: #0099FF; }
+h3.main-title { background-color: #0099FF; -moz-box-shadow: inset 0 0 10px #0099FF; -webkit-box-shadow: inset 0 0 10px #0099FF; box-shadow: inset 0 0 10px #0099FF; border: 1px solid #0099FF; }
+a { color: #0099FF; }
+.et_video_play { background-color: #0099FF; }
+#second-menu > ul > li > a:hover { background-color: #0099FF; }
+#second-menu ul ul li a:hover { background-color: #ffb122; }
+#second-menu ul.nav li ul { background: #0099FF; }
+#second-menu ul ul li a { border-top: 1px solid #0099FF; }
+</style>
+
+</head><body>
+<div id="header" class="container"><div id="logo-area">
+    <a href="/">
+        <h1>学到老，活到老</h1>
+        <p>上士闻道，勤而行之；中士闻道，若存若亡；下士闻道，大笑之</p>
+    </a>
+</div></div>
+<div id="menu">
+    <div class="container"><a href="/" class="mobile_nav closed">首页</a>
+<a href="/archive" class="mobile_nav closed">文章列表</a>
+<a href="/links/page" class="mobile_nav closed">收藏</a>
+<a href="/about" class="mobile_nav closed">关于</a>
+
+<nav id="second-menu" class="clearfix">
+    <ul id="menu-categories" class="nav">
+                        <li id="" class="menu-item"><a href="/" class="mobile_nav closed">首页</a></li>
+                                <li id="" class="menu-item"><a href="/archive" class="mobile_nav closed">文章列表</a></li>
+                                <li id="" class="menu-item"><a href="/links/page" class="mobile_nav closed">收藏</a></li>
+                                <li id="" class="menu-item"><a href="/about" class="mobile_nav closed">关于</a></li>
+                    </ul>
+<form action="http://google.com/search" class="search-form" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvxiaoyu.com" />
+    <input class="searchinput" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+</nav></div>
+</div>
+<div class="main-area">
+    <div class="container">
+        <div id="content-area" class="clearfix">
+            
+<div class="left-area">
+<article class="post entry clearfix">
+    <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/11/07/monitor-linux-performance">Nov 07,2014 </p>
+    <div class="post_content clearfix">
+        <h1 class="title"><a href="/blog/2014/11/07/monitor-linux-performance">监视linux服务器运行状态与性能</a></h1>
+        <hr/>
+        <p>我们在使用服务器的时候，当然希望能随时监控服务器的运行状态、系统负载等信息，便于找出系统瓶颈，并且在硬件配置快要不够用的时候及时进行扩展。</p>
+<p>下面这篇文章给出了20种有可能会帮助我们的工具。</p>
+<p><a href="http://www.tecmint.com/command-line-tools-to-monitor-linux-performance/">20 Command Line Tools to Monitor Linux Performance</a></p>
+<p>下面这篇文章给出了25个，当然它们有很多是重复的。
+<a href="http://www.thegeekstuff.com/2011/12/linux-performance-monitoring-tools/">Top 25 Best Linux Performance Monitoring and Debugging Tools</a></p>
+<p>还有下面这篇文章有助于我们理解CPU负载的相关问题，<a href="http://blog.scoutapp.com/articles/2009/07/31/understanding-load-averages">Understanding Linux CPU Load - when should you be worried?</a>，还有<a href="http://blog.scoutapp.com/articles/2011/02/10/understanding-disk-i-o-when-should-you-be-worried">Understanding Disk I/O - when should you be worried?</a>，<a href="http://blog.scoutapp.com/articles/2010/10/06/determining-free-memory-on-linux">Determining free memory on Linux</a>是关于内存的。都值得一看。</p>
+<p>类似 uptime、 htop 这些命令，只能够在服务器本机上运行。我们想要随时监控还得远程登录到服务器上，很不方面。为了方便，我们可以写一段脚本，随时统计这样的信息，记录在数据库或文件系统，再搭配一个日志系统，这样使用浏览器就可以随时看到服务器的状态，还可以设置短信报警、邮件报警等。</p>
+<p>ELK(Elasticsearch + Logstash + Kibana)就是这样的一套方案。参见<a href="http://blog.carlos-spitzer.com/2014/09/28/improving-linux-log-analysis-capabilities-with-logstash-elasticsearch-kibana/">Improving Linux log-analysis capabilities with logstash + elasticsearch + kibana</a>。</p>
+    </div>
+</article>
+
+<article class="post entry clearfix">
+    </article>
+</div>
+
+<div class="sidebar">
+</div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="container clearfix" style="float:center;text-align:center;font-size:10pt;color:#000000;">
+      <p id="copyright">
+	<a href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备14033542</a>
+	 | &copy; 2014 吕晓宇 | Powered by 
+	<a href="http://crotal.org" target="_blank">Crotal</a>
+      </p>
+    </div>
+</div></body>
+</html>
