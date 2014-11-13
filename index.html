@@ -104,13 +104,14 @@ a { color: #0099FF; }
 
 
 <p>之后重启openfire。使用spark发送了几天中英文及数字消息，发现现在不记录中文消息。以前是记录，但显示为问号，现在是不记录。</p>
-<p>似乎可以考虑重新安装mysql和openfire了。先在vmware虚拟机上试验一下搞了utf8以后能否支持中文昵称和中文聊天记录。最关键的两个配置：</p>
+<p>似乎可以考虑重新安装mysql和openfire了。先在vmware虚拟机上试验一下搞了utf8以后能否支持中文昵称和中文聊天记录。官方文档：<a href="http://www.igniterealtime.org/builds/openfire/docs/latest/documentation/database.html">Database Installation Guide</a>。最关键的两个配置：</p>
 <div class="codehilite"><pre><span class="nb">create</span> <span class="nx">database</span> <span class="nx">openfire</span> <span class="nb">default</span> <span class="nx">character</span> <span class="nb">set</span> <span class="nx">utf8</span> <span class="nb">default</span> <span class="nx">collate</span> <span class="nx">utf8_general_ci</span>
 
-<span class="o">&lt;</span><span class="nx">serverURL</span><span class="o">&gt;</span><span class="nx">jdbc</span><span class="p">:</span><span class="nx">mysql</span><span class="p">:</span><span class="c1">//127.0.0.1:3306/openfire?useUnicode=true&amp;amp;characterEncoding=utf8&lt;/serverURL&gt;</span>
+<span class="o">&lt;</span><span class="nx">serverURL</span><span class="o">&gt;</span><span class="nx">jdbc</span><span class="p">:</span><span class="nx">mysql</span><span class="p">:</span><span class="c1">//localhost:3306/openfire1?rewriteBatchedStatements=true&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&lt;/serverURL&gt;</span>
 </pre></div>
 
 
+<p>经过一番折腾，终于可以在ofMessageArchive这个表里看到中文聊天记录了。剩下的工作就是写一个rest服务端，提供客户端对于聊天记录的查询。只是包装一些简单的sql查询、或者使用ORM库，在这里就不赘述了。</p>
 <p>那么刚才提到的Message Audit Policy就可以禁用掉了。Message Audit Policy与Monitoring Service 的关系、特点、异同、适用性，留待以后去探究了。或者，如果读者你对着这方面有要说的，欢迎分享给大家。</p>
                 <a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu" class="more">阅读 &rarr;</a>
             </div>
