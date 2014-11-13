@@ -7,6 +7,22 @@
     <link></link>
 
         <item>
+      <title>openfire客户端获取聊天记录</title>
+      <description>openfire是当前较为流行的xmpp服务端。使用它作为服务端，借助github上面的一些开源项目，很容易打造出一套跨平台的即时通讯解决方案，包含如下的五个主流平台：PC端的windows、mac os、linux，以及移动端的ios和android平台。 当然，这只能包含最基本的通讯功能。如果想达到QQ、MSN、微信、whatsapp这样主流软件丰富的用户体验，还有许多工作要做。 比如，如何在服务端保存聊天记录，并需要的时候客户端能够获取并展现出来，就需要专门研究一下。 这篇Openfire Chat...</description>
+      <link>/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu</link>
+      <pubDate>2014-11-13 10:19:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu</guid>
+    </item>
+        <item>
+      <title>两种方式的办事作风</title>
+      <description></description>
+      <link>/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng</link>
+      <pubDate>2014-11-13 10:17:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng</guid>
+    </item>
+        <item>
       <title>监视linux服务器运行状态与性能</title>
       <description>我们在使用服务器的时候，当然希望能随时监控服务器的运行状态、系统负载等信息，便于找出系统瓶颈，并且在硬件配置快要不够用的时候及时进行扩展。 下面这篇文章给出了20种有可能会帮助我们的工具。 20 Command Line Tools to Monitor Linux Performance 下面这篇文章给出了25个，当然它们有很多是重复的。 Top 25 Best Linux Performance Monitoring and Debugging Tools 还有下面这篇文章有助于我们理解CPU负载的相...</description>
       <link>/blog/2014/11/07/monitor-linux-performance</link>
@@ -55,6 +71,14 @@
       <guid>/blog/2014/10/30/new-word-to-me-the-Sneakernet</guid>
     </item>
         <item>
+      <title>从全栈看待性能问题</title>
+      <description>昨天列举了Carlos Bueno著名的The Full Stack文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。 一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。 一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。 数据的形状/特征/要素/属性/指标（The shape of the data） 数据量（Working data size）：就是网站拥有...</description>
+      <link>/blog/2014/10/30/shapes-of-data-and-its-flows</link>
+      <pubDate>2014-10-30 09:17:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/10/30/shapes-of-data-and-its-flows</guid>
+    </item>
+        <item>
       <title>find your own fate book</title>
       <description></description>
       <link>/blog/2014/10/30/find-your-own-fate-book</link>
@@ -69,14 +93,6 @@
       <pubDate>2014-10-30 09:17:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
       <guid>/blog/2014/10/30/bian-que-jian-cai-huan-gong</guid>
-    </item>
-        <item>
-      <title>从全栈看待性能问题</title>
-      <description>昨天列举了Carlos Bueno著名的The Full Stack文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。 一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。 一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。 数据的形状/特征/要素/属性/指标（The shape of the data） 数据量（Working data size）：就是网站拥有...</description>
-      <link>/blog/2014/10/30/shapes-of-data-and-its-flows</link>
-      <pubDate>2014-10-30 09:17:00 +0800</pubDate>
-      2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/10/30/shapes-of-data-and-its-flows</guid>
     </item>
         <item>
       <title>全栈工程师（full stack engineer）的概念</title>
