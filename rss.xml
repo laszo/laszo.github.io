@@ -7,6 +7,14 @@
     <link></link>
 
         <item>
+      <title>query chat logs: anothor way, may be better</title>
+      <description>this ariticle : (http://www.lvxiaoyu.com/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/) maybe is not nessary. see this: (http://stackoverflow.com/questions/11397172/xmppframework-retrieve-archived-messages-from-openfire-server?lq=1) may be i...</description>
+      <link>/blog/2014/11/22/query-chat-logs:-anothor-way,-may-be-better</link>
+      <pubDate>2014-11-22 21:24:00 +0800</pubDate>
+      2012-11-20 13:55:00 +0100
+      <guid>/blog/2014/11/22/query-chat-logs:-anothor-way,-may-be-better</guid>
+    </item>
+        <item>
       <title>总结国内的移动即时通讯解决方案提供商--标题还得改改</title>
       <description>环信：http://www.easemob.com/ 亲加通信云：http://www.gotye.com.cn/</description>
       <link>/blog/2014/11/20/app-im-solution-provider-in-cn</link>
@@ -79,12 +87,12 @@
       <guid>/blog/2014/10/30/new-word-to-me-the-Sneakernet</guid>
     </item>
         <item>
-      <title>从全栈看待性能问题</title>
-      <description>昨天列举了Carlos Bueno著名的The Full Stack文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。 一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。 一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。 数据的形状/特征/要素/属性/指标（The shape of the data） 数据量（Working data size）：就是网站拥有...</description>
-      <link>/blog/2014/10/30/shapes-of-data-and-its-flows</link>
+      <title>find your own fate book</title>
+      <description></description>
+      <link>/blog/2014/10/30/find-your-own-fate-book</link>
       <pubDate>2014-10-30 09:17:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/10/30/shapes-of-data-and-its-flows</guid>
+      <guid>/blog/2014/10/30/find-your-own-fate-book</guid>
     </item>
         <item>
       <title>《扁鹊见蔡桓公》给我们的启示</title>
@@ -95,12 +103,12 @@
       <guid>/blog/2014/10/30/bian-que-jian-cai-huan-gong</guid>
     </item>
         <item>
-      <title>find your own fate book</title>
-      <description></description>
-      <link>/blog/2014/10/30/find-your-own-fate-book</link>
+      <title>从全栈看待性能问题</title>
+      <description>昨天列举了Carlos Bueno著名的The Full Stack文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。 一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。 一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。 数据的形状/特征/要素/属性/指标（The shape of the data） 数据量（Working data size）：就是网站拥有...</description>
+      <link>/blog/2014/10/30/shapes-of-data-and-its-flows</link>
       <pubDate>2014-10-30 09:17:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
-      <guid>/blog/2014/10/30/find-your-own-fate-book</guid>
+      <guid>/blog/2014/10/30/shapes-of-data-and-its-flows</guid>
     </item>
         <item>
       <title>全栈工程师（full stack engineer）的概念</title>

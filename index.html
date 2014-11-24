@@ -57,6 +57,19 @@ a { color: #0099FF; }
             
 <div class="left-area">
         <article class="post type-post status-publish hentry category-people entry clearfix">
+        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/11/22/query-chat-logs:-anothor-way,-may-be-better">Nov 22,2014</p>
+
+            <div class="post_content clearfix">
+                <h1 class="title"><a href="/blog/2014/11/22/query-chat-logs:-anothor-way,-may-be-better">query chat logs: anothor way, may be better</a></h1>
+                <hr/>
+                <p>this ariticle : (http://www.lvxiaoyu.com/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/) maybe is not nessary.</p>
+<p>see this: (http://stackoverflow.com/questions/11397172/xmppframework-retrieve-archived-messages-from-openfire-server?lq=1)</p>
+<p>may be it is the better and earier way.</p>
+<p>just send a <retrieve> package, you will receive a list of chat log. see doc : (http://xmpp.org/extensions/xep-0136.html). I have not tried, which will be my work on monday(11.24)</p>
+                <a href="/blog/2014/11/22/query-chat-logs:-anothor-way,-may-be-better" class="more">阅读 &rarr;</a>
+            </div>
+        </article>
+        <article class="post type-post status-publish hentry category-people entry clearfix">
         <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/11/20/app-im-solution-provider-in-cn">Nov 20,2014</p>
 
             <div class="post_content clearfix">
@@ -152,32 +165,6 @@ a { color: #0099FF; }
 <p>类似 uptime、 htop 这些命令，只能够在服务器本机上运行。我们想要随时监控还得远程登录到服务器上，不方便。为了方便，我们可以写一段脚本，随时统计这样的信息，记录在数据库或文件系统，再搭配一个日志系统，这样使用浏览器就可以随时看到服务器的状态，还可以设置短信报警、邮件报警等。</p>
 <p>ELK(Elasticsearch + Logstash + Kibana)就是这样的一套方案。参见<a href="http://blog.carlos-spitzer.com/2014/09/28/improving-linux-log-analysis-capabilities-with-logstash-elasticsearch-kibana/">Improving Linux log-analysis capabilities with logstash + elasticsearch + kibana</a>。</p>
                 <a href="/blog/2014/11/07/monitor-linux-performance" class="more">阅读 &rarr;</a>
-            </div>
-        </article>
-        <article class="post type-post status-publish hentry category-people entry clearfix">
-        <p class="meta-info">Posted  by 吕晓宇 on <a href="/blog/2014/11/04/ios-dev-error-No-provisioning-profiles-with-a-valid-signing-identity">Nov 04,2014</p>
-
-            <div class="post_content clearfix">
-                <h1 class="title"><a href="/blog/2014/11/04/ios-dev-error-No-provisioning-profiles-with-a-valid-signing-identity">ios开发中报错 No provisioning profiles with a valid signing identity 或 Your account already has a valid certificate</a></h1>
-                <hr/>
-                <p>如果你在多台mac上开发ios app，在遇到下面的错误时：</p>
-<div class="codehilite"><pre><span class="n">No</span> <span class="n">provisioning</span> <span class="n">profiles</span> <span class="n">with</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">signing</span> <span class="n">identity</span> 
-</pre></div>
-
-
-<p>可以尝试在“钥匙链”中删除所有ios开发相关的证书。再次在设备上调试app时，可能会遇到如下错误：</p>
-<div class="codehilite"><pre><span class="n">Your</span> <span class="n">account</span> <span class="n">already</span> <span class="n">has</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">certificate</span>
-</pre></div>
-
-
-<p>这时应在另一台mac上面，导出证书，并导入到报错的电脑上，如此应该可以解决问题。</p>
-<p>导出方法：</p>
-<ol>
-<li>打开xcode，打开preferences</li>
-<li>在accounts一栏，选择相关的apple id，点击 view details</li>
-<li>导出所有的 singing identities 和 provisioning profiles。</li>
-</ol>
-                <a href="/blog/2014/11/04/ios-dev-error-No-provisioning-profiles-with-a-valid-signing-identity" class="more">阅读 &rarr;</a>
             </div>
         </article>
         <br/>
