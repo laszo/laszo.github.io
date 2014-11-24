@@ -8,7 +8,7 @@
 
         <item>
       <title>query chat logs: anothor way, may be better</title>
-      <description>this ariticle : (http://www.lvxiaoyu.com/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/) maybe is not nessary. see this: (http://stackoverflow.com/questions/11397172/xmppframework-retrieve-archived-messages-from-openfire-server?lq=1) may be i...</description>
+      <description>this ariticle : openfire客户端获取聊天记录 maybe is not nessary. see this: (http://stackoverflow.com/questions/11397172/xmppframework-retrieve-archived-messages-from-openfire-server?lq=1) may be it is the better and earier way. just send a package, you will receiv...</description>
       <link>/blog/2014/11/22/query-chat-logs:-anothor-way,-may-be-better</link>
       <pubDate>2014-11-22 21:24:00 +0800</pubDate>
       2012-11-20 13:55:00 +0100
