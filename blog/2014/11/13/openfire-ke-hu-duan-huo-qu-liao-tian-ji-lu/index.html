@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-<meta charset="UTF-8" /><title>Home | Crotal</title>
+<meta charset="UTF-8" /><title>openfire客户端获取聊天记录 | Crotal</title>
 <meta name="author" content="user">
-<meta name="description" content="">
+<meta name="description" content="openfire是当前较为流行的xmpp服务端。使用它作为服务端，借助github上面的一些开源项目，很容易打造出一套跨平台的即时通讯解决方案，包含如下的五个主流平台：PC端的windows、mac os、linux，以及移动端的ios和android平台。 当然，这只能包含最基本的通讯功能。如果想达到QQ、MSN、微信、whatsapp这样主流软件丰富的用户体验，还有许多工作要做。 比如，如何在服务端保存聊天记录，并需要的时候客户端能够获取并展现出来，就需要专门研究一下。 这篇Openfire ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content="">
 <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" />-->
@@ -52,35 +52,11 @@
 <div class="container innerpage_content">
   <div class="row">
 
-    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/12/10/zhe-ji-tian-blog-huai-le/'>这几天博客有问题</a></h2>
-        <p class="blog-post-meta">Dec 10, 2014 by <i>user</i></p>
-        <p>使用crotal制作博客，markdown文件中的 slug 一项，在generate过程中，有可能会作为文件名或目录名使用，所以最好不要使用特殊字符，最多使用下划线和短横线。否则生成会有问题。</p>
-        <a href="/blog/2014/12/10/zhe-ji-tian-blog-huai-le/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/'>query chat logs: anothor way, may be better</a></h2>
-        <p class="blog-post-meta">Nov 22, 2014 by <i>user</i></p>
-        <p>this ariticle : <a href="http://www.lvxiaoyu.com/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/">openfire客户端获取聊天记录</a> maybe is not nessary.</p>
-<p>see this: (http://stackoverflow.com/questions/11397172/xmppframework-retrieve-archived-messages-from-openfire-server?lq=1)</p>
-<p>may be it is the better and earier way.</p>
-<p>just send a <retrieve> package, you will receive a list of chat log. see doc : (http://xmpp.org/extensions/xep-0136.html). I have not tried, which will be my work on monday(11.24)</p>
-        <a href="/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/20/app-im-solution-provider-in-cn/'>总结国内的移动即时通讯解决方案提供商--标题还得改改</a></h2>
-        <p class="blog-post-meta">Nov 20, 2014 by <i>user</i></p>
-        <p>环信：http://www.easemob.com/
-亲加通信云：http://www.gotye.com.cn/</p>
-        <a href="/blog/2014/11/20/app-im-solution-provider-in-cn/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/'>openfire客户端获取聊天记录</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
+    <div class="col-sm-12 blog-main">
+      <div class="blog-post box">
+        <p class="blog-post-meta"><i>in</i> <i> by </i>user<i> - Nov 13, 2014</i></p>
+        <h2 class="blog-post-title">openfire客户端获取聊天记录</h2>
+        <hr/>
         <p>openfire是当前较为流行的xmpp服务端。使用它作为服务端，借助github上面的一些开源项目，很容易打造出一套跨平台的即时通讯解决方案，包含如下的五个主流平台：PC端的windows、mac os、linux，以及移动端的ios和android平台。</p>
 <p>当然，这只能包含最基本的通讯功能。如果想达到QQ、MSN、微信、whatsapp这样主流软件丰富的用户体验，还有许多工作要做。</p>
 <p>比如，如何在服务端保存聊天记录，并需要的时候客户端能够获取并展现出来，就需要专门研究一下。</p>
@@ -132,50 +108,34 @@
 
 <p>经过一番折腾，终于可以在ofMessageArchive这个表里看到中文聊天记录了。剩下的工作就是写一个rest服务端，提供客户端对于聊天记录的查询。只是包装一些简单的sql查询、或者使用ORM库，在这里就不赘述了。</p>
 <p>那么刚才提到的Message Audit Policy就可以禁用掉了。Message Audit Policy与Monitoring Service 的关系、特点、异同、适用性，留待以后去探究了。或者，如果读者你对着这方面有要说的，欢迎分享给大家。</p>
-        <a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/" >Read More</a>
+        <hr/>
+        <div class="author-info">
+          <div class="col-sm-3">
+            <img src="/images/avatar.gif" alt="..." class="img-thumbnail">
+          </div>
+          <div class="col-sm-9">
+            <h4>user</h4>
+            <small>Hello World! I'm <b>User</b>. Change this text in <code>config.yml</code> <code>-> self_description</code>.</small>
+          </div>
+        </div>
       </div>
 
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/'>两种方式的办事作风</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
-        
-        <a href="/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/" >Read More</a>
-      </div>
+            <div class="box">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * siteURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'None'; // required: replace example with your forum shortname
 
-                <br/>
-    <ul class="page_numbers pull-right">
-                <li class="page_info"><p>Page 1 of 12</p></li>
-                                                <li class="active"><a>1<span class="sr-only">(current)</span></a></li>
-                                                            <li><a href="/blog/page/2">2</a></li>
-                                                            <li><a href="/blog/page/3">3</a></li>
-                                                            <li><a href="/blog/page/4">4</a></li>
-                                                            <li><a href="/blog/page/5">5</a></li>
-                                                            <li><a href="/blog/page/6">6</a></li>
-                                                            <li><a href="/blog/page/7">7</a></li>
-                                                            <li><a href="/blog/page/8">8</a></li>
-                                                            <li><a href="/blog/page/9">9</a></li>
-                                                            <li><a href="/blog/page/10">10</a></li>
-                                                            <li><a href="/blog/page/11">11</a></li>
-                                                            <li><a href="/blog/page/12">12</a></li>
-                                        </ul>
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+         })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>      </div>
+      
     </div>
-
-<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 right">
-            <div class="widget box">
-    <h4 class="widgettitle">About</h4>
-    <div class="description">
-        <p>A static site generator which is written in Python, super fast, easy to use, and free to all.Start a blog right now using Crotal!</p>
-    </div>
-</div>            <div class="widget recent_posts box">
-    <h4 class="widgettitle">Recent Posts</h4>
-    <ul>
-                <li><a href="/blog/2014/12/10/zhe-ji-tian-blog-huai-le/">这几天博客有问题</a></li>
-                <li><a href="/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/">query chat logs: anothor way, may be better</a></li>
-                <li><a href="/blog/2014/11/20/app-im-solution-provider-in-cn/">总结国内的移动即时通讯解决方案提供商--标题还得改改</a></li>
-                <li><a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/">openfire客户端获取聊天记录</a></li>
-                <li><a href="/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/">两种方式的办事作风</a></li>
-            </ul>
-</div>    </div>
   </div>
 </div>
 <div class="blog-footer">

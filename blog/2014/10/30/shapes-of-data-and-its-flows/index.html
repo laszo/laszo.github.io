@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-<meta charset="UTF-8" /><title>About | Crotal</title>
+<meta charset="UTF-8" /><title>从全栈看待性能问题 | Crotal</title>
 <meta name="author" content="user">
-<meta name="description" content="Write down your self-introduction at source/pages/About.markdown">
+<meta name="description" content="昨天列举了Carlos Bueno著名的The Full Stack文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。 一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。 一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。 数据的形状/特征/要素/属性/指标（The shape of the data） 数据量（Working data ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content="">
 <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" />-->
@@ -39,7 +39,7 @@
                                                                                                 <li><a class="blog-nav-item" href="/archives">Archives</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/categories">Categories</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/tags">Tags</a></li>
-                                                                                                <li><a class="blog-nav-item active" href="/about">About</a></li>
+                                                                                                <li><a class="blog-nav-item" href="/about">About</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/rss.xml">RSS</a></li>
                                                             </ul>
             <ul class="nav navbar-nav navbar-right" id="nav">
@@ -52,18 +52,74 @@
 <div class="container innerpage_content">
   <div class="row">
 
-<div class="col-sm-12 blog-main box">
-    <article class="post entry clearfix">
-    <div class="post_content clearfix">
-    <h1 class="title">About</h1>
-    <hr/>
-    <p>Write down your self-introduction at <code>source/pages/About.markdown</code></p>
+    <div class="col-sm-12 blog-main">
+      <div class="blog-post box">
+        <p class="blog-post-meta"><i>in</i> <i> by </i>user<i> - Oct 30, 2014</i></p>
+        <h2 class="blog-post-title">从全栈看待性能问题</h2>
+        <hr/>
+        <p>昨天列举了<a href="https://www.facebook.com/cmb">Carlos Bueno</a>著名的<a href="https://www.facebook.com/note.php?note_id=461505383919">The Full Stack</a>文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。</p>
+<p>一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。</p>
+<p>一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。</p>
+<h4>数据的形状/特征/要素/属性/指标（The shape of the data）</h4>
+<ul>
+<li>
+<p>数据量（Working data size）：就是网站拥有的全部数据的大小。对于一个视频网站来说，Working data就是它提供的全部视频。对于一个新闻网站来说，就是拥有的全部新闻数据。</p>
+</li>
+<li>
+<p>平均请求大小（Average request size）：用户的一次操作涉及到的数据量。不用的应用，这个数字差别很大。如果是一个新闻网站，用户点击某一条新闻进行阅读时，传输的数据量就是这篇新闻网页的大小，从几百K到几M不等。如果是视频网站，用户点击观看一个电影，传输的数据量可能会有几百M。</p>
+</li>
+<li>
+<p>请求频率（Request rate）：用户操作的频繁程度。如果是在线阅读，用户可能几分钟才操作一下；如果是游戏，那就非常频繁了。</p>
+</li>
+<li>
+<p>修改频率（Mutation rate）：数据的增加、删除、编辑的量大小。</p>
+</li>
+<li>
+<p>一致性（Consistency）：数据修改之后，修改的传输速度。如果一个用户发布了一条微博，另一个用户多快能够看到？</p>
+</li>
+<li>
+<p>位置（Locality）：用户是否更热衷于其中一部分内容，而对其他内容兴趣比较低？比如热门视频、热门微博等。</p>
+</li>
+<li>
+<p>计算（Computation）：应用需要进行大量计算吗？如果是一个博客网站，显然不需要什么计算。</p>
+</li>
+<li>
+<p>延迟（Latency）：用户操作之后，系统多快能够做出响应？</p>
+</li>
+<li>
+<p>竞争/争用（Contention）：系统瓶颈在哪里？是否会出现争用资源的情况？</p>
+</li>
+</ul>
+<p>文章的后半部分以一个虚构的视频网站为例，用上述指标进行了分析和建模。在最后，作者指出，利用这些指标，对系统进行简化，有利于理解理解系统的全局（big picture）。这样一个big picture提供了你进一步探究性能问题的切入点。</p>
+        <hr/>
+        <div class="author-info">
+          <div class="col-sm-3">
+            <img src="/images/avatar.gif" alt="..." class="img-thumbnail">
+          </div>
+          <div class="col-sm-9">
+            <h4>user</h4>
+            <small>Hello World! I'm <b>User</b>. Change this text in <code>config.yml</code> <code>-> self_description</code>.</small>
+          </div>
+        </div>
+      </div>
+
+            <div class="box">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * siteURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'None'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+         })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>      </div>
+      
     </div>
-    </article>
-</div>
-
-
-</div>
+  </div>
 </div>
 <div class="blog-footer">
 <p id="copyright">&copy; 2013 user | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>

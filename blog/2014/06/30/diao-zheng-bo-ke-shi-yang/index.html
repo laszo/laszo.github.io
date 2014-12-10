@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-<meta charset="UTF-8" /><title>About | Crotal</title>
+<meta charset="UTF-8" /><title>调整博客 | Crotal</title>
 <meta name="author" content="user">
-<meta name="description" content="Write down your self-introduction at source/pages/About.markdown">
+<meta name="description" content="这个博客的式样需要调整，目前遇到的问题有： 文章栏目过于靠左，而不是居中 在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。 2014-7-2 14:38 记： 今天已经解决了这个问题。办法是修改如下文件： sudo vi /usr/local/lib/python2.7/dist-packages/crotal/create_post.py 第14行： post.title = string 修改为： post.title = unicode(string, ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content="">
 <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" />-->
@@ -39,7 +39,7 @@
                                                                                                 <li><a class="blog-nav-item" href="/archives">Archives</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/categories">Categories</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/tags">Tags</a></li>
-                                                                                                <li><a class="blog-nav-item active" href="/about">About</a></li>
+                                                                                                <li><a class="blog-nav-item" href="/about">About</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/rss.xml">RSS</a></li>
                                                             </ul>
             <ul class="nav navbar-nav navbar-right" id="nav">
@@ -52,18 +52,72 @@
 <div class="container innerpage_content">
   <div class="row">
 
-<div class="col-sm-12 blog-main box">
-    <article class="post entry clearfix">
-    <div class="post_content clearfix">
-    <h1 class="title">About</h1>
-    <hr/>
-    <p>Write down your self-introduction at <code>source/pages/About.markdown</code></p>
+    <div class="col-sm-12 blog-main">
+      <div class="blog-post box">
+        <p class="blog-post-meta"><i>in</i> <i> by </i>user<i> - Jun 30, 2014</i></p>
+        <h2 class="blog-post-title">调整博客</h2>
+        <hr/>
+        <p>这个博客的式样需要调整，目前遇到的问题有：</p>
+<ul>
+<li>文章栏目过于靠左，而不是居中</li>
+<li>在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。</li>
+</ul>
+<p>2014-7-2 14:38 记：
+今天已经解决了这个问题。办法是修改如下文件：</p>
+<div class="codehilite"><pre><span class="n">sudo</span> <span class="n">vi</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python2</span><span class="mf">.7</span><span class="o">/</span><span class="n">dist</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">crotal</span><span class="o">/</span><span class="n">create_post</span><span class="p">.</span><span class="n">py</span>
+</pre></div>
+
+
+<p>第14行：</p>
+<div class="codehilite"><pre><span class="n">post</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">string</span>
+</pre></div>
+
+
+<p>修改为：</p>
+<div class="codehilite"><pre><span class="n">post</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li>
+<p>这是一个纯静态站点，每次编辑文章都要ssh到服务器上操作，实在太不方便了。
+目标是像<a href="https://www.zybuluo.com">这个网站</a>一样能够在线的写作和发布。当然
+这样的话就不是静态站点而是动态的了。也可以现在zybuluo上面写好草稿，
+最后一次性的发布。能够不方便，也好。太方便反而不会去慎重对待了。</p>
+</li>
+<li>
+<p>首页的prev按钮不起作用</p>
+</li>
+</ul>
+        <hr/>
+        <div class="author-info">
+          <div class="col-sm-3">
+            <img src="/images/avatar.gif" alt="..." class="img-thumbnail">
+          </div>
+          <div class="col-sm-9">
+            <h4>user</h4>
+            <small>Hello World! I'm <b>User</b>. Change this text in <code>config.yml</code> <code>-> self_description</code>.</small>
+          </div>
+        </div>
+      </div>
+
+            <div class="box">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * siteURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'None'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+         })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>      </div>
+      
     </div>
-    </article>
-</div>
-
-
-</div>
+  </div>
 </div>
 <div class="blog-footer">
 <p id="copyright">&copy; 2013 user | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>

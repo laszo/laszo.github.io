@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-<meta charset="UTF-8" /><title>About | Crotal</title>
+<meta charset="UTF-8" /><title>iOS下的XMPP开源库XMPPFramework介绍 | Crotal</title>
 <meta name="author" content="user">
-<meta name="description" content="Write down your self-introduction at source/pages/About.markdown">
+<meta name="description" content="如果你想开发带有聊天功能的iOS APP，这个XMPPFramework 是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。 首先下载这个库的源代码： git clone https://github.com/robbiehanson/XMPPFramework.git 或者下载源代码的ZIP包。 {tree}()是一个很有用的命令行工具，它能够以树形的方式展现指定目录的结构。 首先我们来查看项目的一级目录： tree -L 1 得到输出： . ├── Authentication ├── ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content="">
 <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" />-->
@@ -39,7 +39,7 @@
                                                                                                 <li><a class="blog-nav-item" href="/archives">Archives</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/categories">Categories</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/tags">Tags</a></li>
-                                                                                                <li><a class="blog-nav-item active" href="/about">About</a></li>
+                                                                                                <li><a class="blog-nav-item" href="/about">About</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/rss.xml">RSS</a></li>
                                                             </ul>
             <ul class="nav navbar-nav navbar-right" id="nav">
@@ -52,18 +52,90 @@
 <div class="container innerpage_content">
   <div class="row">
 
-<div class="col-sm-12 blog-main box">
-    <article class="post entry clearfix">
-    <div class="post_content clearfix">
-    <h1 class="title">About</h1>
-    <hr/>
-    <p>Write down your self-introduction at <code>source/pages/About.markdown</code></p>
+    <div class="col-sm-12 blog-main">
+      <div class="blog-post box">
+        <p class="blog-post-meta"><i>in</i> <i> by </i>user<i> - Aug 02, 2014</i></p>
+        <h2 class="blog-post-title">iOS下的XMPP开源库XMPPFramework介绍</h2>
+        <hr/>
+        <p>如果你想开发带有聊天功能的iOS APP，这个<a href="https://github.com/robbiehanson/XMPPFramework">XMPPFramework</a>
+是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。</p>
+<p>首先下载这个库的源代码：</p>
+<div class="codehilite"><pre><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="o">:</span><span class="c1">//github.com/robbiehanson/XMPPFramework.git</span>
+</pre></div>
+
+
+<p>或者下载源代码的<a href="https://github.com/robbiehanson/XMPPFramework/archive/master.zip">ZIP包</a>。
+{tree}()是一个很有用的命令行工具，它能够以树形的方式展现指定目录的结构。
+首先我们来查看项目的一级目录：</p>
+<div class="codehilite"><pre><span class="n">tree</span> <span class="o">-</span><span class="n">L</span> <span class="mi">1</span>
+</pre></div>
+
+
+<p>得到输出：</p>
+<div class="codehilite"><pre><span class="p">.</span>
+<span class="err">├──</span> <span class="n">Authentication</span>
+<span class="err">├──</span> <span class="n">Categories</span>
+<span class="err">├──</span> <span class="n">Core</span>
+<span class="err">├──</span> <span class="n">Extensions</span>
+<span class="err">├──</span> <span class="n">README</span><span class="p">.</span><span class="n">markdown</span>
+<span class="err">├──</span> <span class="n">Sample_XMPPFramework</span><span class="p">.</span><span class="n">h</span>
+<span class="err">├──</span> <span class="n">Utilities</span>
+<span class="err">├──</span> <span class="n">Vendor</span>
+<span class="err">├──</span> <span class="n">Xcode</span>
+<span class="err">└──</span> <span class="n">copying</span><span class="p">.</span><span class="n">txt</span>
+</pre></div>
+
+
+<p>顶级目录里共有10个目录和文件，其中3个文件，7个文件夹。三个文件分别是:</p>
+<ol>
+<li>README.markdown：介绍了该项目的内容，并给出链接，指向项目概览、安装方法等。其中项目概览是我们尤其应该仔细阅读的文件。</li>
+<li>Sample_XMPPFramework.h：给出例子，说明头文件的引用请客</li>
+<li>copying.txt：版权信息，该项目基于BSD Style License和BSD License。</li>
+</ol>
+<p>三个文件都很简单，接下来概览这7个文件夹，稍后逐一详细研究：</p>
+<ol>
+<li>Authentication：即便不看该目录的内容，顾名思义，也可以推测这里面包含用户身份验证、鉴权等相关类和方法。</li>
+<li>Categories：category 是 Objective-C 的一种语言机制，允许我们通过给一个类添加方法来扩充这个类。这里面应该包含了对苹果官方库中某些类的扩展。</li>
+<li>Core：这里面当然是最核心的项目类了，使我们要重点研究的。</li>
+<li>Extensions：扩展有两层含义：a, Objective-C 的一种语言机制，类似于category；b，XMPP协议的扩展，一般称为XEP，<a href="http://xmpp.org/xmpp-protocols/xmpp-extensions/">XMPP Extensions</a>。这里的Extensions指的是后者。</li>
+<li>Utilities：存放一些使用工具类。很多项目都会有这个文件夹。</li>
+<li>Vendor：保存了该项目使用的第三方库</li>
+<li>Xcode：里面有一些Demo项目和测试用例，举例说明该库的使用方法。</li>
+</ol>
+<p>接下来，可以有如下两个选择，先后顺序无所谓：</p>
+<ol>
+<li>浏览Xcode目录里面的项目，简单浏览Demo代码，编译运行一下，有一个直观的印象。</li>
+<li>浏览Core目录，较深入的研究里面的目录结构和头文件。看看这里面的类对同级其他目录里的文件的引用情况，这样会对项目的架构层级产生概念。一般来说，其他目录里的文件都是为这里面的类服务的。</li>
+</ol>
+        <hr/>
+        <div class="author-info">
+          <div class="col-sm-3">
+            <img src="/images/avatar.gif" alt="..." class="img-thumbnail">
+          </div>
+          <div class="col-sm-9">
+            <h4>user</h4>
+            <small>Hello World! I'm <b>User</b>. Change this text in <code>config.yml</code> <code>-> self_description</code>.</small>
+          </div>
+        </div>
+      </div>
+
+            <div class="box">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * siteURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'None'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+         })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>      </div>
+      
     </div>
-    </article>
-</div>
-
-
-</div>
+  </div>
 </div>
 <div class="blog-footer">
 <p id="copyright">&copy; 2013 user | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>

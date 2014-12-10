@@ -54,99 +54,89 @@
 
     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
             <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/12/10/zhe-ji-tian-blog-huai-le/'>这几天博客有问题</a></h2>
-        <p class="blog-post-meta">Dec 10, 2014 by <i>user</i></p>
-        <p>使用crotal制作博客，markdown文件中的 slug 一项，在generate过程中，有可能会作为文件名或目录名使用，所以最好不要使用特殊字符，最多使用下划线和短横线。否则生成会有问题。</p>
-        <a href="/blog/2014/12/10/zhe-ji-tian-blog-huai-le/" >Read More</a>
+        <h2 class="blog-post-title"><a href='/blog/2014/11/07/monitor-linux-performance/'>监视linux服务器运行状态与性能</a></h2>
+        <p class="blog-post-meta">Nov 07, 2014 by <i>user</i></p>
+        <p>我们在使用服务器的时候，当然希望能随时监控服务器的运行状态、系统负载等信息，便于找出系统瓶颈，并且在硬件配置快要不够用的时候及时进行扩展。</p>
+<p>下面这篇文章给出了20种有可能会帮助我们的工具。</p>
+<p><a href="http://www.tecmint.com/command-line-tools-to-monitor-linux-performance/">20 Command Line Tools to Monitor Linux Performance</a></p>
+<p>下面这篇文章给出了25个，当然它们有很多是重复的。
+<a href="http://www.thegeekstuff.com/2011/12/linux-performance-monitoring-tools/">Top 25 Best Linux Performance Monitoring and Debugging Tools</a></p>
+<p>还有下面这篇文章有助于我们理解CPU负载的相关问题，<a href="http://blog.scoutapp.com/articles/2009/07/31/understanding-load-averages">Understanding Linux CPU Load - when should you be worried?</a>，还有<a href="http://blog.scoutapp.com/articles/2011/02/10/understanding-disk-i-o-when-should-you-be-worried">Understanding Disk I/O - when should you be worried?</a>是关于Disk I/O的，<a href="http://blog.scoutapp.com/articles/2010/10/06/determining-free-memory-on-linux">Determining free memory on Linux</a>是关于内存的。都值得一看。</p>
+<p>类似 uptime、 htop 这些命令，只能够在服务器本机上运行。我们想要随时监控还得远程登录到服务器上，不方便。为了方便，我们可以写一段脚本，随时统计这样的信息，记录在数据库或文件系统，再搭配一个日志系统，这样使用浏览器就可以随时看到服务器的状态，还可以设置短信报警、邮件报警等。</p>
+<p>ELK(Elasticsearch + Logstash + Kibana)就是这样的一套方案。参见<a href="http://blog.carlos-spitzer.com/2014/09/28/improving-linux-log-analysis-capabilities-with-logstash-elasticsearch-kibana/">Improving Linux log-analysis capabilities with logstash + elasticsearch + kibana</a>。</p>
+        <a href="/blog/2014/11/07/monitor-linux-performance/" >Read More</a>
       </div>
 
             <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/'>query chat logs: anothor way, may be better</a></h2>
-        <p class="blog-post-meta">Nov 22, 2014 by <i>user</i></p>
-        <p>this ariticle : <a href="http://www.lvxiaoyu.com/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/">openfire客户端获取聊天记录</a> maybe is not nessary.</p>
-<p>see this: (http://stackoverflow.com/questions/11397172/xmppframework-retrieve-archived-messages-from-openfire-server?lq=1)</p>
-<p>may be it is the better and earier way.</p>
-<p>just send a <retrieve> package, you will receive a list of chat log. see doc : (http://xmpp.org/extensions/xep-0136.html). I have not tried, which will be my work on monday(11.24)</p>
-        <a href="/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/20/app-im-solution-provider-in-cn/'>总结国内的移动即时通讯解决方案提供商--标题还得改改</a></h2>
-        <p class="blog-post-meta">Nov 20, 2014 by <i>user</i></p>
-        <p>环信：http://www.easemob.com/
-亲加通信云：http://www.gotye.com.cn/</p>
-        <a href="/blog/2014/11/20/app-im-solution-provider-in-cn/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/'>openfire客户端获取聊天记录</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
-        <p>openfire是当前较为流行的xmpp服务端。使用它作为服务端，借助github上面的一些开源项目，很容易打造出一套跨平台的即时通讯解决方案，包含如下的五个主流平台：PC端的windows、mac os、linux，以及移动端的ios和android平台。</p>
-<p>当然，这只能包含最基本的通讯功能。如果想达到QQ、MSN、微信、whatsapp这样主流软件丰富的用户体验，还有许多工作要做。</p>
-<p>比如，如何在服务端保存聊天记录，并需要的时候客户端能够获取并展现出来，就需要专门研究一下。</p>
-<p>这篇<a href="https://community.igniterealtime.org/thread/29686">Openfire Chat Logs</a>居然是google搜出来的第一篇。</p>
-<div class="codehilite"><pre><span class="n">On</span> <span class="n">the</span> <span class="n">server</span><span class="o">-</span><span class="n">side</span> <span class="n">it</span> <span class="n">is</span> <span class="n">configured</span> <span class="n">from</span> <span class="n">the</span> <span class="s">&quot;Message Audit Policy&quot;</span> <span class="n">link</span><span class="o">/</span><span class="n">page</span><span class="p">.</span>
+        <h2 class="blog-post-title"><a href='/blog/2014/11/04/ios-dev-error-No-provisioning/'>ios开发中报错 No provisioning profiles with a valid signing identity 或 Your account already has a valid certificate</a></h2>
+        <p class="blog-post-meta">Nov 04, 2014 by <i>user</i></p>
+        <p>如果你在多台mac上开发ios app，在遇到下面的错误时：</p>
+<div class="codehilite"><pre><span class="n">No</span> <span class="n">provisioning</span> <span class="n">profiles</span> <span class="n">with</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">signing</span> <span class="n">identity</span> 
 </pre></div>
 
 
-<p>问题：</p>
+<p>可以尝试在“钥匙链”中删除所有ios开发相关的证书。再次在设备上调试app时，可能会遇到如下错误：</p>
+<div class="codehilite"><pre><span class="n">Your</span> <span class="n">account</span> <span class="n">already</span> <span class="n">has</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">certificate</span>
+</pre></div>
+
+
+<p>这时应在另一台mac上面，导出证书，并导入到报错的电脑上，如此应该可以解决问题。</p>
+<p>导出方法：</p>
 <ol>
-<li>Message Audit Policy 是否需要装插件？答案：不需要，就在server-server settings页面里。</li>
-<li>这样记录应该不是聊天记录吧？仅仅是记录了所有的通讯数据包。不方便根据用户或房间查询聊天记录。答案：不方便。需要一个viewer，有人建议看这篇帖子(<a href="https://community.igniterealtime.org/thread/29159">audit log viewer?</a>)。</li>
-<li>即便是能看了，也并未提供一个接口，使客户端用以获取与某项的聊天记录。</li>
+<li>打开xcode，打开preferences</li>
+<li>在accounts一栏，选择相关的apple id，点击 view details</li>
+<li>导出所有的 singing identities 和 provisioning profiles。</li>
 </ol>
-<p>从这篇的问答里我追踪到了<a href="https://community.igniterealtime.org/docs/DOC-1041">Non-Jive Openfire Plugins</a>。然后<a href="http://sourceforge.net/projects/iball-auditor/">i-Ball Chat Auditor</a> 装了一下居然不起作用。如何让它起作用以及如何使用它，留待以后研究了。</p>
-<p><a href="https://community.igniterealtime.org/thread/14773">Logging Conversations</a>这篇帖子很老（2006年），也很长。另有：<a href="http://www.xmpp.org/extensions/xep-0136.html">XEP-0136: Message Archiving</a>乃是最权威的资料。</p>
-<p>从stackoverflow的一个问题<a href="http://stackoverflow.com/questions/6635034/smack-api-read-chat-histroy-from-openfire-server">Smack API - Read Chat Histroy from Openfire Server</a>中，
-<a href="http://stackoverflow.com/users/1206536/alpay">Alpay</a>提供了一个回答，这个回答并没有帮助到我，而回答下面的评论（comments）里面，被折叠的一条评论倒是帮助到了我：</p>
-<blockquote>
-<p>I haven' t tested but you should see <a href="http://www.igniterealtime.org/projects/openfire/plugins/monitoring/readme.html">this</a>, and <a href="https://blogs.reucon.com/srt/tag/open_archive/">this</a>. I hope they help –  Alpay Feb 7 '13 at 12:40</p>
-</blockquote>
-<p>从这里发现，原来<a href="http://www.igniterealtime.org/projects/openfire/plugins/monitoring/readme.html">Monitoring Service</a>插件就是用于记录聊天记录（chat logs）的。但是有两个问题：</p>
-<ol>
-<li>如何从客户端获取这些聊天记录呢？</li>
-<li>中文的信息是乱码该如何解决？</li>
-</ol>
-<p>根据这篇<a href="http://www.myexception.cn/java-other/1001465.html">spark + openfire的聊天监控问题</a>，检查了mysql数据库，发现的确有一张ofMessageArchive表。</p>
-<div class="codehilite"><pre><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">ofMessageArchive</span> <span class="n">limit</span> <span class="mi">10</span><span class="p">;</span>
-</pre></div>
-
-
-<p>可以看到聊天数据的确存在，那么现在有两项工作要做：</p>
-<ol>
-<li>解决中文乱码问题。顺便解决用户昵称中文乱码。</li>
-<li>写一个小型服务端，提供rest接口，根据fromJID、toJID、sentDate、分页等信息，供客户端查询聊天记录。</li>
-</ol>
-<p>按照这篇<a href="http://blog.sina.com.cn/s/blog_4bf75d0a0100l92b.html">解决openfire在使用MySQL数据库后的中文乱码问题</a>，在serverURL这一节添加如下字符：</p>
-<div class="codehilite"><pre><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">useUnicode</span><span class="o">=</span><span class="nb">true</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">characterEncoding</span><span class="o">=</span><span class="n">utf8</span>
-</pre></div>
-
-
-<p>之后重启openfire。使用spark发送了几天中英文及数字消息，发现现在不记录中文消息。以前是记录，但显示为问号，现在是不记录。</p>
-<p>似乎可以考虑重新安装mysql和openfire了。先在vmware虚拟机上试验一下搞了utf8以后能否支持中文昵称和中文聊天记录。官方文档：<a href="http://www.igniterealtime.org/builds/openfire/docs/latest/documentation/database.html">Database Installation Guide</a>。最关键的两个配置：</p>
-<div class="codehilite"><pre><span class="nb">create</span> <span class="nx">database</span> <span class="nx">openfire</span> <span class="nb">default</span> <span class="nx">character</span> <span class="nb">set</span> <span class="nx">utf8</span> <span class="nb">default</span> <span class="nx">collate</span> <span class="nx">utf8_general_ci</span>
-
-<span class="o">&lt;</span><span class="nx">serverURL</span><span class="o">&gt;</span><span class="nx">jdbc</span><span class="p">:</span><span class="nx">mysql</span><span class="p">:</span><span class="c1">//localhost:3306/openfire1?rewriteBatchedStatements=true&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&lt;/serverURL&gt;</span>
-</pre></div>
-
-
-<p>经过一番折腾，终于可以在ofMessageArchive这个表里看到中文聊天记录了。剩下的工作就是写一个rest服务端，提供客户端对于聊天记录的查询。只是包装一些简单的sql查询、或者使用ORM库，在这里就不赘述了。</p>
-<p>那么刚才提到的Message Audit Policy就可以禁用掉了。Message Audit Policy与Monitoring Service 的关系、特点、异同、适用性，留待以后去探究了。或者，如果读者你对着这方面有要说的，欢迎分享给大家。</p>
-        <a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/" >Read More</a>
+        <a href="/blog/2014/11/04/ios-dev-error-No-provisioning/" >Read More</a>
       </div>
 
             <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/'>两种方式的办事作风</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
-        
-        <a href="/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/" >Read More</a>
+        <h2 class="blog-post-title"><a href='/blog/2014/11/04/yuan-ren-de-sheng-huo-fang/'>原人的生活方式才是最适合人性的方式</a></h2>
+        <p class="blog-post-meta">Nov 04, 2014 by <i>user</i></p>
+        <p>最近在看《全球通史》，关于人类的起源和发展的部分，有如下要点：</p>
+<ol>
+<li>人类的原人时代经历了几百万年。</li>
+<li>原人时代的食物来源主要是从环境中采集，任何含有营养并且能消化的东西都可以作为食物。</li>
+<li>食物采集时代，人类的工作时间大概只有十分之一。其余时间就是闲着，休息或打发时间。</li>
+<li>原人居无定所，并不固定在一个地方生活。</li>
+</ol>
+<p>我的看法：</p>
+<ol>
+<li>目前人类的基因与原人是完全一致的。</li>
+<li>从生物对环境适应性的角度看，原人的生活方式持续了几百万年，那么原人的基因应该是符合此种生活方式的。</li>
+<li>现在的人类的基因，不管是生理上还是思想上，相对于“现代生活方式”来说，原人的生活方式更符合人性。</li>
+<li>或者说人性就是根据原人的生活环境进化而来的。</li>
+</ol>
+<p>所以，更进一步的看法，为何人们总是这样：</p>
+<ol>
+<li>体力允许的情况下，游山玩水、到处旅游总是一件乐事。</li>
+<li>人们总是喜欢轻轻松松的、舒舒服服的，做休闲性的事情。因为原人90%的时间都是这么做的。</li>
+<li>但是闲的久了，又想动弹动弹。因为毕竟还有10%的时间是在工作。</li>
+</ol>
+        <a href="/blog/2014/11/04/yuan-ren-de-sheng-huo-fang/" >Read More</a>
+      </div>
+
+            <div class="blog-post box">
+        <h2 class="blog-post-title"><a href='/blog/2014/11/03/core-data-study/'>CoreData的概念介绍与学习资料汇总</a></h2>
+        <p class="blog-post-meta">Nov 03, 2014 by <i>user</i></p>
+        <p>CoreData是iOS开发中的一个重要部分，它可以看做是ORM模型在iOS系统中的实现。</p>
+<p><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html">Introduction to Core Data Programming Guide</a>是苹果官方的文档。</p>
+<p><a href="http://www.informit.com/authors/bio/69adbbf8-e0e4-46ce-9bec-fb0362b6b463">Tim Roadley</a>的文章<a href="http://www.informit.com/articles/article.aspx?p=2160906">Avoiding Ten Big Mistakes iOS Developers Make with Core Data</a>介绍了在使用coredata的过程中应当注意和避免的问题。</p>
+        <a href="/blog/2014/11/03/core-data-study/" >Read More</a>
+      </div>
+
+            <div class="blog-post box">
+        <h2 class="blog-post-title"><a href='/blog/2014/11/02/javac-mvn-ant-mmg-deng/'>javac mvn ant mmg 等java构建工具的介绍与使用</a></h2>
+        <p class="blog-post-meta">Nov 02, 2014 by <i>user</i></p>
+        <p>这几项工具都是构建java或android项目的常用工具。值得学习一下，会从命令行操作。</p>
+        <a href="/blog/2014/11/02/javac-mvn-ant-mmg-deng/" >Read More</a>
       </div>
 
                 <br/>
     <ul class="page_numbers pull-right">
-                <li class="page_info"><p>Page 1 of 12</p></li>
-                                                <li class="active"><a>1<span class="sr-only">(current)</span></a></li>
-                                                            <li><a href="/blog/page/2">2</a></li>
+                <li class="page_info"><p>Page 2 of 12</p></li>
+                                            <li><a href="/">1</a></li>
+                                                                <li class="active"><a>2<span class="sr-only">(current)</span></a></li>
                                                             <li><a href="/blog/page/3">3</a></li>
                                                             <li><a href="/blog/page/4">4</a></li>
                                                             <li><a href="/blog/page/5">5</a></li>

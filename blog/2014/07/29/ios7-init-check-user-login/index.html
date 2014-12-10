@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-<meta charset="UTF-8" /><title>About | Crotal</title>
+<meta charset="UTF-8" /><title>iOS7中如何根据用户是否登录来决定是否启动Main.storyboard或登录界面 | Crotal</title>
 <meta name="author" content="user">
-<meta name="description" content="Write down your self-introduction at source/pages/About.markdown">
+<meta name="description" content="从iOS7开始，在xcode中新建一个iOS项目，默认会建立一个Main.storyboard，在项目属性中，app的启动界面默认启动这个storyboard（在general->Main Interface选项）。这样通常是方便我们开发的。减少了大量在ViewController中切换的代码。 但是，如果我们要做一个带有用户系统的app，实现如下功能： app启动的时候判断用户是否已经登录，如果没有登录，显示『登录或注册界面』，如果已经登录，则显示主界面。 ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content="">
 <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" />-->
@@ -39,7 +39,7 @@
                                                                                                 <li><a class="blog-nav-item" href="/archives">Archives</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/categories">Categories</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/tags">Tags</a></li>
-                                                                                                <li><a class="blog-nav-item active" href="/about">About</a></li>
+                                                                                                <li><a class="blog-nav-item" href="/about">About</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/rss.xml">RSS</a></li>
                                                             </ul>
             <ul class="nav navbar-nav navbar-right" id="nav">
@@ -52,18 +52,64 @@
 <div class="container innerpage_content">
   <div class="row">
 
-<div class="col-sm-12 blog-main box">
-    <article class="post entry clearfix">
-    <div class="post_content clearfix">
-    <h1 class="title">About</h1>
-    <hr/>
-    <p>Write down your self-introduction at <code>source/pages/About.markdown</code></p>
+    <div class="col-sm-12 blog-main">
+      <div class="blog-post box">
+        <p class="blog-post-meta"><i>in</i> <i> by </i>user<i> - Jul 29, 2014</i></p>
+        <h2 class="blog-post-title">iOS7中如何根据用户是否登录来决定是否启动Main.storyboard或登录界面</h2>
+        <hr/>
+        <p>从iOS7开始，在xcode中新建一个iOS项目，默认会建立一个Main.storyboard，在项目属性中，app的启动界面默认启动这个storyboard（在general-&gt;Main Interface选项）。这样通常是方便我们开发的。减少了大量在ViewController中切换的代码。</p>
+<p>但是，如果我们要做一个带有用户系统的app，实现如下功能：</p>
+<blockquote>
+<p>app启动的时候判断用户是否已经登录，如果没有登录，显示『登录或注册界面』，如果已经登录，则显示主界面。</p>
+</blockquote>
+<p>我们需要在AppDelegate的application: didFinishLaunchingWithOptions: 方法中去实现：</p>
+<div class="codehilite"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="n">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
+<span class="p">{</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">window</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIWindow</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">initWithFrame</span><span class="o">:</span><span class="p">[[</span><span class="n">UIScreen</span> <span class="n">mainScreen</span><span class="p">]</span> <span class="n">bounds</span><span class="p">]];</span>
+    <span class="k">if</span> <span class="p">([</span><span class="n">user</span> <span class="n">logined</span><span class="p">])</span> <span class="p">{</span>        
+        <span class="n">UIStoryboard</span> <span class="o">*</span><span class="n">storyBoard</span><span class="o">=</span><span class="p">[</span><span class="n">UIStoryboard</span> <span class="n">storyboardWithName</span><span class="o">:</span><span class="s">@&quot;Main&quot;</span> <span class="n">bundle</span><span class="o">:</span><span class="nb">nil</span><span class="p">];</span>
+        <span class="n">mainTabBarController</span> <span class="o">*</span><span class="n">mainVC</span> <span class="o">=</span> <span class="p">[</span><span class="n">storyBoard</span> <span class="n">instantiateInitialViewController</span><span class="p">];</span>                
+        <span class="n">self</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">rootViewController</span> <span class="o">=</span> <span class="n">mainVC</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="n">LoginPage</span> <span class="o">*</span><span class="n">loginPage</span> <span class="o">=</span> <span class="p">[[</span><span class="n">LoginPage</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>        
+        <span class="n">self</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">rootViewController</span> <span class="o">=</span> <span class="n">loginPage</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>这也是在iOS6及其以前的版本中的默认做法。</p>
+        <hr/>
+        <div class="author-info">
+          <div class="col-sm-3">
+            <img src="/images/avatar.gif" alt="..." class="img-thumbnail">
+          </div>
+          <div class="col-sm-9">
+            <h4>user</h4>
+            <small>Hello World! I'm <b>User</b>. Change this text in <code>config.yml</code> <code>-> self_description</code>.</small>
+          </div>
+        </div>
+      </div>
+
+            <div class="box">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * siteURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'None'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+         })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>      </div>
+      
     </div>
-    </article>
-</div>
-
-
-</div>
+  </div>
 </div>
 <div class="blog-footer">
 <p id="copyright">&copy; 2013 user | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>

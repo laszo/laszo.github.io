@@ -54,102 +54,91 @@
 
     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
             <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/12/10/zhe-ji-tian-blog-huai-le/'>这几天博客有问题</a></h2>
-        <p class="blog-post-meta">Dec 10, 2014 by <i>user</i></p>
-        <p>使用crotal制作博客，markdown文件中的 slug 一项，在generate过程中，有可能会作为文件名或目录名使用，所以最好不要使用特殊字符，最多使用下划线和短横线。否则生成会有问题。</p>
-        <a href="/blog/2014/12/10/zhe-ji-tian-blog-huai-le/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/'>query chat logs: anothor way, may be better</a></h2>
-        <p class="blog-post-meta">Nov 22, 2014 by <i>user</i></p>
-        <p>this ariticle : <a href="http://www.lvxiaoyu.com/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/">openfire客户端获取聊天记录</a> maybe is not nessary.</p>
-<p>see this: (http://stackoverflow.com/questions/11397172/xmppframework-retrieve-archived-messages-from-openfire-server?lq=1)</p>
-<p>may be it is the better and earier way.</p>
-<p>just send a <retrieve> package, you will receive a list of chat log. see doc : (http://xmpp.org/extensions/xep-0136.html). I have not tried, which will be my work on monday(11.24)</p>
-        <a href="/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/20/app-im-solution-provider-in-cn/'>总结国内的移动即时通讯解决方案提供商--标题还得改改</a></h2>
-        <p class="blog-post-meta">Nov 20, 2014 by <i>user</i></p>
-        <p>环信：http://www.easemob.com/
-亲加通信云：http://www.gotye.com.cn/</p>
-        <a href="/blog/2014/11/20/app-im-solution-provider-in-cn/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/'>openfire客户端获取聊天记录</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
-        <p>openfire是当前较为流行的xmpp服务端。使用它作为服务端，借助github上面的一些开源项目，很容易打造出一套跨平台的即时通讯解决方案，包含如下的五个主流平台：PC端的windows、mac os、linux，以及移动端的ios和android平台。</p>
-<p>当然，这只能包含最基本的通讯功能。如果想达到QQ、MSN、微信、whatsapp这样主流软件丰富的用户体验，还有许多工作要做。</p>
-<p>比如，如何在服务端保存聊天记录，并需要的时候客户端能够获取并展现出来，就需要专门研究一下。</p>
-<p>这篇<a href="https://community.igniterealtime.org/thread/29686">Openfire Chat Logs</a>居然是google搜出来的第一篇。</p>
-<div class="codehilite"><pre><span class="n">On</span> <span class="n">the</span> <span class="n">server</span><span class="o">-</span><span class="n">side</span> <span class="n">it</span> <span class="n">is</span> <span class="n">configured</span> <span class="n">from</span> <span class="n">the</span> <span class="s">&quot;Message Audit Policy&quot;</span> <span class="n">link</span><span class="o">/</span><span class="n">page</span><span class="p">.</span>
-</pre></div>
-
-
-<p>问题：</p>
-<ol>
-<li>Message Audit Policy 是否需要装插件？答案：不需要，就在server-server settings页面里。</li>
-<li>这样记录应该不是聊天记录吧？仅仅是记录了所有的通讯数据包。不方便根据用户或房间查询聊天记录。答案：不方便。需要一个viewer，有人建议看这篇帖子(<a href="https://community.igniterealtime.org/thread/29159">audit log viewer?</a>)。</li>
-<li>即便是能看了，也并未提供一个接口，使客户端用以获取与某项的聊天记录。</li>
-</ol>
-<p>从这篇的问答里我追踪到了<a href="https://community.igniterealtime.org/docs/DOC-1041">Non-Jive Openfire Plugins</a>。然后<a href="http://sourceforge.net/projects/iball-auditor/">i-Ball Chat Auditor</a> 装了一下居然不起作用。如何让它起作用以及如何使用它，留待以后研究了。</p>
-<p><a href="https://community.igniterealtime.org/thread/14773">Logging Conversations</a>这篇帖子很老（2006年），也很长。另有：<a href="http://www.xmpp.org/extensions/xep-0136.html">XEP-0136: Message Archiving</a>乃是最权威的资料。</p>
-<p>从stackoverflow的一个问题<a href="http://stackoverflow.com/questions/6635034/smack-api-read-chat-histroy-from-openfire-server">Smack API - Read Chat Histroy from Openfire Server</a>中，
-<a href="http://stackoverflow.com/users/1206536/alpay">Alpay</a>提供了一个回答，这个回答并没有帮助到我，而回答下面的评论（comments）里面，被折叠的一条评论倒是帮助到了我：</p>
+        <h2 class="blog-post-title"><a href='/blog/2014/09/02/ye-shuo-nuan-nan/'>也说暖男</a></h2>
+        <p class="blog-post-meta">Sep 02, 2014 by <i>user</i></p>
+        <p>暖男虽然是最近流行的一个词，但暖男这个物种却早已存在。</p>
+<p>我认为，只要符合古代所谓“君子”标准的人，都可以称之为暖男。</p>
+<p>子夏说：</p>
 <blockquote>
-<p>I haven' t tested but you should see <a href="http://www.igniterealtime.org/projects/openfire/plugins/monitoring/readme.html">this</a>, and <a href="https://blogs.reucon.com/srt/tag/open_archive/">this</a>. I hope they help –  Alpay Feb 7 '13 at 12:40</p>
+<p>君子有三变：望之俨然，即之也温，听其言也厉。</p>
 </blockquote>
-<p>从这里发现，原来<a href="http://www.igniterealtime.org/projects/openfire/plugins/monitoring/readme.html">Monitoring Service</a>插件就是用于记录聊天记录（chat logs）的。但是有两个问题：</p>
-<ol>
-<li>如何从客户端获取这些聊天记录呢？</li>
-<li>中文的信息是乱码该如何解决？</li>
-</ol>
-<p>根据这篇<a href="http://www.myexception.cn/java-other/1001465.html">spark + openfire的聊天监控问题</a>，检查了mysql数据库，发现的确有一张ofMessageArchive表。</p>
-<div class="codehilite"><pre><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">ofMessageArchive</span> <span class="n">limit</span> <span class="mi">10</span><span class="p">;</span>
-</pre></div>
-
-
-<p>可以看到聊天数据的确存在，那么现在有两项工作要做：</p>
-<ol>
-<li>解决中文乱码问题。顺便解决用户昵称中文乱码。</li>
-<li>写一个小型服务端，提供rest接口，根据fromJID、toJID、sentDate、分页等信息，供客户端查询聊天记录。</li>
-</ol>
-<p>按照这篇<a href="http://blog.sina.com.cn/s/blog_4bf75d0a0100l92b.html">解决openfire在使用MySQL数据库后的中文乱码问题</a>，在serverURL这一节添加如下字符：</p>
-<div class="codehilite"><pre><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">useUnicode</span><span class="o">=</span><span class="nb">true</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">characterEncoding</span><span class="o">=</span><span class="n">utf8</span>
-</pre></div>
-
-
-<p>之后重启openfire。使用spark发送了几天中英文及数字消息，发现现在不记录中文消息。以前是记录，但显示为问号，现在是不记录。</p>
-<p>似乎可以考虑重新安装mysql和openfire了。先在vmware虚拟机上试验一下搞了utf8以后能否支持中文昵称和中文聊天记录。官方文档：<a href="http://www.igniterealtime.org/builds/openfire/docs/latest/documentation/database.html">Database Installation Guide</a>。最关键的两个配置：</p>
-<div class="codehilite"><pre><span class="nb">create</span> <span class="nx">database</span> <span class="nx">openfire</span> <span class="nb">default</span> <span class="nx">character</span> <span class="nb">set</span> <span class="nx">utf8</span> <span class="nb">default</span> <span class="nx">collate</span> <span class="nx">utf8_general_ci</span>
-
-<span class="o">&lt;</span><span class="nx">serverURL</span><span class="o">&gt;</span><span class="nx">jdbc</span><span class="p">:</span><span class="nx">mysql</span><span class="p">:</span><span class="c1">//localhost:3306/openfire1?rewriteBatchedStatements=true&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&lt;/serverURL&gt;</span>
-</pre></div>
-
-
-<p>经过一番折腾，终于可以在ofMessageArchive这个表里看到中文聊天记录了。剩下的工作就是写一个rest服务端，提供客户端对于聊天记录的查询。只是包装一些简单的sql查询、或者使用ORM库，在这里就不赘述了。</p>
-<p>那么刚才提到的Message Audit Policy就可以禁用掉了。Message Audit Policy与Monitoring Service 的关系、特点、异同、适用性，留待以后去探究了。或者，如果读者你对着这方面有要说的，欢迎分享给大家。</p>
-        <a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/" >Read More</a>
+<p>所谓“即之也温”，意思是接近他时感觉温和可亲。这不是暖男是什么？</p>
+<p>现在所说的暖男一般是男人对女人暖，而在古代，由于女人较少在社会上活动，暖男们主要是
+对男人暖。</p>
+<p>历史上、文学上面的暖男形象颇多，三国时就有一个大暖男，刘备。
+陈寿说他“弘毅宽厚，知人待士”。</p>
+<p>水浒里的头号暖男，宋江。</p>
+        <a href="/blog/2014/09/02/ye-shuo-nuan-nan/" >Read More</a>
       </div>
 
             <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/'>两种方式的办事作风</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
-        
-        <a href="/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/" >Read More</a>
+        <h2 class="blog-post-title"><a href='/blog/2014/09/02/shang-shi-wen-dao-qin-er-xing-zhi/'>上士闻道，勤而行之；中士闻道，若存若亡；下士闻道，大笑之</a></h2>
+        <p class="blog-post-meta">Sep 02, 2014 by <i>user</i></p>
+        <p>这是《道德经》上的一句话。</p>
+<p><a href="http://www.jiaoyou.com/diary_6381_77.html">这里</a>有一篇博文。</p>
+        <a href="/blog/2014/09/02/shang-shi-wen-dao-qin-er-xing-zhi/" >Read More</a>
+      </div>
+
+            <div class="blog-post box">
+        <h2 class="blog-post-title"><a href='/blog/2014/09/02/nan-ren-nei-xin-shen-chu/'>男人内心深处住着一个小男孩</a></h2>
+        <p class="blog-post-meta">Sep 02, 2014 by <i>user</i></p>
+        <p>知乎上面有人问：<a href="http://www.zhihu.com/question/21700285">如何成为一名优秀的女朋友</a></p>
+<p>下面的这个答案获得了最高票，两千多个赞同：</p>
+<blockquote>
+<p>保护他内心的小男孩</p>
+</blockquote>
+        <a href="/blog/2014/09/02/nan-ren-nei-xin-shen-chu/" >Read More</a>
+      </div>
+
+            <div class="blog-post box">
+        <h2 class="blog-post-title"><a href='/blog/2014/09/02/nan-hai-yu-nan-ren-de-si/'>男孩与男人的四种心理模型</a></h2>
+        <p class="blog-post-meta">Sep 02, 2014 by <i>user</i></p>
+        <p>阅读《国王,武士,祭司,诗人》一书：</p>
+<blockquote>
+<p>我们经常会听到一些男人”把握不住“自己。
+这是因为,他的心智凌乱不堪,不同的内心组成部分七零八落。
+一个把握不住自己的男人,通常是因为他还没有机会经过一次成人的犀利，
+去体验作为男人最深处的结构。
+于是，他仍旧是个男孩 - 这并不是因为他还想当个孩子，
+而是因为没有人在他的生活中出现，向他展示一条由男孩气质到男人气质的转换的路。
+没有人出现，指引他去开启内心成熟雄性的所有可能性。<br />
+                           --Moore &amp; Gillette</p>
+</blockquote>
+<p>英文名为《King, Warrior, Magician, Lover: Rediscovering the Archetypes of the Mature Masculine》的著作原作者为Robert Moore和Douglas Gillette,Moore原为芝加哥神学院的教授，主攻心理学和宗教，Gillette则是世界灵性研究所的创始人之一。</p>
+        <a href="/blog/2014/09/02/nan-hai-yu-nan-ren-de-si/" >Read More</a>
+      </div>
+
+            <div class="blog-post box">
+        <h2 class="blog-post-title"><a href='/blog/2014/08/27/ios-error-unable-to-dequeue-a-cell/'>iOS 开发中报错unable to dequeue a cell with identifier Cell - must register a nib or a class for the identifier or connect a prototype cell in a storyboard 的解决方法</a></h2>
+        <p class="blog-post-meta">Aug 27, 2014 by <i>user</i></p>
+        <p>在iOS开发中，如果遇到错误：</p>
+<div class="codehilite"><pre><span class="n">unable</span> <span class="n">to</span> <span class="n">dequeue</span> <span class="n">a</span> <span class="n">cell</span> <span class="n">with</span> <span class="n">identifier</span> <span class="n">Cell</span> <span class="o">-</span> <span class="n">must</span> <span class="k">register</span> <span class="n">a</span> <span class="n">nib</span> <span class="n">or</span> <span class="n">a</span> <span class="n">class</span> <span class="k">for</span> <span class="n">the</span> <span class="n">identif</span>    <span class="n">ier</span> <span class="n">or</span> <span class="n">connect</span> <span class="n">a</span> <span class="n">prototype</span> <span class="n">cell</span> <span class="n">in</span> <span class="n">a</span> <span class="n">storyboard</span> 
+</pre></div>
+
+
+<p>可以试试下面的解决方法。</p>
+<p>将如下代码：</p>
+<div class="codehilite"><pre><span class="n">UITableViewCell</span> <span class="o">*</span><span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">tableView</span> <span class="n">dequeueReusableCellWithIdentifier</span><span class="o">:</span><span class="n">CellIdentifier</span> <span class="n">forIndexPath</span><span class="o">:</span><span class="n">indexPath</span><span class="p">];</span>
+</pre></div>
+
+
+<p>修改为如下代码：</p>
+<div class="codehilite"><pre> <span class="n">UITableViewCell</span> <span class="o">*</span><span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">tableView</span> <span class="n">dequeueReusableCellWithIdentifier</span><span class="o">:</span><span class="n">CellIdentifier</span><span class="p">];</span>
+</pre></div>
+
+
+<p>解决方法来自<a href="http://stackoverflow.com/questions/19084274/xcode-unable-to-dequeue-a-cell-with-identifier">stackoverflow</a></p>
+        <a href="/blog/2014/08/27/ios-error-unable-to-dequeue-a-cell/" >Read More</a>
       </div>
 
                 <br/>
     <ul class="page_numbers pull-right">
-                <li class="page_info"><p>Page 1 of 12</p></li>
-                                                <li class="active"><a>1<span class="sr-only">(current)</span></a></li>
+                <li class="page_info"><p>Page 5 of 12</p></li>
+                                            <li><a href="/">1</a></li>
                                                             <li><a href="/blog/page/2">2</a></li>
                                                             <li><a href="/blog/page/3">3</a></li>
                                                             <li><a href="/blog/page/4">4</a></li>
-                                                            <li><a href="/blog/page/5">5</a></li>
+                                                                <li class="active"><a>5<span class="sr-only">(current)</span></a></li>
                                                             <li><a href="/blog/page/6">6</a></li>
                                                             <li><a href="/blog/page/7">7</a></li>
                                                             <li><a href="/blog/page/8">8</a></li>

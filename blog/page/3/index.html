@@ -54,100 +54,113 @@
 
     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
             <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/12/10/zhe-ji-tian-blog-huai-le/'>这几天博客有问题</a></h2>
-        <p class="blog-post-meta">Dec 10, 2014 by <i>user</i></p>
-        <p>使用crotal制作博客，markdown文件中的 slug 一项，在generate过程中，有可能会作为文件名或目录名使用，所以最好不要使用特殊字符，最多使用下划线和短横线。否则生成会有问题。</p>
-        <a href="/blog/2014/12/10/zhe-ji-tian-blog-huai-le/" >Read More</a>
+        <h2 class="blog-post-title"><a href='/blog/2014/10/30/new-word-to-me-the-Sneakernet/'>new word to me the Sneakernet</a></h2>
+        <p class="blog-post-meta">Oct 30, 2014 by <i>user</i></p>
+        <p>查看维基百科的解释。</p>
+<p>http://en.wikipedia.org/wiki/Sneakernet</p>
+        <a href="/blog/2014/10/30/new-word-to-me-the-Sneakernet/" >Read More</a>
       </div>
 
             <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/'>query chat logs: anothor way, may be better</a></h2>
-        <p class="blog-post-meta">Nov 22, 2014 by <i>user</i></p>
-        <p>this ariticle : <a href="http://www.lvxiaoyu.com/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/">openfire客户端获取聊天记录</a> maybe is not nessary.</p>
-<p>see this: (http://stackoverflow.com/questions/11397172/xmppframework-retrieve-archived-messages-from-openfire-server?lq=1)</p>
-<p>may be it is the better and earier way.</p>
-<p>just send a <retrieve> package, you will receive a list of chat log. see doc : (http://xmpp.org/extensions/xep-0136.html). I have not tried, which will be my work on monday(11.24)</p>
-        <a href="/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/" >Read More</a>
+        <h2 class="blog-post-title"><a href='/blog/2014/10/30/shapes-of-data-and-its-flows/'>从全栈看待性能问题</a></h2>
+        <p class="blog-post-meta">Oct 30, 2014 by <i>user</i></p>
+        <p>昨天列举了<a href="https://www.facebook.com/cmb">Carlos Bueno</a>著名的<a href="https://www.facebook.com/note.php?note_id=461505383919">The Full Stack</a>文章，下面列举出文章的要点。水平所限，对服务端性能感兴趣的同学推荐去看一下原文。</p>
+<p>一个全栈程序员是一个多面手，应当有能力独立开发非凡的应用程序。虽然没有人能精通任何事情，但是全栈程序员应当知晓一个系统在各个层面是如何运作的。</p>
+<p>一个应用的需求是由它所处理的数据决定的，而它的性能则取决于硬件传输的速度。</p>
+<h4>数据的形状/特征/要素/属性/指标（The shape of the data）</h4>
+<ul>
+<li>
+<p>数据量（Working data size）：就是网站拥有的全部数据的大小。对于一个视频网站来说，Working data就是它提供的全部视频。对于一个新闻网站来说，就是拥有的全部新闻数据。</p>
+</li>
+<li>
+<p>平均请求大小（Average request size）：用户的一次操作涉及到的数据量。不用的应用，这个数字差别很大。如果是一个新闻网站，用户点击某一条新闻进行阅读时，传输的数据量就是这篇新闻网页的大小，从几百K到几M不等。如果是视频网站，用户点击观看一个电影，传输的数据量可能会有几百M。</p>
+</li>
+<li>
+<p>请求频率（Request rate）：用户操作的频繁程度。如果是在线阅读，用户可能几分钟才操作一下；如果是游戏，那就非常频繁了。</p>
+</li>
+<li>
+<p>修改频率（Mutation rate）：数据的增加、删除、编辑的量大小。</p>
+</li>
+<li>
+<p>一致性（Consistency）：数据修改之后，修改的传输速度。如果一个用户发布了一条微博，另一个用户多快能够看到？</p>
+</li>
+<li>
+<p>位置（Locality）：用户是否更热衷于其中一部分内容，而对其他内容兴趣比较低？比如热门视频、热门微博等。</p>
+</li>
+<li>
+<p>计算（Computation）：应用需要进行大量计算吗？如果是一个博客网站，显然不需要什么计算。</p>
+</li>
+<li>
+<p>延迟（Latency）：用户操作之后，系统多快能够做出响应？</p>
+</li>
+<li>
+<p>竞争/争用（Contention）：系统瓶颈在哪里？是否会出现争用资源的情况？</p>
+</li>
+</ul>
+<p>文章的后半部分以一个虚构的视频网站为例，用上述指标进行了分析和建模。在最后，作者指出，利用这些指标，对系统进行简化，有利于理解理解系统的全局（big picture）。这样一个big picture提供了你进一步探究性能问题的切入点。</p>
+        <a href="/blog/2014/10/30/shapes-of-data-and-its-flows/" >Read More</a>
       </div>
 
             <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/20/app-im-solution-provider-in-cn/'>总结国内的移动即时通讯解决方案提供商--标题还得改改</a></h2>
-        <p class="blog-post-meta">Nov 20, 2014 by <i>user</i></p>
-        <p>环信：http://www.easemob.com/
-亲加通信云：http://www.gotye.com.cn/</p>
-        <a href="/blog/2014/11/20/app-im-solution-provider-in-cn/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/'>openfire客户端获取聊天记录</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
-        <p>openfire是当前较为流行的xmpp服务端。使用它作为服务端，借助github上面的一些开源项目，很容易打造出一套跨平台的即时通讯解决方案，包含如下的五个主流平台：PC端的windows、mac os、linux，以及移动端的ios和android平台。</p>
-<p>当然，这只能包含最基本的通讯功能。如果想达到QQ、MSN、微信、whatsapp这样主流软件丰富的用户体验，还有许多工作要做。</p>
-<p>比如，如何在服务端保存聊天记录，并需要的时候客户端能够获取并展现出来，就需要专门研究一下。</p>
-<p>这篇<a href="https://community.igniterealtime.org/thread/29686">Openfire Chat Logs</a>居然是google搜出来的第一篇。</p>
-<div class="codehilite"><pre><span class="n">On</span> <span class="n">the</span> <span class="n">server</span><span class="o">-</span><span class="n">side</span> <span class="n">it</span> <span class="n">is</span> <span class="n">configured</span> <span class="n">from</span> <span class="n">the</span> <span class="s">&quot;Message Audit Policy&quot;</span> <span class="n">link</span><span class="o">/</span><span class="n">page</span><span class="p">.</span>
-</pre></div>
-
-
-<p>问题：</p>
-<ol>
-<li>Message Audit Policy 是否需要装插件？答案：不需要，就在server-server settings页面里。</li>
-<li>这样记录应该不是聊天记录吧？仅仅是记录了所有的通讯数据包。不方便根据用户或房间查询聊天记录。答案：不方便。需要一个viewer，有人建议看这篇帖子(<a href="https://community.igniterealtime.org/thread/29159">audit log viewer?</a>)。</li>
-<li>即便是能看了，也并未提供一个接口，使客户端用以获取与某项的聊天记录。</li>
-</ol>
-<p>从这篇的问答里我追踪到了<a href="https://community.igniterealtime.org/docs/DOC-1041">Non-Jive Openfire Plugins</a>。然后<a href="http://sourceforge.net/projects/iball-auditor/">i-Ball Chat Auditor</a> 装了一下居然不起作用。如何让它起作用以及如何使用它，留待以后研究了。</p>
-<p><a href="https://community.igniterealtime.org/thread/14773">Logging Conversations</a>这篇帖子很老（2006年），也很长。另有：<a href="http://www.xmpp.org/extensions/xep-0136.html">XEP-0136: Message Archiving</a>乃是最权威的资料。</p>
-<p>从stackoverflow的一个问题<a href="http://stackoverflow.com/questions/6635034/smack-api-read-chat-histroy-from-openfire-server">Smack API - Read Chat Histroy from Openfire Server</a>中，
-<a href="http://stackoverflow.com/users/1206536/alpay">Alpay</a>提供了一个回答，这个回答并没有帮助到我，而回答下面的评论（comments）里面，被折叠的一条评论倒是帮助到了我：</p>
+        <h2 class="blog-post-title"><a href='/blog/2014/10/30/bian-que-jian-cai-huan-gong/'>《扁鹊见蔡桓公》给我们的启示</a></h2>
+        <p class="blog-post-meta">Oct 30, 2014 by <i>user</i></p>
+        <p>我们上中学的时候学过一篇课文《扁鹊见蔡桓公》，虽然那时候能够背下来，但是对其中的意思并无领会。多年以后，在生活和工作中经历的一些事，对文章有了更深的认识。</p>
 <blockquote>
-<p>I haven' t tested but you should see <a href="http://www.igniterealtime.org/projects/openfire/plugins/monitoring/readme.html">this</a>, and <a href="https://blogs.reucon.com/srt/tag/open_archive/">this</a>. I hope they help –  Alpay Feb 7 '13 at 12:40</p>
+<p>扁鹊见蔡桓公，立有间，扁鹊曰：“君有疾在腠理，不治将恐深。”桓侯曰：“寡人无疾。”</p>
+<p>扁鹊出，桓侯曰：“医之好治不病以为功！”</p>
+<p>居十日，扁鹊复见，曰：“君之病在肌肤，不治将益深。”桓侯不应。扁鹊出，桓侯又不悦。</p>
+<p>居十日，扁鹊复见，曰：“君之病在肠胃，不治将益深。”桓侯又不应。扁鹊出，桓侯又不悦。</p>
+<p>居十日，扁鹊望桓侯而还走。桓侯故使人问之，扁鹊曰：“疾在腠理，汤熨之所及也；在肌肤，针石之所及也；在肠胃，火齐之所及也；在骨髓，司命之所属，无奈何也。今在骨髓，臣是以无请也。”</p>
+<p>居五日，桓侯体痛，使人索扁鹊，已逃秦矣。桓侯遂死。</p>
 </blockquote>
-<p>从这里发现，原来<a href="http://www.igniterealtime.org/projects/openfire/plugins/monitoring/readme.html">Monitoring Service</a>插件就是用于记录聊天记录（chat logs）的。但是有两个问题：</p>
-<ol>
-<li>如何从客户端获取这些聊天记录呢？</li>
-<li>中文的信息是乱码该如何解决？</li>
-</ol>
-<p>根据这篇<a href="http://www.myexception.cn/java-other/1001465.html">spark + openfire的聊天监控问题</a>，检查了mysql数据库，发现的确有一张ofMessageArchive表。</p>
-<div class="codehilite"><pre><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">ofMessageArchive</span> <span class="n">limit</span> <span class="mi">10</span><span class="p">;</span>
-</pre></div>
-
-
-<p>可以看到聊天数据的确存在，那么现在有两项工作要做：</p>
-<ol>
-<li>解决中文乱码问题。顺便解决用户昵称中文乱码。</li>
-<li>写一个小型服务端，提供rest接口，根据fromJID、toJID、sentDate、分页等信息，供客户端查询聊天记录。</li>
-</ol>
-<p>按照这篇<a href="http://blog.sina.com.cn/s/blog_4bf75d0a0100l92b.html">解决openfire在使用MySQL数据库后的中文乱码问题</a>，在serverURL这一节添加如下字符：</p>
-<div class="codehilite"><pre><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">useUnicode</span><span class="o">=</span><span class="nb">true</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">characterEncoding</span><span class="o">=</span><span class="n">utf8</span>
-</pre></div>
-
-
-<p>之后重启openfire。使用spark发送了几天中英文及数字消息，发现现在不记录中文消息。以前是记录，但显示为问号，现在是不记录。</p>
-<p>似乎可以考虑重新安装mysql和openfire了。先在vmware虚拟机上试验一下搞了utf8以后能否支持中文昵称和中文聊天记录。官方文档：<a href="http://www.igniterealtime.org/builds/openfire/docs/latest/documentation/database.html">Database Installation Guide</a>。最关键的两个配置：</p>
-<div class="codehilite"><pre><span class="nb">create</span> <span class="nx">database</span> <span class="nx">openfire</span> <span class="nb">default</span> <span class="nx">character</span> <span class="nb">set</span> <span class="nx">utf8</span> <span class="nb">default</span> <span class="nx">collate</span> <span class="nx">utf8_general_ci</span>
-
-<span class="o">&lt;</span><span class="nx">serverURL</span><span class="o">&gt;</span><span class="nx">jdbc</span><span class="p">:</span><span class="nx">mysql</span><span class="p">:</span><span class="c1">//localhost:3306/openfire1?rewriteBatchedStatements=true&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&lt;/serverURL&gt;</span>
-</pre></div>
-
-
-<p>经过一番折腾，终于可以在ofMessageArchive这个表里看到中文聊天记录了。剩下的工作就是写一个rest服务端，提供客户端对于聊天记录的查询。只是包装一些简单的sql查询、或者使用ORM库，在这里就不赘述了。</p>
-<p>那么刚才提到的Message Audit Policy就可以禁用掉了。Message Audit Policy与Monitoring Service 的关系、特点、异同、适用性，留待以后去探究了。或者，如果读者你对着这方面有要说的，欢迎分享给大家。</p>
-        <a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/" >Read More</a>
+<p>是蔡桓公不想治病吗？是他没有这个意识。</p>
+<p>更加感慨，原来自己很多所谓的生活感悟、人生智慧，在经典著作里早已提过，只是被无视了。</p>
+        <a href="/blog/2014/10/30/bian-que-jian-cai-huan-gong/" >Read More</a>
       </div>
 
             <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/'>两种方式的办事作风</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
+        <h2 class="blog-post-title"><a href='/blog/2014/10/30/find-your-own-fate-book/'>find your own fate book</a></h2>
+        <p class="blog-post-meta">Oct 30, 2014 by <i>user</i></p>
         
-        <a href="/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/" >Read More</a>
+        <a href="/blog/2014/10/30/find-your-own-fate-book/" >Read More</a>
+      </div>
+
+            <div class="blog-post box">
+        <h2 class="blog-post-title"><a href='/blog/2014/10/28/be-a-full-stack-engineer/'>全栈工程师（full stack engineer）的概念</a></h2>
+        <p class="blog-post-meta">Oct 28, 2014 by <i>user</i></p>
+        <p>看了一下昨天写的东西，所列的清单其实就是要成为全栈工程师。
+成为全栈工程师/全栈开发者（full stack engineer/full stack developer）可以说是我们每个技术人员技术发展的最终目标之一。</p>
+<p>简单说来，全栈就是要我们熟练掌握技术系统的全部环节。</p>
+<p>下面是收集的一些资料。</p>
+<p><a href="https://www.facebook.com/note.php?note_id=461505383919">The Full Stack, Part I</a></p>
+<p><a href="http://calendar.perfplanet.com/2010/the-full-stack/">The Full Stack</a>，根上一篇内容一样。</p>
+<p><a href="http://www.laurencegellert.com/2012/08/what-is-a-full-stack-developer/">What is a Full Stack developer?</a></p>
+<p><a href="http://www.forbes.com/sites/oreillymedia/2014/04/11/full-stack-developer-is-a-tall-order-bordering-on-unicorn-territory/">Developers Need To Broaden Their Range</a></p>
+<p><a href="http://forge38.com/blog/2008/06/full-stack-web-developers/">full-stack programmer</a></p>
+<p><a href="http://www.quora.com/What-does-the-term-full-stack-programmer-mean">What-does-the-term-full-stack-programmer-mean</a></p>
+<p><a href="http://alchemycs.github.io/2011/07/20/What_Is_A_Full_Stack_Web_Developer_-_Part_1_of_3.html">What Is A Full Stack Web Developer - Part 1 of 3</a></p>
+<p><a href="http://blog.cloudbees.com/2012/09/the-full-stack-developer.html">the-full-stack-developer</a></p>
+<p><a href="http://www.smashingmagazine.com/2013/11/21/introduction-to-full-stack-javascript/">An Introduction To Full-Stack JavaScript</a></p>
+<p>现在有很多公司都声称要招聘full stack的工程师。
+这里有一个stackoverflow的招聘岗位，介绍在微软环境下的full-stack。
+<a href="http://careers.stackoverflow.com/jobs/34229/full-stack-web-developer-stack-exchange">Full-Stack Web Developer</a></p>
+<p>还有一些资料，说的是系统架构，其实也是关于full stack的内容。
+<a href="http://blog.csdn.net/wuwei1984100/article/details/25744671">构建高并发高可用的电商平台架构实践</a></p>
+<p><a href="http://www.oschina.net/translate/the-architecture-twitter-uses-to-deal-with-150m-active-users">Twitter 高并发高可用架构</a></p>
+<p><a href="http://highscalability.com/blog/2013/7/8/the-architecture-twitter-uses-to-deal-with-150m-active-users.html">The Architecture Twitter Uses To Deal With 150M Active Users, 300K QPS, A 22 MB/S Firehose, And Send Tweets In Under 5 Seconds</a>，这是上一篇的英文原文。</p>
+<p>整个<a href="http://highscalability.com/">High Scalability网站</a>都是跟系统架构、高性能有关的内容。</p>
+<p><a href="http://tech.it168.com/zt/sa/">it168的软件架构学习专题</a>也总结了很多资料。</p>
+<p>根据这些内容，以及我自己的理解，画了下面一张图：</p>
+<p><img alt="fullstackpng" src="http://www.lvxiaoyu.com/images/fullstack.png" /></p>
+        <a href="/blog/2014/10/28/be-a-full-stack-engineer/" >Read More</a>
       </div>
 
                 <br/>
     <ul class="page_numbers pull-right">
-                <li class="page_info"><p>Page 1 of 12</p></li>
-                                                <li class="active"><a>1<span class="sr-only">(current)</span></a></li>
+                <li class="page_info"><p>Page 3 of 12</p></li>
+                                            <li><a href="/">1</a></li>
                                                             <li><a href="/blog/page/2">2</a></li>
-                                                            <li><a href="/blog/page/3">3</a></li>
+                                                                <li class="active"><a>3<span class="sr-only">(current)</span></a></li>
                                                             <li><a href="/blog/page/4">4</a></li>
                                                             <li><a href="/blog/page/5">5</a></li>
                                                             <li><a href="/blog/page/6">6</a></li>
