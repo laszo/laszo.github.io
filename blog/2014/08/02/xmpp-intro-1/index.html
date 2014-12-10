@@ -1,16 +1,16 @@
 <html lang="en-US">
 <head>
-<meta charset="UTF-8" /><title>iOS下的XMPP开源库XMPPFramework介绍 | 学到老，活到老</title>
-<meta name="author" content="laszo">
-<meta name="description" content="如果你想开发带有聊天功能的iOS APP，这个XMPPFramework 是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。 首先下载这个库的源代码： git clone https://github.com/robbiehanson/XMPPFramework.git 或者下载源代码的ZIP包。 {tree}()是一个很有用的命令行工具，它能够以树形的方式展现指定目录的结构。 首先我们来查看项目的一级目录： tree -L 1 得到输出： . ├── Authentication ├── ...">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta property="og:site_name" content="">
-<link rel="stylesheet" href="/css/bootstrap.css" type="text/css">
-<link rel="stylesheet" href="/css/blog.css" type="text/css">
-<link rel="stylesheet" href="/css/pygments.css" type="text/css">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
-
-
+    <meta charset="UTF-8"/>
+    <title>iOS下的XMPP开源库XMPPFramework介绍 | 学到老，活到老</title>
+    <meta name="author" content="laszo">
+    <meta name="description"
+          content="如果你想开发带有聊天功能的iOS APP，这个XMPPFramework 是肯定会遇到的一个库。本文将简略研究一下这个库的源代码。 首先下载这个库的源代码： git clone https://github.com/robbiehanson/XMPPFramework.git 或者下载源代码的ZIP包。 {tree}()是一个很有用的命令行工具，它能够以树形的方式展现指定目录的结构。 首先我们来查看项目的一级目录： tree -L 1 得到输出： . ├── Authentication ├── ...">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta property="og:site_name" content="">
+    <link rel="stylesheet" href="/css/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="/css/blog.css" type="text/css">
+    <link rel="stylesheet" href="/css/pygments.css" type="text/css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head><header class="navbar navbar-default topnav" role="banner">
     <div class="container">
         <div class="navbar-header">
