@@ -1,0 +1,33 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>iOS 开发中报错unable to dequeue a cell with identifier Cell - must register a nib or a class for the identifier or connect a prototype cell in a storyboard 的解决方法</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="blog-header">
+        <h1 class="blog-title">学到老，活到老</h1>
+        <hr/>
+    </div>
+
+    <div class="row col-sm-12 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                iOS 开发中报错unable to dequeue a cell with identifier Cell - must register a nib or a class for the identifier or connect a prototype cell in a storyboard 的解决方法
+            </h3>
+            <p>在iOS开发中，如果遇到错误：
+<code>unable to dequeue a cell with identifier Cell - must register a nib or a class for the identif    ier or connect a prototype cell in a storyboard</code>
+可以试试下面的解决方法。</p>
+<p>将如下代码：
+<code>UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];</code>
+修改为如下代码：
+<code>UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];</code></p>
+<p>解决方法来自<a href="http://stackoverflow.com/questions/19084274/xcode-unable-to-dequeue-a-cell-with-identifier">stackoverflow</a></p>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

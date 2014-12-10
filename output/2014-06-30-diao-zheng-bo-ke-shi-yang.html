@@ -1,0 +1,47 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>调整博客</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="blog-header">
+        <h1 class="blog-title">学到老，活到老</h1>
+        <hr/>
+    </div>
+
+    <div class="row col-sm-12 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                调整博客
+            </h3>
+            <p>这个博客的式样需要调整，目前遇到的问题有：</p>
+<ul>
+<li>文章栏目过于靠左，而不是居中</li>
+<li>在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。</li>
+</ul>
+<p>2014-7-2 14:38 记：
+今天已经解决了这个问题。办法是修改如下文件：
+<code>shell
+sudo vi /usr/local/lib/python2.7/dist-packages/crotal/create_post.py</code>
+第14行：
+<code>python
+post.title = string</code>
+修改为：
+<code>python
+post.title = unicode(string, errors='ignore')</code>
+* 这是一个纯静态站点，每次编辑文章都要ssh到服务器上操作，实在太不方便了。
+目标是像<a href="https://www.zybuluo.com">这个网站</a>一样能够在线的写作和发布。当然
+这样的话就不是静态站点而是动态的了。也可以现在zybuluo上面写好草稿，
+最后一次性的发布。能够不方便，也好。太方便反而不会去慎重对待了。</p>
+<ul>
+<li>首页的prev按钮不起作用</li>
+</ul>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

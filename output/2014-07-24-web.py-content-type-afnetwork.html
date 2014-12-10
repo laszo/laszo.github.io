@@ -1,0 +1,34 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>web.py指定Content-Type</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="blog-header">
+        <h1 class="blog-title">学到老，活到老</h1>
+        <hr/>
+    </div>
+
+    <div class="row col-sm-12 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                web.py指定Content-Type
+            </h3>
+            <p>在开发iOS应用的时候，会用到AFNetworking这个目前非常流行的第三方库。看它的名字就知道，
+它封装了iOS开发种常见的网络操作，使用方便、高效。</p>
+<p>但是，如果使用web.py作为server端，默认情况下，在运行app的时候，很可能会遇到如下错误：
+<code>Request failed: unacceptable content-type: text/plain</code>
+需要我们在server端代码里，返回请求之前添加如下代码：
+<code>web.header('Content-Type', 'text/json')</code>
+原因很简单，阅读<a href="https://github.com/iwasrobbed/Forecastr/blob/master/AFNetworking/AFURLResponseSerialization.m">AFURLResponseSerialization</a>类的代码就会发现，
+AFNetworking会在接受到server端数据之后，检查返回数据的ContenType类型，如果不符合要求，
+就会主动给出出错提示。从这个细节里可以看出，AFNetworking这个库还是比较严谨的。</p>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

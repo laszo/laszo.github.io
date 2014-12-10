@@ -1,0 +1,47 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mac os 下面Java和Maven配置</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="blog-header">
+        <h1 class="blog-title">学到老，活到老</h1>
+        <hr/>
+    </div>
+
+    <div class="row col-sm-12 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                Mac os 下面Java和Maven配置
+            </h3>
+            <p>首先，mac os系统的终端是bash，配置文件放在 “~/.bash_profile” 而不是 “~/.profile”，如果你在后者里面更改环境变量，是不起作用的。</p>
+<ol>
+<li>
+<p>下载jdk并安装，地址：<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Oracle Java SE Download</a></p>
+</li>
+<li>
+<p>下载maven，地址：<a href="http://maven.apache.org/download.cgi">Apache Maven</a></p>
+</li>
+<li>
+<p>修改配置文件，添加如下内容：
+<code>export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+export PATH=$JAVA_HOME/bin:$PATH
+export M2_HOME=/usr/local/apache-maven-3.2.3
+export M2=$M2_HOME/bin
+export MAVEN_OPTS="-Xms256m -Xmx512m"
+export PATH=$M2:$PATH</code></p>
+</li>
+</ol>
+<p>参考：</p>
+<p>http://maven.apache.org/download.cgi</p>
+<p>http://www.oracle.com/technetwork/cn/community/java/apache-maven-getting-started-1-406235-zhs.html</p>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
