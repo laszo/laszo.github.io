@@ -1,175 +1,457 @@
-<html lang="en-US">
+<html>
 <head>
-    <meta charset="UTF-8"/>
-    <title>Home | 学到老，活到老</title>
-    <meta name="author" content="laszo">
-    <meta name="description"
-          content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta property="og:site_name" content="">
-    <link rel="stylesheet" href="/css/bootstrap.css" type="text/css">
-    <link rel="stylesheet" href="/css/blog.css" type="text/css">
-    <link rel="stylesheet" href="/css/pygments.css" type="text/css">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-</head><header class="navbar navbar-default topnav" role="banner">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/" id="logo">学到老，活到老</a>
-        </div>
-        <div class="collapse navbar-collapse" id="navigation">
-            <ul class="nav navbar-nav navbar-left" id="nav">
-                                                                <li><a class="blog-nav-item" href="/">Home</a></li>
-                                                                                                <li><a class="blog-nav-item" href="/archives">Archives</a></li>
-                                                                                                <li><a class="blog-nav-item" href="/categories">Categories</a></li>
-                                                                                                <li><a class="blog-nav-item" href="/tags">Tags</a></li>
-                                                                                                <li><a class="blog-nav-item" href="/links">Links</a></li>
-                                                                                                <li><a class="blog-nav-item" href="/about">About</a></li>
-                                                                                                <li><a class="blog-nav-item" href="/rss.xml">RSS</a></li>
-                                                            </ul>
-            <ul class="nav navbar-nav navbar-right" id="nav">
-                                                                    </ul>
+    <meta charset="utf-8">
+    <title>学到老，活到老</title>
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="blog-header">
+        <h1 class="blog-title">学到老，活到老</h1>
+        <hr />
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-12-10-zhe-ji-tian-blog-huai-le.html" target="_blank">这几天博客有问题</a>
+            </h3>
         </div>
     </div>
-</header><body>
-
-
-<div class="container innerpage_content">
-  <div class="row">
-
-    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/12/10/zhe-ji-tian-blog-huai-le/'>这几天博客有问题</a></h2>
-        <p class="blog-post-meta">Dec 10, 2014 by <i>user</i></p>
-        <p>使用crotal制作博客，markdown文件中的 slug 一项，在generate过程中，有可能会作为文件名或目录名使用，所以最好不要使用特殊字符，最多使用下划线和短横线。否则生成会有问题。</p>
-        <a href="/blog/2014/12/10/zhe-ji-tian-blog-huai-le/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/'>query chat logs: anothor way, may be better</a></h2>
-        <p class="blog-post-meta">Nov 22, 2014 by <i>user</i></p>
-        <p>this ariticle : <a href="http://www.lvxiaoyu.com/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/">openfire客户端获取聊天记录</a> maybe is not nessary.</p>
-<p>see this: (http://stackoverflow.com/questions/11397172/xmppframework-retrieve-archived-messages-from-openfire-server?lq=1)</p>
-<p>may be it is the better and earier way.</p>
-<p>just send a <retrieve> package, you will receive a list of chat log. see doc : (http://xmpp.org/extensions/xep-0136.html). I have not tried, which will be my work on monday(11.24)</p>
-        <a href="/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/20/app-im-solution-provider-in-cn/'>总结国内的移动即时通讯解决方案提供商--标题还得改改</a></h2>
-        <p class="blog-post-meta">Nov 20, 2014 by <i>user</i></p>
-        <p>环信：http://www.easemob.com/
-亲加通信云：http://www.gotye.com.cn/</p>
-        <a href="/blog/2014/11/20/app-im-solution-provider-in-cn/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/'>openfire客户端获取聊天记录</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
-        <p>openfire是当前较为流行的xmpp服务端。使用它作为服务端，借助github上面的一些开源项目，很容易打造出一套跨平台的即时通讯解决方案，包含如下的五个主流平台：PC端的windows、mac os、linux，以及移动端的ios和android平台。</p>
-<p>当然，这只能包含最基本的通讯功能。如果想达到QQ、MSN、微信、whatsapp这样主流软件丰富的用户体验，还有许多工作要做。</p>
-<p>比如，如何在服务端保存聊天记录，并需要的时候客户端能够获取并展现出来，就需要专门研究一下。</p>
-<p>这篇<a href="https://community.igniterealtime.org/thread/29686">Openfire Chat Logs</a>居然是google搜出来的第一篇。</p>
-<div class="codehilite"><pre><span class="n">On</span> <span class="n">the</span> <span class="n">server</span><span class="o">-</span><span class="n">side</span> <span class="n">it</span> <span class="n">is</span> <span class="n">configured</span> <span class="n">from</span> <span class="n">the</span> <span class="s">&quot;Message Audit Policy&quot;</span> <span class="n">link</span><span class="o">/</span><span class="n">page</span><span class="p">.</span>
-</pre></div>
-
-
-<p>问题：</p>
-<ol>
-<li>Message Audit Policy 是否需要装插件？答案：不需要，就在server-server settings页面里。</li>
-<li>这样记录应该不是聊天记录吧？仅仅是记录了所有的通讯数据包。不方便根据用户或房间查询聊天记录。答案：不方便。需要一个viewer，有人建议看这篇帖子(<a href="https://community.igniterealtime.org/thread/29159">audit log viewer?</a>)。</li>
-<li>即便是能看了，也并未提供一个接口，使客户端用以获取与某项的聊天记录。</li>
-</ol>
-<p>从这篇的问答里我追踪到了<a href="https://community.igniterealtime.org/docs/DOC-1041">Non-Jive Openfire Plugins</a>。然后<a href="http://sourceforge.net/projects/iball-auditor/">i-Ball Chat Auditor</a> 装了一下居然不起作用。如何让它起作用以及如何使用它，留待以后研究了。</p>
-<p><a href="https://community.igniterealtime.org/thread/14773">Logging Conversations</a>这篇帖子很老（2006年），也很长。另有：<a href="http://www.xmpp.org/extensions/xep-0136.html">XEP-0136: Message Archiving</a>乃是最权威的资料。</p>
-<p>从stackoverflow的一个问题<a href="http://stackoverflow.com/questions/6635034/smack-api-read-chat-histroy-from-openfire-server">Smack API - Read Chat Histroy from Openfire Server</a>中，
-<a href="http://stackoverflow.com/users/1206536/alpay">Alpay</a>提供了一个回答，这个回答并没有帮助到我，而回答下面的评论（comments）里面，被折叠的一条评论倒是帮助到了我：</p>
-<blockquote>
-<p>I haven' t tested but you should see <a href="http://www.igniterealtime.org/projects/openfire/plugins/monitoring/readme.html">this</a>, and <a href="https://blogs.reucon.com/srt/tag/open_archive/">this</a>. I hope they help –  Alpay Feb 7 '13 at 12:40</p>
-</blockquote>
-<p>从这里发现，原来<a href="http://www.igniterealtime.org/projects/openfire/plugins/monitoring/readme.html">Monitoring Service</a>插件就是用于记录聊天记录（chat logs）的。但是有两个问题：</p>
-<ol>
-<li>如何从客户端获取这些聊天记录呢？</li>
-<li>中文的信息是乱码该如何解决？</li>
-</ol>
-<p>根据这篇<a href="http://www.myexception.cn/java-other/1001465.html">spark + openfire的聊天监控问题</a>，检查了mysql数据库，发现的确有一张ofMessageArchive表。</p>
-<div class="codehilite"><pre><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">ofMessageArchive</span> <span class="n">limit</span> <span class="mi">10</span><span class="p">;</span>
-</pre></div>
-
-
-<p>可以看到聊天数据的确存在，那么现在有两项工作要做：</p>
-<ol>
-<li>解决中文乱码问题。顺便解决用户昵称中文乱码。</li>
-<li>写一个小型服务端，提供rest接口，根据fromJID、toJID、sentDate、分页等信息，供客户端查询聊天记录。</li>
-</ol>
-<p>按照这篇<a href="http://blog.sina.com.cn/s/blog_4bf75d0a0100l92b.html">解决openfire在使用MySQL数据库后的中文乱码问题</a>，在serverURL这一节添加如下字符：</p>
-<div class="codehilite"><pre><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">useUnicode</span><span class="o">=</span><span class="nb">true</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">characterEncoding</span><span class="o">=</span><span class="n">utf8</span>
-</pre></div>
-
-
-<p>之后重启openfire。使用spark发送了几天中英文及数字消息，发现现在不记录中文消息。以前是记录，但显示为问号，现在是不记录。</p>
-<p>似乎可以考虑重新安装mysql和openfire了。先在vmware虚拟机上试验一下搞了utf8以后能否支持中文昵称和中文聊天记录。官方文档：<a href="http://www.igniterealtime.org/builds/openfire/docs/latest/documentation/database.html">Database Installation Guide</a>。最关键的两个配置：</p>
-<div class="codehilite"><pre><span class="nb">create</span> <span class="nx">database</span> <span class="nx">openfire</span> <span class="nb">default</span> <span class="nx">character</span> <span class="nb">set</span> <span class="nx">utf8</span> <span class="nb">default</span> <span class="nx">collate</span> <span class="nx">utf8_general_ci</span>
-
-<span class="o">&lt;</span><span class="nx">serverURL</span><span class="o">&gt;</span><span class="nx">jdbc</span><span class="p">:</span><span class="nx">mysql</span><span class="p">:</span><span class="c1">//localhost:3306/openfire1?rewriteBatchedStatements=true&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&lt;/serverURL&gt;</span>
-</pre></div>
-
-
-<p>经过一番折腾，终于可以在ofMessageArchive这个表里看到中文聊天记录了。剩下的工作就是写一个rest服务端，提供客户端对于聊天记录的查询。只是包装一些简单的sql查询、或者使用ORM库，在这里就不赘述了。</p>
-<p>那么刚才提到的Message Audit Policy就可以禁用掉了。Message Audit Policy与Monitoring Service 的关系、特点、异同、适用性，留待以后去探究了。或者，如果读者你对着这方面有要说的，欢迎分享给大家。</p>
-        <a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/" >Read More</a>
-      </div>
-
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/'>两种方式的办事作风</a></h2>
-        <p class="blog-post-meta">Nov 13, 2014 by <i>user</i></p>
-        
-        <a href="/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/" >Read More</a>
-      </div>
-
-                <br/>
-    <ul class="page_numbers pull-right">
-                <li class="page_info"><p>Page 1 of 12</p></li>
-                                                <li class="active"><a>1<span class="sr-only">(current)</span></a></li>
-                                                            <li><a href="/blog/page/2">2</a></li>
-                                                            <li><a href="/blog/page/3">3</a></li>
-                                                            <li><a href="/blog/page/4">4</a></li>
-                                                            <li><a href="/blog/page/5">5</a></li>
-                                                            <li><a href="/blog/page/6">6</a></li>
-                                                            <li><a href="/blog/page/7">7</a></li>
-                                                            <li><a href="/blog/page/8">8</a></li>
-                                                            <li><a href="/blog/page/9">9</a></li>
-                                                            <li><a href="/blog/page/10">10</a></li>
-                                                            <li><a href="/blog/page/11">11</a></li>
-                                                            <li><a href="/blog/page/12">12</a></li>
-                                        </ul>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-11-22-query-chat-logs-anothor-way-may-be-better.html" target="_blank">query chat logs: anothor way, may be better</a>
+            </h3>
+        </div>
     </div>
-
-<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 right">
-            <div class="widget box">
-    <h4 class="widgettitle">About</h4>
-    <div class="description">
-        <p>None</p>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-11-20-app-im-solution-provider-in-cn.html" target="_blank">总结国内的移动即时通讯解决方案提供商--标题还得改改</a>
+            </h3>
+        </div>
     </div>
-</div>            <div class="widget recent_posts box">
-    <h4 class="widgettitle">Recent Posts</h4>
-    <ul>
-                <li><a href="/blog/2014/12/10/zhe-ji-tian-blog-huai-le/">这几天博客有问题</a></li>
-                <li><a href="/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/">query chat logs: anothor way, may be better</a></li>
-                <li><a href="/blog/2014/11/20/app-im-solution-provider-in-cn/">总结国内的移动即时通讯解决方案提供商--标题还得改改</a></li>
-                <li><a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/">openfire客户端获取聊天记录</a></li>
-                <li><a href="/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/">两种方式的办事作风</a></li>
-            </ul>
-</div>    </div>
-  </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-11-13-openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu.html" target="_blank">openfire客户端获取聊天记录</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-11-13-liang-zhong-fang-shi-de-ban-shi-zuo-feng.html" target="_blank">两种方式的办事作风</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-11-07-monitor-linux-performance.html" target="_blank">监视linux服务器运行状态与性能</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-11-04-yuan-ren-de-sheng-huo-fang-shi.html" target="_blank">原人的生活方式才是最适合人性的方式</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-11-04-ios-dev-error-No-provisioning.html" target="_blank">ios开发中报错 No provisioning profiles with a valid signing identity 或 Your account already has a valid certificate</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-11-03-core-data-study.html" target="_blank">CoreData的概念介绍与学习资料汇总</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-11-02-javac-mvn-ant-mmg-deng.html" target="_blank">javac mvn ant mmg 等java构建工具的介绍与使用</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-10-30-shapes-of-data-and-its-flows.html" target="_blank">从全栈看待性能问题</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-10-30-new-word-to-me-the-Sneakernet.html" target="_blank">new word to me the Sneakernet</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-10-30-find-your-own-fate-book.html" target="_blank">find your own fate book</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-10-30-bian-que-jian-cai-huan-gong.html" target="_blank">《扁鹊见蔡桓公》给我们的启示</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-10-28-many-things-to-do-and-where.html" target="_blank">努力的方向</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-10-28-be-a-full-stack-engineer.html" target="_blank">全栈工程师（full stack engineer）的概念</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-10-24-mac-os-maven-config.html" target="_blank">Mac os 下面Java和Maven配置</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-10-24-compile-android-source-code-enviroment.html" target="_blank">编译Android系统源代码的步骤</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-10-21-my-new-nexus-5.html" target="_blank">入手一部Nexus 5</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-09-09-breaking-bad.html" target="_blank">推荐美剧：绝命毒师(breaking bad)</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-09-02-ye-shuo-nuan-nan.html" target="_blank">也说暖男</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-09-02-shang-shi-wen-dao-qin-er-xing-zhi.html" target="_blank">上士闻道，勤而行之；中士闻道，若存若亡；下士闻道，大笑之</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-09-02-nan-ren-nei-xin-shen.html" target="_blank">男人内心深处住着一个小男孩</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-09-02-nan-hai-yu-nan-ren-de-si.html" target="_blank">男孩与男人的四种心理模型</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-27-ios-error-unable-to-dequeue-a-cell.html" target="_blank">iOS 开发中报错unable to dequeue a cell with identifier Cell - must register a nib or a class for the identifier or connect a prototype cell in a storyboard 的解决方法</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-20-intro-parallax-scrolling.html" target="_blank">视差滚动 parallax scrolling 介绍</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-19-SSL-info-docs.html" target="_blank">SSL相关知识汇总</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-19-mac-install-redis-info.html" target="_blank">mac 安装 redis 过程信息</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-19-jin-qi-xiang-fa-0819.html" target="_blank">近期一些思维片段0819</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-11-wsgi-docs.html" target="_blank">wsgi相关文章收集</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-11-think-and-learning-issues.html" target="_blank">学而不思、思而不学、书呆子、民科等问题之杂说</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-11-man-install-nginx-info-out.html" target="_blank">mac 安装 nginx 过程中的提示信息</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-11-dui-ruan-jian-de-tan-suo-de-zhong-dian.html" target="_blank">对软件的探索的终点</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-07-xie-dong-xi-de-mu-biao-du-zhe.html" target="_blank">写东西的目标读者</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-07-ru-he-zhang-wo-app-tui-guang.html" target="_blank">如何掌握app推广的技能</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-07-jing-ti-shen-tong-jiao-yu.html" target="_blank">应当警惕'神童教育'</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-04-man-hua-qianxu.html" target="_blank">漫话谦虚的几个层面</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-02-xmpp-intro-1.html" target="_blank">iOS下的XMPP开源库XMPPFramework介绍</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-08-02-method-read-source-code.html" target="_blank">阅读源代码的方法之讨论</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-29-ios7-init-check-user-login.html" target="_blank">iOS7中如何根据用户是否登录来决定是否启动Main.storyboard或登录界面</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-25-ma-che-fu-de-bi-yu.html" target="_blank">心理学中著名的马车比喻</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-25-fan-ren-xiu-xian-chuan-gao-mo-di-mo.html" target="_blank">凡人修仙传里的世界观</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-24-web.py-content-type-afnetwork.html" target="_blank">web.py指定Content-Type</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-20-think-big-do-small.html" target="_blank">think big, do small 的几层含义</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-19-meaning-of-deduce.html" target="_blank">咬文嚼字：演绎</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-19-ke-fu-du-shu-de-zhang-ai.html" target="_blank">克服读书的障碍</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-17-ji-pian-wen-zhai-1.html" target="_blank">收藏：关于程序开发工作量与工作量估算的几篇文章</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-17-han-men-zai-nan-chu-gui-zi.html" target="_blank">关于'寒门再难出贵子'之我见</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-17-book-Algorithms-dasgupta.html" target="_blank">推荐好书：《算法概论》</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-16-topic-model.html" target="_blank">主题模型及LSI、PLSI、LDA简介</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-14-negative-thought-patterns.html" target="_blank">浅析悲观思维模式及对策</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-06-wei-lai-wu-nian-du-shu-ji-hua.html" target="_blank">未来五年读书计划</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-07-03-wo-jia-xiao-qu-kan-zhao-ting-piao-liang.html" target="_blank">我家小区看着看挺漂亮</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-06-30-diao-zheng-bo-ke-shi-yang.html" target="_blank">调整博客</a>
+            </h3>
+        </div>
+    </div>
+    
+    <div class="row col-sm-8 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                <a href="output/2014-06-30-da-suan-xie-yi-dian-bu-yi-bian.html" target="_blank">打算写一点不易变化的东西</a>
+            </h3>
+        </div>
+    </div>
+    
 </div>
-<div class="blog-footer">
-<p id="copyright">&copy; 2013 laszo | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>
-    </div>
+<script src="static/js/bootstrap.min.js"></script>
 </body>
 </html>
