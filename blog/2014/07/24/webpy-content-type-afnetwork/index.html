@@ -1,9 +1,8 @@
-<link href='http://fonts.googleapis.com/css?family=Hammersmith+One' rel='stylesheet' type='text/css'>
-<!DOCTYPE html>
+<link href='/css/googleapifont.css' rel='stylesheet' type='text/css'>
 <html lang="en-US">
 <head>
-<meta charset="UTF-8" /><title>web.py指定Content-Type | Crotal</title>
-<meta name="author" content="user">
+<meta charset="UTF-8" /><title>web.py指定Content-Type | 学到老，活到老</title>
+<meta name="author" content="laszo">
 <meta name="description" content="在开发iOS应用的时候，会用到AFNetworking这个目前非常流行的第三方库。看它的名字就知道， 它封装了iOS开发种常见的网络操作，使用方便、高效。 但是，如果使用web.py作为server端，默认情况下，在运行app的时候，很可能会遇到如下错误： Request failed: unacceptable content-type: text/plain 需要我们在server端代码里，返回请求之前添加如下代码： web.header('Content-Type', 'text/json') ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content="">
@@ -11,7 +10,7 @@
 <link rel="stylesheet" href="/css/bootstrap.css" type="text/css">
 <link rel="stylesheet" href="/css/blog.css" type="text/css">
 <link rel="stylesheet" href="/css/pygments.css" type="text/css">
-<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="/css/font-awesome.min.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -31,7 +30,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/" id="logo">Crotal</a>
+            <a class="navbar-brand" href="/" id="logo">学到老，活到老</a>
         </div>
         <div class="collapse navbar-collapse" id="navigation">
             <ul class="nav navbar-nav navbar-left" id="nav">
@@ -78,7 +77,7 @@ AFNetworking会在接受到server端数据之后，检查返回数据的ContenTy
             <img src="/images/avatar.gif" alt="..." class="img-thumbnail">
           </div>
           <div class="col-sm-9">
-            <h4>user</h4>
+            <h4>laszo</h4>
             <small>Hello World! I'm <b>User</b>. Change this text in <code>config.yml</code> <code>-> self_description</code>.</small>
           </div>
         </div>
@@ -103,7 +102,7 @@ AFNetworking会在接受到server端数据之后，检查返回数据的ContenTy
   </div>
 </div>
 <div class="blog-footer">
-<p id="copyright">&copy; 2013 user | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>
+<p id="copyright">&copy; 2013 laszo | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>
     </div>
   <script type="text/javascript">
     (function(){
