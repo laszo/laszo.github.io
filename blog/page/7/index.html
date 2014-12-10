@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-<meta charset="UTF-8" /><title>Home | Crotal</title>
-<meta name="author" content="user">
+<meta charset="UTF-8" /><title>Home | 学到老，活到老</title>
+<meta name="author" content="laszo">
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content="">
@@ -31,7 +31,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/" id="logo">Crotal</a>
+            <a class="navbar-brand" href="/" id="logo">学到老，活到老</a>
         </div>
         <div class="collapse navbar-collapse" id="navigation">
             <ul class="nav navbar-nav navbar-left" id="nav">
@@ -53,6 +53,56 @@
   <div class="row">
 
     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+            <div class="blog-post box">
+        <h2 class="blog-post-title"><a href='/blog/2014/08/11/wsgi-docs/'>wsgi相关文章收集</a></h2>
+        <p class="blog-post-meta">Aug 11, 2014 by <i>user</i></p>
+        <p><a href="http://legacy.python.org/dev/peps/pep-0333/">PEP 333 -- Python Web Server Gateway Interface v1.0</a>
+、
+<a href="http://lihuipeng.blog.51cto.com/3064864/890573">CGI，FastCGI，WSGI，flup，spawn-fcgi之间的关系</a>
+、
+<a href="http://www.oschina.net/question/25940_10751">Python WSGI服务器大乱斗（Rev.2）</a>
+、
+<a href="http://wsgi.readthedocs.org/en/latest/">wsgi.org</a>
+、
+<a href="http://www.douban.com/note/13508388/">WSGI、flup、fastcgi、web.py的关系</a>中 Mr.J的评论：</p>
+<blockquote>
+<p>WSGI是python的接口规范，这个规范是针对WEB服务器和python应用（框架等）的交互的。FASTCGI则是两者底层的通信协议的规范。</p>
+</blockquote>
+<p><a href="http://blog.ez2learn.com/2010/01/27/introduction-to-wsgi/">化整為零的次世代網頁開發標準: WSGI</a>
+、
+<a href="http://blog.csdn.net/five3/article/details/7732832">nginx[+spawn-fcgi]+flup+webpy服务搭建</a>
+、
+<a href="http://my.oschina.net/junn/blog/280799">概念了解：CGI，FastCGI，PHP-CGI与PHP-FPM</a>
+、
+<a href="http://zsl-oo7.blog.163.com/blog/static/353297032013111510441430/">WSGI 是什么 以及如何使用</a>
+、
+<a href="http://developer.51cto.com/art/201010/229615_all.htm">快速部署Python应用：Nginx+uWSGI配置详解</a>
+、
+<a href="https://github.com/lzjun567/note/blob/master/note/python/wsgi.md">深入理解WSGI</a>
+、
+<a href="http://uwsgi-docs.readthedocs.org/en/latest/Options.html">uwsgi-docs</a>
+、
+<a href="http://mdba.cn/?p=109">Nginx+uWSGI安装与配置</a>
+、
+<a href="http://webpython.codepoint.net/wsgi_tutorial">WSGI Tutorial</a>
+、
+<a href="http://wiki.woodpecker.org.cn/moin/WSGI">啄木鸟社区wiki的WSGI页面（有大量链接）</a>
+、
+<a href="http://nichol.as/benchmark-of-python-web-servers">Benchmark of Python WSGI Servers(2010)</a>
+、
+<a href="http://linluxiang.iteye.com/blog/799163">wsgi初探</a>
+、
+<a href="http://www.cnblogs.com/holbrook/archive/2012/02/25/2357337.html">戏说WSGI（Python Web服务网关接口）</a>：</p>
+<blockquote>
+<p>WSGI是马里奥在探索管道的时候发现的一种连接件，它非常简单，入口处提供一个start_response，用于回流（回调，callback），入口会连接到出口的一个函数，并传递environ字典和start_response作为参数；而出口处的函数先是调用start_response并传递status和header，然后再返回content。由于这段心法有些拗口，马里奥演示了唯一的招式，并声明其实所有的招式都可以从这招中演化出来：[code]</p>
+<p>马里奥还发现，WSGI其实可以串联起来，为了区分，马里奥将下水管的入口叫做web server，只能接受外界的请求并调用下一段管件的函数；中间的管件叫做middleware，既可以接收上一段管件的请求，又可以调用下一段管件的函数；管道的终点叫做web app，只能被上一段管件调用。</p>
+</blockquote>
+<p><a href="http://blog.csdn.net/sraing/article/details/8455242"> WSGI的理解（转载）</a>
+、
+<a href="http://blog.csdn.net/on_1y/article/details/18803563">WSGI 简介</a></p>
+        <a href="/blog/2014/08/11/wsgi-docs/" >Read More</a>
+      </div>
+
             <div class="blog-post box">
         <h2 class="blog-post-title"><a href='/blog/2014/08/11/think-and-learning-issues/'>学而不思、思而不学、书呆子、民科等问题之杂说</a></h2>
         <p class="blog-post-meta">Aug 11, 2014 by <i>user</i></p>
@@ -165,37 +215,6 @@
         <a href="/blog/2014/08/07/jing-ti-shen-tong-jiao-yu/" >Read More</a>
       </div>
 
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/08/07/xie-dong-xi-de-mu-biao-du-zhe/'>写东西的目标读者</a></h2>
-        <p class="blog-post-meta">Aug 07, 2014 by <i>user</i></p>
-        <p>我们写东西，比如博客、文档、报告、计划等，假想的读者不应该是如下：</p>
-<blockquote>
-<p>跟你同领域、并且水平与你相当或者比你高的人。</p>
-</blockquote>
-<p>而应该是如下：</p>
-<blockquote>
-<p>与你同处在一个大领域，且具有一般水平的人。</p>
-</blockquote>
-<p>在这里，领域的大小划分视具体情况而定。比如我的硕士论文是关于镜头分割，这是一个很细的方向。往外扩展，它属于视频处理领域，视频处理又属于信号/图像处理，信号/图像处理又属于计算机科学，计算机学科属于工科，工科广义上来说又属于科学的一种，凡是“反映现实世界各种现象的客观规律的知识体系”都可以归入科学里面去，而科学，又属于人类文明、文化的产物之一。</p>
-<p>领域之间，从小到大的包含关系如下：</p>
-<blockquote>
-<p>镜头分割-&gt;视频处理-&gt;图像处理-&gt;计算机科学-&gt;工科-&gt;科学-&gt;文化</p>
-</blockquote>
-<p>上面的划分并非精确，只是为了笼统说明领域大小范围的概念，用以说明写文章所针对的读者群的大小。</p>
-<p>比如我要写镜头分割方面的知识介绍，最低标准应当能够让了解图像处理基本知识的人能够看懂、并有所收获。不能满足此标准则文章毫无意义，纯属自娱自乐。</p>
-<p>稍扩大一点，及格的水准应当让了解计算机学科一般知识的人能看懂。</p>
-<p>再扩大，如果你的文章能够让一个普通理工科背景的人、甚至任何一个具有一般阅读能力的人都能够看的明白，那就更好了。这至少说明了两件事：</p>
-<ol>
-<li>你对你要介绍的知识的掌握已经有了相当的了解。</li>
-<li>你的表达能力还不错。</li>
-</ol>
-<p>爱因斯坦曾经说过：</p>
-<blockquote>
-<p>如果你无法用简单的方法来解释某事物的话，那么你对该事情就没有充分地理解。</p>
-</blockquote>
-        <a href="/blog/2014/08/07/xie-dong-xi-de-mu-biao-du-zhe/" >Read More</a>
-      </div>
-
                 <br/>
     <ul class="page_numbers pull-right">
                 <li class="page_info"><p>Page 7 of 12</p></li>
@@ -223,17 +242,17 @@
 </div>            <div class="widget recent_posts box">
     <h4 class="widgettitle">Recent Posts</h4>
     <ul>
+                <li><a href="/blog/2014/12/10/a-new-post/">a new post</a></li>
                 <li><a href="/blog/2014/12/10/zhe-ji-tian-blog-huai-le/">这几天博客有问题</a></li>
                 <li><a href="/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/">query chat logs: anothor way, may be better</a></li>
                 <li><a href="/blog/2014/11/20/app-im-solution-provider-in-cn/">总结国内的移动即时通讯解决方案提供商--标题还得改改</a></li>
                 <li><a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/">openfire客户端获取聊天记录</a></li>
-                <li><a href="/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/">两种方式的办事作风</a></li>
             </ul>
 </div>    </div>
   </div>
 </div>
 <div class="blog-footer">
-<p id="copyright">&copy; 2013 user | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>
+<p id="copyright">&copy; 2013 laszo | Powered by <a href="http://crotal.org" target="_blank">Crotal</a></p>
     </div>
   <script type="text/javascript">
     (function(){
