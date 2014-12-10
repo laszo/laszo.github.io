@@ -45,8 +45,8 @@ index.html文件以及output、static两个文件夹即可。
 
 本项目使用python开发，用到了如下几个库：
 
-*[markdown]()，能够把markdown标记语言生成为响应的html标签。
-*[jinjia]()，一个模板系统，很多著名的python项目在用。
-*[bootstrap](http://getbootstrap.com/)，前段框架。
+* [markdown]()，能够把markdown标记语言生成为响应的html标签。
+* [jinjia]()，一个模板系统，很多著名的python项目在用。
+* [bootstrap](http://getbootstrap.com/)，前段框架。
 
 为什么不用Jekyll？因为gem install在windows下运行有问题，难以安装Jekyll。
