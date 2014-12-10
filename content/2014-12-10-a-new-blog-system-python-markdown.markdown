@@ -15,6 +15,7 @@ slug: a-new-blog-system-python-markdown
 并且，我还打算维护一个gist，收集[使用了realsimpleblog的站点](https://gist.github.com/laszo/6fbbb9cef91bde50fb02)。
 
 使用步骤：
+
 1. 需要安装python环境，windows、linux、mac均可。并安装python库yaml、markdown。
 
 2. 下载realsimpleblog
