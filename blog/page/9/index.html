@@ -28,6 +28,7 @@
                                                                                                 <li><a class="blog-nav-item" href="/archives">Archives</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/categories">Categories</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/tags">Tags</a></li>
+                                                                                                <li><a class="blog-nav-item" href="/links">Links</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/about">About</a></li>
                                                                                                 <li><a class="blog-nav-item" href="/rss.xml">RSS</a></li>
                                                             </ul>
@@ -42,36 +43,6 @@
   <div class="row">
 
     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-            <div class="blog-post box">
-        <h2 class="blog-post-title"><a href='/blog/2014/07/29/ios7-init-check-user-login/'>iOS7中如何根据用户是否登录来决定是否启动Main.storyboard或登录界面</a></h2>
-        <p class="blog-post-meta">Jul 29, 2014 by <i>user</i></p>
-        <p>从iOS7开始，在xcode中新建一个iOS项目，默认会建立一个Main.storyboard，在项目属性中，app的启动界面默认启动这个storyboard（在general-&gt;Main Interface选项）。这样通常是方便我们开发的。减少了大量在ViewController中切换的代码。</p>
-<p>但是，如果我们要做一个带有用户系统的app，实现如下功能：</p>
-<blockquote>
-<p>app启动的时候判断用户是否已经登录，如果没有登录，显示『登录或注册界面』，如果已经登录，则显示主界面。</p>
-</blockquote>
-<p>我们需要在AppDelegate的application: didFinishLaunchingWithOptions: 方法中去实现：</p>
-<div class="codehilite"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="n">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
-<span class="p">{</span>
-    <span class="n">self</span><span class="p">.</span><span class="n">window</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIWindow</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">initWithFrame</span><span class="o">:</span><span class="p">[[</span><span class="n">UIScreen</span> <span class="n">mainScreen</span><span class="p">]</span> <span class="n">bounds</span><span class="p">]];</span>
-    <span class="k">if</span> <span class="p">([</span><span class="n">user</span> <span class="n">logined</span><span class="p">])</span> <span class="p">{</span>        
-        <span class="n">UIStoryboard</span> <span class="o">*</span><span class="n">storyBoard</span><span class="o">=</span><span class="p">[</span><span class="n">UIStoryboard</span> <span class="n">storyboardWithName</span><span class="o">:</span><span class="s">@&quot;Main&quot;</span> <span class="n">bundle</span><span class="o">:</span><span class="nb">nil</span><span class="p">];</span>
-        <span class="n">mainTabBarController</span> <span class="o">*</span><span class="n">mainVC</span> <span class="o">=</span> <span class="p">[</span><span class="n">storyBoard</span> <span class="n">instantiateInitialViewController</span><span class="p">];</span>                
-        <span class="n">self</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">rootViewController</span> <span class="o">=</span> <span class="n">mainVC</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="p">{</span>
-        <span class="n">LoginPage</span> <span class="o">*</span><span class="n">loginPage</span> <span class="o">=</span> <span class="p">[[</span><span class="n">LoginPage</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>        
-        <span class="n">self</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">rootViewController</span> <span class="o">=</span> <span class="n">loginPage</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>这也是在iOS6及其以前的版本中的默认做法。</p>
-        <a href="/blog/2014/07/29/ios7-init-check-user-login/" >Read More</a>
-      </div>
-
             <div class="blog-post box">
         <h2 class="blog-post-title"><a href='/blog/2014/07/25/ma-che-fu-de-bi-yu/'>心理学中著名的马车比喻</a></h2>
         <p class="blog-post-meta">Jul 25, 2014 by <i>user</i></p>
@@ -185,6 +156,30 @@ AFNetworking会在接受到server端数据之后，检查返回数据的ContenTy
         <a href="/blog/2014/07/20/think-big-do-small/" >Read More</a>
       </div>
 
+            <div class="blog-post box">
+        <h2 class="blog-post-title"><a href='/blog/2014/07/19/ke-fu-du-shu-de-zhang-ai/'>克服读书的障碍</a></h2>
+        <p class="blog-post-meta">Jul 19, 2014 by <i>user</i></p>
+        <p>很多人都想要读书，但往往读了一点就放弃了，特别是大部头的书，或者是具有一定难度和深度的书。</p>
+<p>我认为，其中的一个原因，是读大部头书籍时带来的挫败感和无力感。</p>
+<p>这个挫败感是从哪里来的呢？这来自于读书之前过高的期望。
+很多人在拿到书的时候，总是想要一下子读完，或者几天就读完，然后『迅速获取该书所带来的好处』。
+刚拿到书时，前几次阅读，在高期望的刺激下进行了过量的阅读。
+这种过高的阅读量，大大超过了读者自己的脑力、基础知识能够接受的程度。
+这时候，潜意识里会发出疲劳、拒绝阅读的信号，很快，无力感、挫败感、以及对该书的抵触心理接踵而至。
+久而久之，他们会产生这样的自我暗示：『我天生就不是读书的料』。</p>
+<p>我们会发现，大部分人，终其一生只有一个职业。大部分人是能够熟悉和精通自己专业的知识和技能。也许他们也想学一下别的专业的知识和技能，但是成功的却很少。为什么有能力学好自己的专业却学不好别的专业呢？</p>
+<p>因为他们在学习本专业的时候接受的是系统的教育，而工作以后再学习其他专业的时候就不得不自我教育、自我学习了。</p>
+<p>所谓的系统训练，会把原本庞大的知识体系分门别类，分成一系列子学科。
+单一的子学科，再按照章节、课时进行划分。这样，每一个时间段只学习一小块内容，就不会感觉太难了，至少是可以被平均脑力水平的人接受了。</p>
+<p>所以，如果我们想要自学点什么东西，最好是：</p>
+<p>1，要有合理的期望，任何想要速成的心理都是不现实的</p>
+<p>2，制定阶段性的小目标，每实现一次就是一次成功。</p>
+<p>其实，不只是读书，任何有一定难度的事情都要分析并分解之，然后逐步完成。
+每个人都有要学习的欲望、改变现状的欲望。这时候，是否有能力对任务进行分解、计划、执行、记录、反馈，就成了成功的关键。</p>
+<p>幸运的是，这是一种可以掌握的技能。关于这方面更多的讨论，可以参见<a href="http://book.douban.com/subject/10773358/">《意志力》</a>这本书。</p>
+        <a href="/blog/2014/07/19/ke-fu-du-shu-de-zhang-ai/" >Read More</a>
+      </div>
+
                 <br/>
     <ul class="page_numbers pull-right">
                 <li class="page_info"><p>Page 9 of 12</p></li>
@@ -207,16 +202,16 @@ AFNetworking会在接受到server端数据之后，检查返回数据的ContenTy
             <div class="widget box">
     <h4 class="widgettitle">About</h4>
     <div class="description">
-        <p>A static site generator which is written in Python, super fast, easy to use, and free to all.Start a blog right now using Crotal!</p>
+        <p>None</p>
     </div>
 </div>            <div class="widget recent_posts box">
     <h4 class="widgettitle">Recent Posts</h4>
     <ul>
-                <li><a href="/blog/2014/12/10/a-new-post/">a new post</a></li>
                 <li><a href="/blog/2014/12/10/zhe-ji-tian-blog-huai-le/">这几天博客有问题</a></li>
                 <li><a href="/blog/2014/11/22/query-chat-logs-anothor-way-may-be-better/">query chat logs: anothor way, may be better</a></li>
                 <li><a href="/blog/2014/11/20/app-im-solution-provider-in-cn/">总结国内的移动即时通讯解决方案提供商--标题还得改改</a></li>
                 <li><a href="/blog/2014/11/13/openfire-ke-hu-duan-huo-qu-liao-tian-ji-lu/">openfire客户端获取聊天记录</a></li>
+                <li><a href="/blog/2014/11/13/liang-zhong-fang-shi-de-ban-shi-zuo-feng/">两种方式的办事作风</a></li>
             </ul>
 </div>    </div>
   </div>
