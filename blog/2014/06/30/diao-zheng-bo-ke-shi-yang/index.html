@@ -1,4 +1,3 @@
-<link href='/css/googleapifont.css' rel='stylesheet' type='text/css'>
 <html lang="en-US">
 <head>
 <meta charset="UTF-8" /><title>调整博客 | 学到老，活到老</title>
@@ -6,20 +5,11 @@
 <meta name="description" content="这个博客的式样需要调整，目前遇到的问题有： 文章栏目过于靠左，而不是居中 在dev-1上面添加post，如果标题是中文会报错。而在ec2-1上面则没有这个问题。 2014-7-2 14:38 记： 今天已经解决了这个问题。办法是修改如下文件： sudo vi /usr/local/lib/python2.7/dist-packages/crotal/create_post.py 第14行： post.title = string 修改为： post.title = unicode(string, ...">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta property="og:site_name" content="">
-<!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" />-->
 <link rel="stylesheet" href="/css/bootstrap.css" type="text/css">
 <link rel="stylesheet" href="/css/blog.css" type="text/css">
 <link rel="stylesheet" href="/css/pygments.css" type="text/css">
-<link href="/css/font-awesome.min.css" rel="stylesheet">
-<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
-<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-    <script async="" type="text/javascript" src="//None.disqus.com/count.js"></script>
+
 
 </head><header class="navbar navbar-default topnav" role="banner">
     <div class="container">
