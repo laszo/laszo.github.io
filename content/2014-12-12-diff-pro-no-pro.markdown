@@ -5,7 +5,7 @@ categories:
 slug: diff-pro-and-no-pro
 ---
 
-最近看了一本书《程序员的修炼》，其中有一篇《最牛B的编码套路》。文中有几句话：
+最近看了一本书《程序员的修炼》，其中有一篇[《最牛B的编码套路》](http://blog.csdn.net/happydeer/article/details/17023229)。文中有几句话：
 
 > 单纯地每天埋头于工作并不能算是真正意义上的锻炼——参加会议并不能锻炼你的人际交往能力；回复邮件并不能提高你的打字水平。你必须定期留出时间，集中锻炼，这样才能把事情做得更好。
 
@@ -15,4 +15,4 @@ slug: diff-pro-and-no-pro
 
 具体怎样达到专业水平、专家水平的境界应该是什么样子的，请阅读本文提到的书和文章。
 
-附，这篇文章提到的另两篇文章：《Practicing Programming》、《The Expert Mind》。
+附，这篇文章提到的另两篇文章：《Practicing Programming》、[《The Expert Mind》](http://www.ecocn.org/thread-10643-1-1.html)。
