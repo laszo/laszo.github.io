@@ -15,7 +15,8 @@ slug: a-new-blog-system-python-markdown
 
 这样就行了。
 
-今天下午一共花了两个小时构建完毕。放在了github上，名字叫做[realsimpleblog](https://github.com/laszo/realsimpleblog)。因为真的是 real simple 了。喜欢极简风格、有兴趣维护自己独立博客的同学，可以下载使用一下。
+今天下午一共花了两个小时构建完毕。放在了github上，名字叫做[realsimpleblog](https://github.com/laszo/realsimpleblog)。叫做real simple，可以说是名副其实。
+喜欢极简风格、有兴趣维护自己独立博客的同学，可以下载使用一下。
 
 我自己当然是这个系统的第一个用户。
 我的博客[http://www.lvxiaoyu.com/](http://www.lvxiaoyu.com/)就是基于此系统构建，托管在githubpages上。
