@@ -15,4 +15,4 @@ slug: diff-pro-and-no-pro
 
 具体怎样达到专业水平、专家水平的境界应该是什么样子的，请阅读本文提到的书和文章。
 
-附，这篇文章提到的另两篇文章：《Practicing Programming》、[《The Expert Mind》](http://www.ecocn.org/thread-10643-1-1.html)。
+附，相关文章：《Practicing Programming》、[《The Expert Mind》](http://www.ecocn.org/thread-10643-1-1.html)、[《如何拥有专业思考能力》](http://article.yeeyan.org/compare/95884)。
