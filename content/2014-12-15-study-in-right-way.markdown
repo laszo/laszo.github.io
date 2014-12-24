@@ -1,5 +1,5 @@
 ---
-title: "计划的重点不在于投入，而在于产出"
+title: "学习计划的重点不在于投入，而在于产出"
 date: 2014-12-15 15:24
 categories:
 slug: study-in-right-way
