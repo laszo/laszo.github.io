@@ -28,6 +28,7 @@ slug: little-thing-to-look-software-develop-need-time
 2. IE浏览器对CSS的属性line-height支持是有问题的，我在css文件中对line-height属性所做的修改根本就不起作用。详见[谷歌搜索：ie line height problem](https://www.google.com/search?q=ie+line+height+problem&oq=ie+line+height+problem&aqs=chrome..69i57.895j0j9&sourceid=chrome&es_sm=122&ie=UTF-8)。
 
 这两个问题虽然都不大，但是相互纠缠起来就会令人百思不得其解了。
+
 ```
 1. css文件不更新，修改line-height属性根本起不到作用。
 2. 即便各种重启、清空缓存，css文件更新了，IE视line-height属性的改动为无物，给人感觉还是没起作用。
