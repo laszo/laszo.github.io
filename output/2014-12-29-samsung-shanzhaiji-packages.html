@@ -19,8 +19,8 @@
                 淘宝上买的三星山寨机的进程列表、服务列表、包列表
             </h3>
             <p>我从淘宝上卖的三星山寨机，隔一段时间就自己给我装程序，都是一些小游戏。这应该是在后台常驻运行了什么服务，定期或不定期从网络上获取安装包并自动给我安装。我用adb shell登陆进手机，获得的包、服务、进程列表如下，希望能从中找出来是哪个进程干的好事。</p>
-<p>1，ps
-<code>USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME
+<p>1，ps</p>
+<p><code>USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME
 root      1     0     668    528   c0109e08 00010168 S /init
 root      2     0     0      0     c00686f0 00000000 S kthreadd
 root      3     2     0      0     c00528ac 00000000 S ksoftirqd/0
@@ -167,8 +167,8 @@ u0_a14    11447 134   298916 21516 ffffffff 40144a90 S com.android.deskclock
 shell     11668 164   1240   600   c0011654 40099528 S /system/bin/sh
 root      11672 11668 1248   612   c0011654 4006b528 S sh
 root      11716 11672 1336   484   00000000 400f19d8 R ps</code></p>
-<p>2，service list
-<code>Found 87 services:
+<p>2，service list</p>
+<p><code>Found 87 services:
 0   phoneEx: [com.mediatek.common.telephony.ITelephonyEx]
 1   phone: [com.android.internal.telephony.ITelephony]
 2   iphonesubinfo2: [com.android.internal.telephony.IPhoneSubInfo]
@@ -256,8 +256,8 @@ root      11716 11672 1336   484   00000000 400f19d8 R ps</code></p>
 84  GoogleOtaBinder: [GoogleOtaBinder]
 85  NvRAMAgent: [NvRAMAgent]
 86  DMAgent: []</code></p>
-<p>3，pm -l
-<code>package:/system/framework/framework-res.apk=android
+<p>3，pm -l</p>
+<p><code>package:/system/framework/framework-res.apk=android
 package:/data/app/com.Android1.Packaging-1.apk=com.Android1.Packaging
 package:/data/app/com.ai.android.book.provider-2.apk=com.ai.android.book.provider
 package:/data/app/com.ai.android.book.resources-1.apk=com.ai.android.book.resources

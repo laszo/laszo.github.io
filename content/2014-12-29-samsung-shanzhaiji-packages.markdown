@@ -8,6 +8,7 @@ slug: samsunng-shan-zhai-packages
 我从淘宝上卖的三星山寨机，隔一段时间就自己给我装程序，都是一些小游戏。这应该是在后台常驻运行了什么服务，定期或不定期从网络上获取安装包并自动给我安装。我用adb shell登陆进手机，获得的包、服务、进程列表如下，希望能从中找出来是哪个进程干的好事。
 
 1，ps
+
 ```
 USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME
 root      1     0     668    528   c0109e08 00010168 S /init
@@ -159,6 +160,7 @@ root      11716 11672 1336   484   00000000 400f19d8 R ps
 ```
 
 2，service list
+
 ```
 Found 87 services:
 0	phoneEx: [com.mediatek.common.telephony.ITelephonyEx]
@@ -251,6 +253,7 @@ Found 87 services:
 ```
 
 3，pm -l
+
 ```
 package:/system/framework/framework-res.apk=android
 package:/data/app/com.Android1.Packaging-1.apk=com.Android1.Packaging
