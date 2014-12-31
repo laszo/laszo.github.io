@@ -18,10 +18,10 @@
             <h3 class="blog-post-title">
                 unix v6 源代码中的匿名结构体
             </h3>
-            <p>我们知道，C语言中的结构体定义是：
-<code>struct tag { member-list } variable-list ;</code></p>
-<p>其中，tag、member-list、variable-list这3部分至少要出现2个，比如：
-```
+            <p>我们知道，C语言中的结构体定义是：</p>
+<p><code>struct tag { member-list } variable-list ;</code></p>
+<p>其中，tag、member-list、variable-list这3部分至少要出现2个，比如：</p>
+<p>```
 struct 
 {
     int a;
@@ -36,8 +36,8 @@ struct
 };
 ```
 都是可以的。</p>
-<p>最近在阅读unix v6的源码，却经常发现这样的代码：
-<code>struct
+<p>最近在阅读unix v6的源码，却经常发现这样的代码：</p>
+<p><code>struct
 {
         char    lobyte;
         char    hibyte;

@@ -6,11 +6,13 @@ slug: Anonymous-Structures-in-C-in-Unix-Kernel
 ---
 
 我们知道，C语言中的结构体定义是：
+
 ```
 struct tag { member-list } variable-list ; 
 ```
 
 其中，tag、member-list、variable-list这3部分至少要出现2个，比如：
+
 ```
 struct 
 {
@@ -29,6 +31,7 @@ struct SIMPLE
 都是可以的。
 
 最近在阅读unix v6的源码，却经常发现这样的代码：
+
 ```
 struct
 {
