@@ -21,28 +21,26 @@
             <p>我们知道，C语言中的结构体定义是：</p>
 <p><code>struct tag { member-list } variable-list ;</code></p>
 <p>其中，tag、member-list、variable-list这3部分至少要出现2个，比如：</p>
-<p>```
-struct 
+<p><code>struct 
 {
     int a;
     char b;
     double c;
-} s1;</p>
-<p>struct SIMPLE
+} s1;</code></p>
+<p><code>struct SIMPLE
 {
     int a;
     char b;
     double c;
-};
-```
-都是可以的。</p>
+};</code></p>
+<p>都是可以的。</p>
 <p>最近在阅读unix v6的源码，却经常发现这样的代码：</p>
 <p><code>struct
 {
         char    lobyte;
         char    hibyte;
-};
-struct
+};</code></p>
+<p><code>struct
 {
         int     integ;
 };</code></p>

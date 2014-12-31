@@ -20,7 +20,9 @@ struct
     char b;
     double c;
 } s1;
+```
 
+```
 struct SIMPLE
 {
     int a;
@@ -28,6 +30,7 @@ struct SIMPLE
     double c;
 };
 ```
+
 都是可以的。
 
 最近在阅读unix v6的源码，却经常发现这样的代码：
@@ -38,6 +41,9 @@ struct
         char    lobyte;
         char    hibyte;
 };
+```
+
+```
 struct
 {
         int     integ;
