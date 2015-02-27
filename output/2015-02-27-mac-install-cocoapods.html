@@ -20,17 +20,22 @@
             </h3>
             <p>首先要安装gem和ruby</p>
 <p>先安装 <a href="http://developer.apple.com/xcode/">Xcode</a> 开发工具，它将帮你安装好 Unix 环境需要的开发包 </p>
-<p>然后安装 <a href="http://brew.sh">Homebrew</a> 
-<code>ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-curl -L https://get.rvm.io | bash -s stable
-source ~/.rvm/scripts/rvm
-rvm install 2.0.0
-rvm 2.0.0 --default</code></p>
-<p>切换gem源
-<code>gem source -r https://rubygems.org/
-gem source -a https://ruby.taobao.org</code></p>
-<p>然后
-<code>sudo gem install cocoapods</code></p>
+<p>然后安装 <a href="http://brew.sh">Homebrew</a> </p>
+<p>```
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</p>
+<p>curl -L https://get.rvm.io | bash -s stable</p>
+<p>source ~/.rvm/scripts/rvm</p>
+<p>rvm install 2.0.0</p>
+<p>rvm 2.0.0 --default
+```</p>
+<p>切换gem源</p>
+<p>```
+gem source -r https://rubygems.org/</p>
+<p>gem source -a https://ruby.taobao.org
+```</p>
+<p>然后</p>
+<p><code>sudo gem install cocoapods</code></p>
+<p>即可。</p>
 <p>参考：
 https://ruby-china.org/wiki/install_ruby_guide
 http://code4app.com/article/cocoapods-install-usage</p>
