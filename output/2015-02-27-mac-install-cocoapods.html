@@ -1,0 +1,42 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>mac安装CocoaPods</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/blog.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="blog-header">
+        <h3 class="blog-title">学到老，活到老</h3>
+        <hr/>
+    </div>
+
+    <div class="row col-sm-12 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                mac安装CocoaPods
+            </h3>
+            <p>首先要安装gem和ruby</p>
+<p>先安装 <a href="http://developer.apple.com/xcode/">Xcode</a> 开发工具，它将帮你安装好 Unix 环境需要的开发包 </p>
+<p>然后安装 <a href="http://brew.sh">Homebrew</a> </p>
+<p>ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+curl -L https://get.rvm.io | bash -s stable
+source ~/.rvm/scripts/rvm
+rvm install 2.0.0
+rvm 2.0.0 --default</p>
+<p>切换gem源
+gem source -r https://rubygems.org/
+gem source -a https://ruby.taobao.org</p>
+<p>然后
+sudo gem install cocoapods</p>
+<p>参考：
+https://ruby-china.org/wiki/install_ruby_guide
+http://code4app.com/article/cocoapods-install-usage</p>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
