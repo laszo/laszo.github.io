@@ -18,7 +18,7 @@
             <h3 class="blog-post-title">
                 Ubuntu下使用VPN（基于PPTP协议）
             </h3>
-            <p>三个主要的查看网络地址及路由的命令：</p>
+            <p>三个主要的查看网络地址及路由的命令</p>
 <p>```
 ifconfig</p>
 <p>route -n</p>
@@ -29,7 +29,7 @@ ifconfig</p>
 </ol>
 <p><code>sudo apt-get install pptp-linux</code></p>
 <ol>
-<li>初始化一个VPN的连接通道：</li>
+<li>初始化一个VPN的连接通道</li>
 </ol>
 <p><code>sudo pptpsetup --create myvpn --server xxx.xxx.xxx.xxx --username xx1 --password xx2 --encrypt --start</code></p>
 <p>将输出：</p>
@@ -44,7 +44,7 @@ Using interface ppp0</p>
 <p>通过刚才的创建步骤，在/etc/ppp/peers目录下面，会生成一个叫myvpn的文件。在/etc/ppp目录下面，用户名和密码会写在chap-secrets文件中。</p>
 <p>这时候，虽然已经添加了VPN、并且启动了连接，但是默认的路由仍然是原来的。我们需要修改路由配置：</p>
 <ol>
-<li>修改默认路由：</li>
+<li>修改默认路由</li>
 </ol>
 <p>```
 sudo ip route del default </p>
@@ -54,12 +54,12 @@ sudo ip route del default </p>
 <ol>
 <li>开启与关闭VPN时需要做的动作</li>
 </ol>
-<p>在关闭VPN连接时，需要恢复原来的默认路由：</p>
+<p>在关闭VPN连接时，需要恢复原来的默认路由</p>
 <p>```
 sudo poff myvpn</p>
 <p>sudo ip route add default via xx.xx.xx.xx
 ```</p>
-<p>开启VPN时，需要添加新的VPN为默认路由：</p>
+<p>开启VPN时，需要添加新的VPN为默认路由</p>
 <p>```
 sudo pon myvpn</p>
 <p>sudo ip route del default </p>
@@ -86,7 +86,7 @@ sudo pon myvpn</p>
 <p>写入</p>
 <p><code>/etc/ppp/ip-down.d/disableroute</code>
 文件。</p>
-<p>最后，修改文件的执行权限：</p>
+<p>最后，修改文件的执行权限</p>
 <p>```
 sudo chmod a+x /etc/ppp/ip-up.d/route-traffic </p>
 <p>sudo chmod a+x /etc/ppp/ip-down.d/disableroute 

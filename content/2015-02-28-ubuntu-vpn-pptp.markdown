@@ -5,7 +5,7 @@ categories:
 slug: ubuntu-vpn-pptp
 ---
 
-三个主要的查看网络地址及路由的命令：
+三个主要的查看网络地址及路由的命令
 
 ```
 ifconfig
@@ -21,7 +21,7 @@ ip route
 sudo apt-get install pptp-linux
 ```
 
-2. 初始化一个VPN的连接通道：
+2. 初始化一个VPN的连接通道
 
 ```
 sudo pptpsetup --create myvpn --server xxx.xxx.xxx.xxx --username xx1 --password xx2 --encrypt --start
@@ -47,7 +47,7 @@ remote IP address 10.10.0.1
 
 这时候，虽然已经添加了VPN、并且启动了连接，但是默认的路由仍然是原来的。我们需要修改路由配置：
 
-3. 修改默认路由：
+3. 修改默认路由
 
 ```
 sudo ip route del default 
@@ -59,7 +59,7 @@ sudo ip route add default dev ppp0
 
 4. 开启与关闭VPN时需要做的动作
 
-在关闭VPN连接时，需要恢复原来的默认路由：
+在关闭VPN连接时，需要恢复原来的默认路由
 
 ```
 sudo poff myvpn
@@ -67,7 +67,7 @@ sudo poff myvpn
 sudo ip route add default via xx.xx.xx.xx
 ```
 
-开启VPN时，需要添加新的VPN为默认路由：
+开启VPN时，需要添加新的VPN为默认路由
 
 ```
 sudo pon myvpn
@@ -113,7 +113,7 @@ Ubuntu在开启VPN连接时，会自动执行/etc/ppp/ip-up.d/下的可执行文
 ```
 文件。
 
-最后，修改文件的执行权限：
+最后，修改文件的执行权限
 
 ```
 sudo chmod a+x /etc/ppp/ip-up.d/route-traffic 
