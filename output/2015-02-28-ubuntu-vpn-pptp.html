@@ -69,22 +69,22 @@ sudo pon myvpn</p>
 <li>如果嫌每次输入命令麻烦，可以将这两段命令写在脚本文件中自动执行。</li>
 </ol>
 <p>Ubuntu在开启VPN连接时，会自动执行/etc/ppp/ip-up.d/下的可执行文件，在关闭VPN连接时，会自动执行/etc/ppp/ip-down.d/目录下的可执行文件。</p>
-<p>所以，可以把如下内容
-```</p>
+<p>所以，可以把如下内容</p>
+<p>```</p>
 <h1>!/bin/bash</h1>
 <p>/sbin/ip route del default</p>
 <p>/sbin/ip route add default dev ppp0
 ```</p>
-<p>写入
-<code>/etc/ppp/ip-up.d/route-traffic</code>
+<p>写入</p>
+<p><code>/etc/ppp/ip-up.d/route-traffic</code>
 文件。</p>
 <p>把如下内容</p>
 <p>```</p>
 <h1>!/bin/bash</h1>
 <p>/sbin/ip route add default via 192.168.1.1
 ```</p>
-<p>写入
-<code>/etc/ppp/ip-down.d/disableroute</code>
+<p>写入</p>
+<p><code>/etc/ppp/ip-down.d/disableroute</code>
 文件。</p>
 <p>最后，修改文件的执行权限：</p>
 <p>```

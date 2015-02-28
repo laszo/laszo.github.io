@@ -82,6 +82,7 @@ sudo ip route add default dev ppp0
 Ubuntu在开启VPN连接时，会自动执行/etc/ppp/ip-up.d/下的可执行文件，在关闭VPN连接时，会自动执行/etc/ppp/ip-down.d/目录下的可执行文件。
 
 所以，可以把如下内容
+
 ```
 #!/bin/bash
 
@@ -91,6 +92,7 @@ Ubuntu在开启VPN连接时，会自动执行/etc/ppp/ip-up.d/下的可执行文
 ```
 
 写入
+
 ```
 /etc/ppp/ip-up.d/route-traffic
 ```
@@ -105,6 +107,7 @@ Ubuntu在开启VPN连接时，会自动执行/etc/ppp/ip-up.d/下的可执行文
 ```
 
 写入
+
 ```
 /etc/ppp/ip-down.d/disableroute
 ```
