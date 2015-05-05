@@ -49,6 +49,7 @@
 <p>3，最后，终于到了Provisioning Profile这一步。一个Provisioning Profile相当于前面四个东西的合集。如果前面四个东西都创建完毕了，创建这一步就很简单了。点击加号，根据提示选择对应的APP ID、certificate、devices，最后再给profile起个名字即可。创建完毕以后，最后一步可以下载这个mobileprovision文件。</p>
 <p>这五个东西，Devices和APP ID属于操作步骤，没有对应的文件。后三个东西则是真实的文件。如果你要在其他的MAC上开发这个项目，或者别的同事也要开发和调试这个项目，只需要把这三个文件拷贝到别的MAC上，双击导入即可。</p>
 <p>下面来个一图抵千言：</p>
+<p><img alt="" src="static/images/ios-dev-cer-intro.png" /></p>
 <p>现在回想起来，这点东西并不复杂。但是为什么会这么坑呢？主要是不了解这些东西的相互依赖关系。除了Devices比较独立，也好理解，遇到相关的操作也可以无脑操作。其余的几项，就必须心中有数才能操作了。</p>
 <p>更加坑的是，当这几个东西没有搞好，想要真机运行出现错误提示时，Xocde会提供一个看似很人性化的功能：“fix issues”。这个功能，有时候能够把问题给fix掉，更多的时候它不但没有解决问题，反而让情况变得更乱。当你fix过几次以后，再打开Member Center，发现多了很多xcode创建的cer文件和Provisioning Profile文件。你在新的电脑打开xcode，登录你的开发者账户，xcode还会自动的识别这些远程的这一大堆Provisioning Profile，然后当出现问题时，你就可能会徒劳的在这一大堆profile里面选来选取，就是不成功。殊不知真正的问题往往是出在你没有导入cerSignRequest文件和cer文件。</p>
         </div>
