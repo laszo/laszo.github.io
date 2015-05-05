@@ -49,6 +49,8 @@ cerSignRequest文件是在MAC上操作的。其余四项都是在网页上操作
 
 如果你要在其他的MAC上开发这个项目，或者别的同事也要开发和调试这个项目，
 需要在你的Xcode中把账户信息导出成一个developerprofile文件，在其他mac上用xcode导入这个文件即可。
+操作很简单，参看：[Exporting Your Signing Identities and Provisioning Profiles](https://developer.apple.com/library/mac/recipes/xcode_help-accounts_preferences/articles/export_signing_assets.html)、
+[Importing Your Signing Identities and Provisioning Profiles](https://developer.apple.com/library/mac/recipes/xcode_help-accounts_preferences/articles/import_signing_assets.html#//apple_ref/doc/uid/TP40013306-CH9-SW1)。
 
 下面来个一图抵千言：
 

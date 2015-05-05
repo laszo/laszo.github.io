@@ -55,7 +55,9 @@
 <p>这五个东西，Devices和APP ID属于操作步骤，没有对应的文件。后三个东西则是真实的文件。这些步骤都完成后，
 就可以在你的mac上开发项目并真机调试了。</p>
 <p>如果你要在其他的MAC上开发这个项目，或者别的同事也要开发和调试这个项目，
-需要在你的Xcode中把账户信息导出成一个developerprofile文件，在其他mac上用xcode导入这个文件即可。</p>
+需要在你的Xcode中把账户信息导出成一个developerprofile文件，在其他mac上用xcode导入这个文件即可。
+操作很简单，参看：<a href="https://developer.apple.com/library/mac/recipes/xcode_help-accounts_preferences/articles/export_signing_assets.html">Exporting Your Signing Identities and Provisioning Profiles</a>、
+<a href="https://developer.apple.com/library/mac/recipes/xcode_help-accounts_preferences/articles/import_signing_assets.html#//apple_ref/doc/uid/TP40013306-CH9-SW1">Importing Your Signing Identities and Provisioning Profiles</a>。</p>
 <p>下面来个一图抵千言：</p>
 <p><img height="550px" width="800px" src="../static/images/ios-dev-cer-intro.png" /></p>
 <p>现在回想起来，这点东西并不复杂。但是为什么会这么坑呢？主要是不了解这些东西的相互依赖关系。除了Devices比较独立，也好理解，遇到相关的操作也可以无脑操作。其余的几项，就必须心中有数才能操作了。</p>
