@@ -39,7 +39,11 @@ cerSignRequest文件是在MAC上操作的。其余四项都是在网页上操作
 
 3，最后，终于到了Provisioning Profile这一步。一个Provisioning Profile相当于前面四个东西的合集。如果前面四个东西都创建完毕了，创建这一步就很简单了。点击加号，根据提示选择对应的APP ID、certificate、devices，最后再给profile起个名字即可。创建完毕以后，最后一步可以下载这个mobileprovision文件。
 
-这五个东西，Devices和APP ID属于操作步骤，没有对应的文件。后三个东西则是真实的文件。如果你要在其他的MAC上开发这个项目，或者别的同事也要开发和调试这个项目，只需要把这三个文件拷贝到别的MAC上，双击导入即可。
+这五个东西，Devices和APP ID属于操作步骤，没有对应的文件。后三个东西则是真实的文件。这些东西都创建完毕后，
+就可以在你的mac上开发项目并真机调试了。
+
+如果你要在其他的MAC上开发这个项目，或者别的同事也要开发和调试这个项目，
+需要在你的Xcode中把账户信息导出成一个developerprofile文件，在其他mac上用xcode导入这个文件即可。
 
 下面来个一图抵千言：
 
