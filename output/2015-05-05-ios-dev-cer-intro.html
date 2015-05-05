@@ -44,10 +44,15 @@
 <p>2，APP ID也是相对容易的一步，就是给你的APP起一个名字，一般推荐使用反向域名的方式。比如你的APP英文名叫myapp，你们公司（或者你自己）的域名是test.com，那么你就可以起一个APP ID叫com.test.myapp。在开发的时候，Xcode里项目属性中的Bundle Identifier也必须是这个com.test.myapp。在这一步，可以选择你的APP所需要的权限，比如访问设备位置、访问Game Center等等。将来发布的时候，在iTunes Connect里的APP的套装ID也是这个APP ID。</p>
 <p>前面所说的这两个东西，不依赖于其余三个东西。也就是说，你可以先搞这两步。</p>
 <p>然后这三个东西，是有前后关系的。下面按顺序说明。</p>
-<p>1，cerSignRequest文件，是在MAC上创建的。打开“钥匙串访问”，在左上角菜单选择“证书助理”-“使用key从证书颁发机构请求证书”，填写Email和名称即可，选择存储到磁盘。</p>
-<p>2，cer文件，在网页上，选择Certificates点击加号，按照提示逐步创建即可。在选择APP ID的那一步，选择你创建的APP ID，在Generate your certificate那一步，选择在MAC上创建的cerSignRequest文件。创建完毕以后，最后一步可以下载这个cer文件。</p>
-<p>3，最后，终于到了Provisioning Profile这一步。一个Provisioning Profile相当于前面四个东西的合集。如果前面四个东西都创建完毕了，创建这一步就很简单了。点击加号，根据提示选择对应的APP ID、certificate、devices，最后再给profile起个名字即可。创建完毕以后，最后一步可以下载这个mobileprovision文件。</p>
-<p>这五个东西，Devices和APP ID属于操作步骤，没有对应的文件。后三个东西则是真实的文件。这些东西都创建完毕后，
+<p>1，cerSignRequest文件，是在MAC上创建的。打开“钥匙串访问”，在左上角菜单选择“证书助理”-“使用key从证书颁发机构请求证书”，
+填写Email和名称即可，选择存储到磁盘。</p>
+<p>2，cer文件，在网页上，选择Certificates点击加号，按照提示逐步创建即可。在选择APP ID的那一步，选择你创建的APP ID，
+在Generate your certificate那一步，选择在MAC上创建的cerSignRequest文件。
+创建完毕以后，最后一步可以下载这个cer文件并双击导入你的mac。</p>
+<p>3，最后，终于到了Provisioning Profile这一步。一个Provisioning Profile相当于前面四个东西的合集。
+如果前面四个东西都创建完毕了，创建这一步就很简单了。点击加号，根据提示选择对应的APP ID、certificate、devices，
+最后再给profile起个名字即可。创建完毕以后，最后一步可以下载这个mobileprovision文件并双击导入你的mac。</p>
+<p>这五个东西，Devices和APP ID属于操作步骤，没有对应的文件。后三个东西则是真实的文件。这些步骤都完成后，
 就可以在你的mac上开发项目并真机调试了。</p>
 <p>如果你要在其他的MAC上开发这个项目，或者别的同事也要开发和调试这个项目，
 需要在你的Xcode中把账户信息导出成一个developerprofile文件，在其他mac上用xcode导入这个文件即可。</p>
