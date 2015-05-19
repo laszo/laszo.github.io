@@ -11,12 +11,12 @@ postTemplatePath = 'template/post.html'
 indexTemplatePath = 'template/index.html'
 outpath = 'output/'
 contentpath = 'content/'
-blogtitle = u'脱掉枷锁得自由'
+blogtitle = u'别闹了'
 
 
-def createPost(post):
+def create_post(post):
     text = codecs.open(contentpath + post, 'r', encoding='utf8').read()
-    mkdtxt, title = readPostConfig(text)
+    mkdtxt, title = read_post_config(text)
     content = markdown.markdown(mkdtxt)
     t = codecs.open(postTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(content=content, title=title, blogtitle=blogtitle)
@@ -27,7 +27,7 @@ def createPost(post):
     return outfile, title
 
 
-def readPostConfig(text):
+def read_post_config(text):
     get_header = re.compile(r'---[\s\S]*?---')
     header = get_header.findall(text)[0]
     content = text.replace(header, '', 1)
@@ -40,7 +40,7 @@ def readPostConfig(text):
     return content, title
 
 
-def createIndex(links):
+def create_index(links):
     t = codecs.open(indexTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(links=links, title=blogtitle)
 
@@ -54,9 +54,9 @@ def main():
     posts.reverse()
     links = []
     for p in posts:
-        url, title = createPost(p)
+        url, title = create_post(p)
         links.append({'title':title, 'url':url})
-    createIndex(links)
+    create_index(links)
 
 
 if __name__ == '__main__':
