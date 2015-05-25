@@ -60,5 +60,12 @@ cerSignRequest文件是在MAC上操作的。其余四项都是在网页上操作
 
 更加坑的是，当这几个东西没有搞好，想要真机运行出现错误提示时，Xocde会提供一个看似很人性化的功能：“fix issues”。这个功能，有时候能够把问题给fix掉，更多的时候它不但没有解决问题，反而让情况变得更乱。当你fix过几次以后，再打开Member Center，发现多了很多xcode创建的cer文件和Provisioning Profile文件。你在新的电脑打开xcode，登录你的开发者账户，xcode还会自动的识别这些远程的这一大堆Provisioning Profile，然后当出现问题时，你就可能会徒劳的在这一大堆profile里面选来选取，就是不成功。殊不知真正的问题往往是出在你没有导入cerSignRequest文件和cer文件。
 
+还有一个很常见的坑：你从GitHub上或者从别的什么地方下载了一个项目，它的Bundle Identifier肯定是起了一个你没有用过的名字，如果你想在模拟器上运行一般是没有问题的，但是如果想要在真机上调试运行的话，就要进行一下两步了：
+
+1. 在Member Center新建一个APP ID，也就是你下载的项目的Bundle Identifier，可以用原来的，也可以自己起一个
+
+2. 同样是在Member Center新建一个Provisioning Profile，选择刚才的APP ID。创建完了以后下载并导入Xcode。
+
+有了这两个步骤以后，你应该就可以在真机上调试下载下来的项目了。
 
 
