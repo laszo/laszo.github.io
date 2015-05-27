@@ -33,7 +33,7 @@ https://github.com/laszo/realsimpleblog.git
 ```
 或点击如下连接：[下载zip包](https://github.com/laszo/realsimpleblog/archive/master.zip)，并解压。
 
-3. 开始写博客。在content目录下，新建markdown类型的文件，使用你喜欢的编辑器写吧。如果你不熟悉markdown，可以参看[Markdown 语法说明 (简体中文版)](http://wowubuntu.com/markdown/)，或。[作业部落](https://www.zybuluo.com)提供了在线的markdown编辑器。我向你保证，markdown标记是最最简单易学的，花几分钟时间学会以后，物超所值，欲购从速！
+3. 开始写博客。在content目录下，新建markdown类型的文件，使用你喜欢的编辑器写吧。如果你不熟悉markdown，可以参看[Markdown 语法说明 (简体中文版)](http://wowubuntu.com/markdown/)，或。[作业部落](https://www.zybuluo.com)提供了在线的markdown编辑器。我向你保证，markdown标记是最最简单易学的，花几分钟时间学会以后，物超所值。
 如果你暂时不想写新文章，可以跳到第四步，因为content文件夹中已经附带了一篇“helloworld.markdown”。让你的新博客内容不会为空。
 
 4. 打开命令行终端，进入realsimpleblog目录，输入
