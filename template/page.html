@@ -1,30 +1,31 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>{{ title }}</title>
+    <title>{{ title }} - {{ blogtitle }}</title>
     <link rel="stylesheet" href="static/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container">
     <div class="blog-header">
-        <h1 class="blog-title">{{ title }}</h1>
+        <h1 class="blog-title">{{ blogtitle }}</h1>
     </div>
     <div style="margin-top: 20px; font-size:20">
         <a href="index.html">博客</a>
-        {% for page in pagelinks: %}
-        <a href="{{ page['url'] }}">{{ page['title'] }}</a>
+        {% for link in pagelinks: %}
+        <a href="{{ link['url'] }}">{{ link['title'] }}</a>
         {% endfor %}
     </div>
     <hr style="margin: 0"/>
-    {% for post in postlinks: %}
-    <div class="row col-sm-12 blog-main">
-        <div class="blog-post">
-            <h3 class="blog-post-title">
-                <a href="{{ post['url'] }}" target="_blank">{{ post['title'] }}</a>
-            </h3>
+    <div class="container">
+        <div class="row col-sm-12 blog-main">
+            <div class="blog-post">
+                <h3 class="blog-post-title">
+                    {{ title }}
+                </h3>
+                {{ content }}
+            </div>
         </div>
     </div>
-    {% endfor %}
 </div>
 <script src="static/js/jquery.min.js"></script>
 <script src="static/js/bootstrap.min.js"></script>
