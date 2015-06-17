@@ -1,0 +1,67 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>8个Python Web框架基准测试（转） - 活到老，学到老</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="blog-header">
+        <h1 class="blog-title">活到老，学到老</h1>
+        <hr/>
+    </div>
+    <div class="row col-sm-12 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                8个Python Web框架基准测试（转）
+            </h3>
+            <p>近来在Hacker News上面看到有人发了一篇帖子，对8个Python Web框架进行了测试。
+原文见<a href="http://klen.github.io/py-frameworks-bench/">Python's Web Framework Benchmarks</a>。</p>
+<p>参与测试的框架有如下8个：</p>
+<ul>
+<li>
+<p>Aiohttp 0.16.3 — http client/server for Asyncio.</p>
+</li>
+<li>
+<p>Bottle 0.12.8 — Fast, simple and lightweight WSGI micro web-framework</p>
+</li>
+<li>
+<p>Django 1.8.2 — The Web framework for perfectionists with deadlines</p>
+</li>
+<li>
+<p>Falcon 0.3.0 — A high-performance Python framework for building cloud APIs</p>
+</li>
+<li>
+<p>Flask 0.10.1 — A microframework based on Werkzeug, Jinja2 and good intentions</p>
+</li>
+<li>
+<p>Muffin 0.0.88 — A web-framework based on Asyncio stack</p>
+</li>
+<li>
+<p>Pyramid 1.5.7 — A small, fast, down-to-earth, open source Python web framework</p>
+</li>
+<li>
+<p>Tornado 4.2 — A Python web framework and asynchronous networking library</p>
+</li>
+</ul>
+<p>测试的方法很简单，有如下三项：</p>
+<ol>
+<li>
+<p>JSON测试。把一个对象序列化成JSON，并且返回 <code>application/json</code>响应。</p>
+</li>
+<li>
+<p>远程测试。从一个远程服务器获取数据并返回http响应。</p>
+</li>
+<li>
+<p>完全测试。使用ORM模型从数据库获取一些数据，插入一个新对象，排序并使用模板生成网页。</p>
+</li>
+</ol>
+<p>测试的结果请看原网页。</p>
+<p>可以看到，除了第一项序列化JSON对象，后两项的测试中，tornado和aiohttp都取得了领先的成绩，这跟它们使用的异步的事件机制有关。</p>
+        </div>
+    </div>
+</div>
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+</body>
+</html>
