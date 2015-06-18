@@ -36,4 +36,10 @@ slug: 8-python-web-framework-benchmark
 
 测试的结果请看原网页。
 
-可以看到，除了第一项序列化JSON对象，后两项的测试中，tornado和aiohttp都取得了领先的成绩，这跟它们使用的异步的事件机制有关。
+可以看到，除了第一项序列化JSON对象，后两项的测试中，tornado和aiohttp都取得了领先的成绩，
+这显然跟它们使用的异步的事件机制有关。
+
+在这条消息的评论里，有人说这个评测对性能原理考虑的不是很充分，有人说漏掉了某些框架，
+还有人给出了另外一个benchmark:[https://www.techempower.com/benchmarks/](https://www.techempower.com/benchmarks/)。
+
+Hacker News上面信息量真的是挺大。
