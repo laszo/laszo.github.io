@@ -20,5 +20,3 @@ slug: about
 GitHub: [https://github.com/laszo](https://github.com/laszo)
 
 联系：lasologo(#)gmail.com
-
-爱好广泛
