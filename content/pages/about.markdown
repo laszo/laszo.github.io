@@ -17,6 +17,8 @@ slug: about
 
 2002.9——2006.6、2008.9——2010.3，天津工业大学，本科及研究生。
 
-GitHub:[https://github.com/laszo](https://github.com/laszo)
+GitHub: [https://github.com/laszo](https://github.com/laszo)
 
 联系：lasologo(#)gmail.com
+
+爱好广泛
