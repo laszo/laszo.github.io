@@ -18,7 +18,7 @@ blogtitle = u'活到老，学到老'
 
 def createPost(post):
     text = codecs.open(contentpath + post, 'r', encoding='utf8').read()
-    mkdtxt, title = readConfig(text)
+    mkdtxt, title = read_config(text)
     content = markdown.markdown(mkdtxt)
     t = codecs.open(postTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(content=content, title=title, blogtitle=blogtitle)
@@ -29,9 +29,16 @@ def createPost(post):
     return outfile, title
 
 
+def get_page_info(page):
+    text = codecs.open(pagespath + page, 'r', encoding='utf8').read()
+    mkdtxt, title = read_config(text)
+    outfile = os.path.splitext(page)[0] + '.html'
+    return outfile, title
+
+
 def create_page(page, pagelinks):
     text = codecs.open(pagespath + page, 'r', encoding='utf8').read()
-    mkdtxt, title = readConfig(text)
+    mkdtxt, title = read_config(text)
     content = markdown.markdown(mkdtxt)
     t = codecs.open(pageTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(content=content, title=title, blogtitle=blogtitle, pagelinks=pagelinks)
@@ -42,7 +49,7 @@ def create_page(page, pagelinks):
     return outfile, title
 
 
-def readConfig(text):
+def read_config(text):
     get_header = re.compile(r'---[\s\S]*?---')
     header = get_header.findall(text)[0]
     content = text.replace(header, '', 1)
@@ -76,13 +83,15 @@ def main():
     temp_links = []
     for p in pagefiles:
         text = codecs.open(pagespath + p, 'r', encoding='utf8').read()
-        mkdtxt, title = readConfig(text)
+        mkdtxt, title = read_config(text)
         outfile = os.path.splitext(p)[0] + '.html'
         temp_links.append({'title': title, 'url': url})
     pagelinks = []
     for p in pagefiles:
-        url, title = create_page(p, temp_links)
+        url, title = get_page_info(p)
         pagelinks.append({'title': title, 'url': url})
+    for p in pagefiles:
+        create_page(p, pagelinks)
 
     createIndex(postlinks, pagelinks)
 
