@@ -29,7 +29,7 @@ def createPost(post):
     return outfile, title
 
 
-def createPage(page, pagelinks):
+def create_page(page, pagelinks):
     text = codecs.open(pagespath + page, 'r', encoding='utf8').read()
     mkdtxt, title = readConfig(text)
     content = markdown.markdown(mkdtxt)
@@ -71,18 +71,18 @@ def main():
     for p in posts:
         if os.path.isfile(contentpath+p):
             url, title = createPost(p)
-            postlinks.append({'title':title, 'url':url})
+            postlinks.append({'title': title, 'url': url})
     pagefiles = os.listdir(pagespath)
     temp_links = []
     for p in pagefiles:
         text = codecs.open(pagespath + p, 'r', encoding='utf8').read()
         mkdtxt, title = readConfig(text)
         outfile = os.path.splitext(p)[0] + '.html'
-        temp_links.append({'title':title, 'url':url})
+        temp_links.append({'title': title, 'url': url})
     pagelinks = []
     for p in pagefiles:
-        url, title = createPage(p, temp_links)
-        pagelinks.append({'title':title, 'url':url})
+        url, title = create_page(p, temp_links)
+        pagelinks.append({'title': title, 'url': url})
 
     createIndex(postlinks, pagelinks)
 
