@@ -1,0 +1,59 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>发现了一个有意思的项目heim - 活到老，学到老</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="blog-header">
+        <h1 class="blog-title">活到老，学到老</h1>
+        <hr/>
+    </div>
+    <div class="row col-sm-12 blog-main">
+        <div class="blog-post">
+            <h3 class="blog-post-title">
+                发现了一个有意思的项目heim
+            </h3>
+            <p>最近发现了一个有意思的项目
+<a href="https://github.com/euphoria-io/heim" target="_blank">heim</a>，
+是一个实时网页聊天系统。<a href="https://euphoria.io/">euphoria.io</a>是基于这个项目运行的网站。</p>
+<p>有意思的是，当我自己试着编译运行这个项目遇到问题时，试着在
+<a href="https://euphoria.io/room/welcome/">welcom聊天室</a>里提出了该问题，很快得到了项目作者的回应，
+并跟着我一步一步排查问题，最后终于找到了问题之所在。具体交流的内容可以在这个聊天室里看到，
+时间是今天中午左右。用户名分别是hi和chromakode。</p>
+<p>具体的问题是在docker环境中总是找不到gulp。在heim的readme里给出了编译运行项目的五个步骤：</p>
+<ol>
+<li>
+<p>Install <code>git</code>, <a href="https://docs.docker.com/installation/"><code>docker</code></a>, and
+   <a href="https://docs.docker.com/compose/install/"><code>docker-compose</code></a>.</p>
+</li>
+<li>
+<p>Link in our dependencies repository:</p>
+<ol>
+<li>Clone <a href="https://github.com/euphoria-io/heim-deps">heim-deps</a>.</li>
+<li><code>./heim-deps/deps.sh link ./path/to/heim/repo</code></li>
+</ol>
+</li>
+<li>
+<p>Build the client static files: <code>docker-compose run frontend</code>.</p>
+</li>
+<li>
+<p>Init your db: <code>docker-compose run upgradedb sql-migrate up</code>.</p>
+</li>
+<li>
+<p>Start the server: <code>docker-compose up backend</code>.</p>
+</li>
+</ol>
+<p>解决的方法是在执行完第二步之后，手动进行目录的软连接，假设当前目录是heim的父目录，
+heim与heim-deps项目同在当前这个目录：</p>
+<p><code>rm -rf ./heimpath/repo/deps/node_modules</code></p>
+<p><code>ln -rs ./heim-deps/godeps heimpath/repo/deps/godeps</code></p>
+<p><code>ln -rs ./heim-deps/node_modules heimpath/repo/deps/node_modules</code></p>
+        </div>
+    </div>
+</div>
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+</body>
+</html>
