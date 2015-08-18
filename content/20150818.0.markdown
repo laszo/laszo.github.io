@@ -44,3 +44,13 @@ ln -rs ./heim-deps/godeps heimpath/repo/deps/godeps
 ```
 ln -rs ./heim-deps/node_modules heimpath/repo/deps/node_modules
 ```
+
+也有可能是需要进行如下操作：
+
+```
+ rm -rf ./heimpath/deps/node_modules/
+```
+
+```
+ ln -rs ./heim-deps/node_modules ./heimpath/deps/node_modules
+ ```
