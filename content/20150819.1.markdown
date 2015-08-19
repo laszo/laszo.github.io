@@ -10,10 +10,14 @@ slug:
 [React](http://facebook.github.io/react/) | 
 [React：引领未来的用户界面开发框架](http://item.jd.com/11688174.html)
 
+[Flux](https://facebook.github.io/flux/)
+
+[Reflux](https://github.com/reflux/refluxjs)
+
 [Docker源码分析](http://item.jd.com/11742113.html)
 
 [Open Stack设计与实现](http://item.jd.com/11681557.html)
 
 [Go语言程序设计](http://item.jd.com/11281696.html)
 
-除了Openstack，其余都是[heim项目](https://github.com/euphoria-io/heim)所用到的技术。
+除了Openstack，其余都是[heim项目](https://github.com/euphoria-io/heim)所用到或相关的技术。
