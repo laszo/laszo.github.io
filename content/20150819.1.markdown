@@ -4,7 +4,7 @@ date: 2015-08-19 23:47
 categories:
 slug: 
 ---
->
+
 [less.js](http://less.bootcss.com/)
 
 [React](http://facebook.github.io/react/) | 
@@ -15,3 +15,5 @@ slug:
 [Open Stack设计与实现](http://item.jd.com/11681557.html)
 
 [Go语言程序设计](http://item.jd.com/11281696.html)
+
+除了Openstack，其余都是[heim项目](https://github.com/euphoria-io/heim)所用到的技术。
