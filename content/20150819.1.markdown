@@ -1,0 +1,17 @@
+---
+title: "近期待办事项及待阅读书目"
+date: 2015-08-19 23:47
+categories:
+slug: 
+---
+>
+[less.js](http://less.bootcss.com/)
+
+[React](http://facebook.github.io/react/) | 
+[React：引领未来的用户界面开发框架](http://item.jd.com/11688174.html)
+
+[Docker源码分析](http://item.jd.com/11742113.html)
+
+[Open Stack设计与实现](http://item.jd.com/11681557.html)
+
+[Go语言程序设计](http://item.jd.com/11281696.html)
