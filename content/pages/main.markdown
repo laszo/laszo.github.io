@@ -22,5 +22,9 @@ slug: about
 [pcqpcq/open-source-android-apps](https://github.com/pcqpcq/open-source-android-apps) |
 [dkhamsing/open-source-ios-apps](https://github.com/dkhamsing/open-source-ios-apps)
 
+[hackertarget](https://hackertarget.com/)
+
+[http://vitovan.com/lispweb3.html](http://vitovan.com/lispweb3.html)
+
 
 
