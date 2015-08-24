@@ -13,7 +13,7 @@ indexTemplatePath = 'template/index.html'
 outpath = 'output/'
 contentpath = 'content/'
 pagespath = 'content/pages/'
-blogtitle = u'活到老，学到老'
+blogtitle = u'Joking'
 
 
 def createPost(post):

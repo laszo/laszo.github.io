@@ -24,7 +24,5 @@ slug: about
 
 [hackertarget](https://hackertarget.com/)
 
-[http://vitovan.com/lispweb3.html](http://vitovan.com/lispweb3.html)
-
-
+[An Awesome List of Awesome Lists](https://github.com/sindresorhus/awesome)
 
