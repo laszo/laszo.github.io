@@ -1,0 +1,21 @@
+---
+title: "hacker news 20150907 概要"
+date: 2015-09-07 22:26
+categories:
+slug: 
+---
+
+现在看来，之前所计划的每周搞一次hacker news的简报、这么宽松的计划都显得有点乐观了。上次[简报hacker news](http://www.lvxiaoyu.com/output/20150825.0.html)是8月25号，现在基本上过去了两周了。
+我的工作状态算是比较自由的，有很多时间归自己支配。这样都会延期，可见人的惰性是多么的大。
+
+<hr />
+####[Firefox的创始人写了他自己的《硅谷》剧本](http://techcrunch.com/2015/09/04/the-founder-of-firefox-wrote-his-own-screenplay-for-hbos-silicon-valley-and-its-hilarious/?ncid=rss&utm_source=dlvr.it&utm_medium=twitter&utm_campaign=techglance)
+
+
+![](https://tctechcrunch2011.files.wordpress.com/2015/09/screen-shot-2015-09-04-at-12-01-52-pm.png?w=400)
+
+《硅谷》是HBO出的一个电视剧，顾名思义，讲的是一群年轻人在硅谷创业的事情。目前已经出了两季，风格是比较轻松幽默搞笑的，也很真实，但是里面的很多细节只有真正的程序员和创业者才能get到。
+如果你正在创业，说不定对你还有所启发呢！反正我们老板每看完一集之后都要来回踱步许久...
+
+Blake Ross，作为firefox的建立者，也在Facebook和Netscape工作过，对于startup还是知道点的。他由于等不及电视剧的下一季，所以花了48小时写了自己的剧本，剧情是与第二季的最后一集相衔接的。[剧本的pdf链接](http://blakeross.com/SiliconValleyS03E01.pdf)
+
