@@ -17,12 +17,17 @@ slug: about
 
 [有聊](http://www.yochat.cn/)
 
-[List of free and open-source Android applications](https://en.wikipedia.org/wiki/List_of_free_and_open-source_Android_applications) |
-[AOpenSource.com Android Open Source](http://www.aopensource.com/) |
-[pcqpcq/open-source-android-apps](https://github.com/pcqpcq/open-source-android-apps) |
+[List of free and open-source Android applications](https://en.wikipedia.org/wiki/List_of_free_and_open-source_Android_applications)
+
+[AOpenSource.com Android Open Source](http://www.aopensource.com/)
+
+[pcqpcq/open-source-android-apps](https://github.com/pcqpcq/open-source-android-apps) 
+
 [dkhamsing/open-source-ios-apps](https://github.com/dkhamsing/open-source-ios-apps)
 
 [hackertarget](https://hackertarget.com/)
 
 [An Awesome List of Awesome Lists](https://github.com/sindresorhus/awesome)
+
+[IPN (Intelligent Podcast Network)](https://ipn.li/)
 
