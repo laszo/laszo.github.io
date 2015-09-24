@@ -21,7 +21,7 @@ slug: about
 
 [AOpenSource.com Android Open Source](http://www.aopensource.com/)
 
-[pcqpcq/open-source-android-apps](https://github.com/pcqpcq/open-source-android-apps) 
+[pcqpcq/open-source-android-apps](https://github.com/pcqpcq/open-source-android-apps)
 
 [dkhamsing/open-source-ios-apps](https://github.com/dkhamsing/open-source-ios-apps)
 
@@ -31,3 +31,4 @@ slug: about
 
 [IPN (Intelligent Podcast Network)](https://ipn.li/)
 
+[Best Django (Python) CMS 2015](https://firebearstudio.com/blog/best-django-python-cms-2015.html)
