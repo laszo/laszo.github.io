@@ -77,18 +77,24 @@ def main():
     posts.reverse()
     postlinks = []
     for p in posts:
+        if not check_file_ext(p, 'markdown'):
+            continue
         if os.path.isfile(contentpath+p):
             url, title = createPost(p)
             postlinks.append({'title': title, 'url': url})
     pagefiles = os.listdir(pagespath)
     temp_links = []
     for p in pagefiles:
+        if not check_file_ext(p, 'markdown'):
+            continue
         text = codecs.open(pagespath + p, 'r', encoding='utf8').read()
         mkdtxt, title = read_config(text)
         outfile = os.path.splitext(p)[0] + '.html'
         temp_links.append({'title': title, 'url': url})
     pagelinks = []
     for p in pagefiles:
+        if not check_file_ext(p, 'markdown'):
+            continue
         url, title = get_page_info(p)
         pagelinks.append({'title': title, 'url': url})
     for p in pagefiles:
@@ -96,6 +102,13 @@ def main():
 
     createIndex(postlinks, pagelinks)
 
+
+def check_file_ext(fname, ext):
+    tlist = fname.split('.')
+    if len(tlist) >= 1:
+        if tlist[-1] == ext:
+            return True
+    return False
 
 if __name__ == '__main__':
     main()
