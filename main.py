@@ -14,7 +14,7 @@ indexTemplatePath = 'template/index.html'
 outpath = 'output/'
 contentpath = 'content/'
 pagespath = 'content/pages/'
-blogtitle = u'Joking'
+blogtitle = u'Lv Xiaoyu'
 
 
 def createPost(post):
