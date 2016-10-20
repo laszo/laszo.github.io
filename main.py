@@ -10,9 +10,9 @@ from jinja2 import Template
 
 postTemplatePath = 'template/post.html'
 pageTemplatePath = 'template/page.html'
-indexTemplatePath = 'template/index.html'
-outpath = 'output/'
-contentpath = 'content/'
+blogTemplatePath = 'template/blog.html'
+outpath = 'static/posts/'
+contentpath = 'content/posts/'
 pagespath = 'content/pages/'
 blogtitle = u'Lv Xiaoyu'
 
@@ -63,11 +63,11 @@ def read_config(text):
     return content, title
 
 
-def createIndex(postlinks, pagelinks):
-    t = codecs.open(indexTemplatePath, 'r', encoding='utf8').read()
+def createBlogIndex(postlinks, pagelinks):
+    t = codecs.open(blogTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(postlinks=postlinks, pagelinks=pagelinks, title=blogtitle)
 
-    outfile = 'index.html'
+    outfile = 'blog.html'
     output_file = codecs.open(outfile, "w", encoding="utf-8", errors="xmlcharrefreplace")
     output_file.write(html)
 
@@ -102,7 +102,7 @@ def main():
     for p in pagefiles:
         create_page(p, pagelinks)
 
-    createIndex(postlinks, pagelinks)
+    createBlogIndex(postlinks, pagelinks)
 
 
 def check_file_ext(fname, ext):
