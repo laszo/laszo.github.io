@@ -97,6 +97,8 @@ def main():
             continue
         url, title = get_page_info(p)
         pagelinks.append({'title': title, 'url': url})
+    pagelinks.append({'title': 'Blog', 'url': 'index.html'})
+    pagelinks = sorted(pagelinks, key=lambda link: link['title'])
     for p in pagefiles:
         create_page(p, pagelinks)
 
