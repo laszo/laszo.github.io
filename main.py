@@ -14,6 +14,7 @@ blogTemplatePath = 'template/blog.html'
 outpath = 'static/posts/'
 contentpath = 'content/posts/'
 pagespath = 'content/pages/'
+indexFileName = 'index.html'
 blogtitle = u'Lv Xiaoyu'
 
 
@@ -65,9 +66,9 @@ def read_config(text):
 
 def createBlogIndex(postlinks, pagelinks):
     t = codecs.open(blogTemplatePath, 'r', encoding='utf8').read()
-    html = Template(t).render(postlinks=postlinks, pagelinks=pagelinks, title=blogtitle)
+    html = Template(t).render(postlinks=postlinks, pagelinks=pagelinks, title='Blog', blogtitle=blogtitle)
 
-    outfile = 'blog.html'
+    outfile = indexFileName
     output_file = codecs.open(outfile, "w", encoding="utf-8", errors="xmlcharrefreplace")
     output_file.write(html)
 
@@ -97,7 +98,7 @@ def main():
             continue
         url, title = get_page_info(p)
         pagelinks.append({'title': title, 'url': url})
-    pagelinks.append({'title': 'Blog', 'url': 'index.html'})
+    pagelinks.append({'title': 'Blog', 'url': indexFileName})
     pagelinks = sorted(pagelinks, key=lambda link: link['title'])
     for p in pagefiles:
         create_page(p, pagelinks)

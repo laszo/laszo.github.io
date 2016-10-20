@@ -5,7 +5,6 @@ categories:
 slug: about
 ---
 
----
 lasologo(#)gmail.com
 
 github: [https://github.com/laszo](https://github.com/laszo)

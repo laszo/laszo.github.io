@@ -5,12 +5,8 @@ categories:
 slug: links
 ---
 
-### Many things
+[Hacker News](https://news.ycombinator.com)
 
----
-
-
----
 
 
 
