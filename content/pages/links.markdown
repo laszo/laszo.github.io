@@ -7,6 +7,8 @@ slug: links
 
 [Hacker News](https://news.ycombinator.com)
 
+[High Scalability](http://highscalability.com/)
+
 
 
 
