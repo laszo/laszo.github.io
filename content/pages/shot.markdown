@@ -1,4 +1,8 @@
 ---
-title: "Shot Segment"
+title: "Shot-Segment"
 slug: shot
 ---
+
+从cnki上检索的文章数量可以看到国内的研究情况
+
+从Google学术上面搜索的文章数量可以看到世界的研究情况
