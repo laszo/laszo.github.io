@@ -11,21 +11,48 @@ from jinja2 import Template
 postTemplatePath = 'template/post.html'
 pageTemplatePath = 'template/page.html'
 blogTemplatePath = 'template/blog.html'
-outpath = 'static/posts/'
+postoutpath = 'static/posts/'
+pageoutpath = ''
 contentpath = 'content/posts/'
 pagespath = 'content/pages/'
 indexFileName = 'index.html'
 blogtitle = u'Lv Xiaoyu'
 
 
+def read_config(text):
+    get_header = re.compile(r'---[\s\S]*?---')
+    header = get_header.findall(text)[0]
+    content = text.replace(header, '', 1)
+    header = header.replace('---', '')
+    post_info = yaml.load(header)
+    posttitle = ''
+    for item in post_info:
+        if item.upper() == 'title'.upper():
+            posttitle = post_info[item]
+    return content, posttitle
+
+
 def createPost(post):
     text = codecs.open(contentpath + post, 'r', encoding='utf8').read()
-    mkdtxt, title = read_config(text)
+    mkdtxt, posttitle = read_config(text)
     content = markdown.markdown(mkdtxt)
     t = codecs.open(postTemplatePath, 'r', encoding='utf8').read()
-    html = Template(t).render(content=content, title=title, blogtitle=blogtitle)
+    html = Template(t).render(content=content, posttitle=posttitle, blogtitle=blogtitle)
 
-    outfile = outpath + os.path.splitext(post)[0] + '.html'
+    outfile = postoutpath + os.path.splitext(post)[0] + '.html'
+    output_file = codecs.open(outfile, "w", encoding="utf-8", errors="xmlcharrefreplace")
+    output_file.write(html)
+    return outfile, posttitle
+
+
+def create_page(page, pagelinks):
+    text = codecs.open(pagespath + page, 'r', encoding='utf8').read()
+    mkdtxt, title = read_config(text)
+    content = markdown.markdown(mkdtxt)
+    t = codecs.open(pageTemplatePath, 'r', encoding='utf8').read()
+    html = Template(t).render(content=content, title=title, blogtitle=blogtitle, pagelinks=pagelinks)
+
+    outfile = pageoutpath + os.path.splitext(page)[0] + '.html'
     output_file = codecs.open(outfile, "w", encoding="utf-8", errors="xmlcharrefreplace")
     output_file.write(html)
     return outfile, title
@@ -36,32 +63,6 @@ def get_page_info(page):
     mkdtxt, title = read_config(text)
     outfile = os.path.splitext(page)[0] + '.html'
     return outfile, title
-
-
-def create_page(page, pagelinks):
-    text = codecs.open(pagespath + page, 'r', encoding='utf8').read()
-    mkdtxt, title = read_config(text)
-    content = markdown.markdown(mkdtxt)
-    t = codecs.open(pageTemplatePath, 'r', encoding='utf8').read()
-    html = Template(t).render(content=content, title=title, blogtitle=blogtitle, pagelinks=pagelinks)
-
-    outfile = os.path.splitext(page)[0] + '.html'
-    output_file = codecs.open(outfile, "w", encoding="utf-8", errors="xmlcharrefreplace")
-    output_file.write(html)
-    return outfile, title
-
-
-def read_config(text):
-    get_header = re.compile(r'---[\s\S]*?---')
-    header = get_header.findall(text)[0]
-    content = text.replace(header, '', 1)
-    header = header.replace('---', '')
-    post_info = yaml.load(header)
-    title = ''
-    for item in post_info:
-        if item.upper() == 'title'.upper():
-            title = post_info[item]
-    return content, title
 
 
 def createBlogIndex(postlinks, pagelinks):

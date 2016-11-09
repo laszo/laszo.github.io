@@ -11,13 +11,13 @@
         <h1 class="blog-title">{{ title }} - {{ blogtitle }}</h1>
     </div>
     <div style="margin-top: 20px; font-size:20">
-        <!-- <a href="index.html">Blog</a> -->
         {% for page in pagelinks: %}
         <a href="{{ page['url'] }}">{{ page['title'] }}</a>
         {% endfor %}
     </div>
+
     <hr style="margin: 0"/>
-    
+
     {% for post in postlinks: %}
     <div class="row col-xs-12 col-md-10 col-lg-8 col-sm-12 blog-main">
         <div class="blog-post">
