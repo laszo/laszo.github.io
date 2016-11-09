@@ -1,5 +1,5 @@
 ---
-title: "程序员进阶的过程——《Why Learning to Code is So Damn Hard》读后感"
+title: "程序员进阶的过程——读 'Why Learning to Code is So Damn Hard'"
 date: 2015-05-19 17:00
 categories:
 slug: why-coder-so-hard
