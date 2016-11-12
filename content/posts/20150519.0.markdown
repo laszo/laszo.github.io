@@ -1,5 +1,5 @@
 ---
-title: "在中国IT界混，所需要的三项核心技能"
+title: "在中国IT界混，所需要的三项“核心”技能"
 date: 2015-05-19 17:00
 categories:
 slug: the-secret-in-it
