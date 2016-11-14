@@ -30,5 +30,4 @@ slug: read-book-is-not-always-good
 - 很多东西，本就是人尽皆知、古已有之，放在新形势、新领域，又像煞有介事的拿出来卖弄。
 
 读书不如自己动手，不看书，自己研究这本书的内容、解决这本书的问题。
-Learn by doing,是从王垠[这篇博客](http://www.yinwang.org/blog-cn/2014/08/11/genius/)里看到的。
 
