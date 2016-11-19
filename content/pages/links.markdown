@@ -9,6 +9,6 @@ slug: links
 
 [High Scalability](http://highscalability.com/)
 
-
+[Projects that power GitHub](https://github.com/showcases/projects-that-power-github)
 
 
