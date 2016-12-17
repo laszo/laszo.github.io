@@ -11,4 +11,12 @@ slug: links
 
 [Projects that power GitHub](https://github.com/showcases/projects-that-power-github)
 
+[TensorFlow中文社区](http://www.tensorfly.cn/)
+
+[TensorFlow](https://www.tensorflow.org/)
+
+[MS MARCO](http://www.msmarco.org/)
+
+[我爱机器学习](http://www.52ml.net/)
+
 
