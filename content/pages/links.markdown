@@ -19,4 +19,6 @@ slug: links
 
 [我爱机器学习](http://www.52ml.net/)
 
+[Caffe](http://caffe.berkeleyvision.org/)
+
 
