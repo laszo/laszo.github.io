@@ -16,7 +16,7 @@ pageoutpath = ''
 contentpath = 'content/posts/'
 pagespath = 'content/pages/'
 indexFileName = 'index.html'
-blogtitle = u'Lv Xiaoyu'
+blogtitle = u'Lv Xiaoyu `Site'
 
 
 def read_config(text):
