@@ -37,7 +37,7 @@ def createPost(post):
     mkdtxt, posttitle = read_config(text)
     content = markdown.markdown(mkdtxt)
     t = codecs.open(postTemplatePath, 'r', encoding='utf8').read()
-    html = Template(t).render(content=content, posttitle=posttitle, blogtitle=blogtitle, baseurl=indexFileName)
+    html = Template(t).render(content=content, title=posttitle, blogtitle=blogtitle, baseurl=indexFileName)
 
     outfile = postoutpath + os.path.splitext(post)[0] + '.html'
     output_file = codecs.open(outfile, "w", encoding="utf-8", errors="xmlcharrefreplace")

@@ -2,12 +2,12 @@
 <head>
     <meta charset="utf-8">
     <title>{{ title }} - {{ blogtitle }}</title>
-    <link rel="stylesheet" href="static/css/mp.css" />
+    <link rel="stylesheet" href="static/css/mp.css?v=1" />
 </head>
 <body>
     <div class="container">
         <div class="blog-header">
-            <h1 class="blog-title">{{ title }} - {{ blogtitle }}</h1>
+            <h1>{{ title }} - {{ blogtitle }}</h1>
             <ul class="flex">
                 {% for page in pagelinks: %}
                 <li><a href="{{ page['url'] }}"><h3>{{ page['title'] }}</h3></a></li>
