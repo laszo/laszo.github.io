@@ -1,0 +1,41 @@
+body, dl, dt, dd, p, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, select, 
+fieldset, input, button, textarea, blockquote {
+  margin: 0;
+  padding: 0;
+}
+body {
+  width: 100%;
+  font-size=62.5%;
+}
+.navbar-fixed-top,
+.navbar-fixed-bottom {
+  position: fixed;
+  right: 0;
+  left: 0;
+  z-index: 200;
+}
+.navbar-fixed-top {
+  top: 0;
+  height: 54px;
+}
+.navbar-fixed-bottom {
+  bottom: 0;
+  height: 138px;
+}
+.flex{
+}
+.flex li{
+  display:inline-block;
+}
+.blog-post p {
+  font-size: 2rem;
+}
+.blog-header h1 {
+  font-size: 3rem;
+}
+.blog-header a {
+  font-size: 1rem;
+}
+.blgo-main {
+  max-width: 10em;
+}
