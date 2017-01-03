@@ -8,18 +8,15 @@
 <div class="container">
     <div class="blog-header">
         <h1 class="blog-title">{{ title }} - {{ blogtitle }}</h1>
-         <div style="margin-top: 20px; font-size:2rem">
-        {% for link in pagelinks: %}
-        <a href="{{ link['url'] }}">{{ link['title'] }}</a>
-        {% endfor %}
+        <ul class="flex">
+            {% for page in pagelinks: %}
+                <li><a href="{{ page['url'] }}"><h3>{{ page['title'] }}</h3></a></li>
+            {% endfor %}
+        </ul>
     </div>
-    </div>
-   
 
-    <div class="row col-sm-12 blog-main">
-        <div class="blog-post">
-            {{ content }}
-        </div>
+    <div class="page-content">
+        {{ content }}
     </div>
 </div>
 </body>

@@ -4,23 +4,19 @@ fieldset, input, button, textarea, blockquote {
   padding: 0;
 }
 body {
-  width: 100%;
-  font-size=62.5%;
+  max-width: 800px;
 }
-.navbar-fixed-top,
-.navbar-fixed-bottom {
-  position: fixed;
-  right: 0;
-  left: 0;
-  z-index: 200;
+h1 {
+  font-size: 2.2rem;
 }
-.navbar-fixed-top {
-  top: 0;
-  height: 54px;
+h2 {
+  font-size: 2.1rem;
 }
-.navbar-fixed-bottom {
-  bottom: 0;
-  height: 138px;
+h3 {
+  font-size: 2rem;
+}
+h4 {
+  font-size: 1.8rem;
 }
 .flex{
 }
@@ -28,14 +24,11 @@ body {
   display:inline-block;
 }
 .blog-post p {
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
-.blog-header h1 {
-  font-size: 3rem;
+.post-content p {
+  font-size: 1.5rem;
 }
-.blog-header a {
-  font-size: 1rem;
-}
-.blgo-main {
-  max-width: 10em;
+.page-content p {
+  font-size: 1.5rem;
 }

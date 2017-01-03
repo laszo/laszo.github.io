@@ -5,26 +5,25 @@
     <link rel="stylesheet" href="static/css/mp.css" />
 </head>
 <body>
-<div class="container">
-    <div class="blog-header">
-        <h1 class="blog-title">{{ title }} - {{ blogtitle }}</h1>
-        <ul class="flex">
-            {% for page in pagelinks: %}
-                <li><a href="{{ page['url'] }}"><h2>{{ page['title'] }}</h2></a></li>
-            {% endfor %}
-        </ul>
-    </div>
-    
+    <div class="container">
+        <div class="blog-header">
+            <h1 class="blog-title">{{ title }} - {{ blogtitle }}</h1>
+            <ul class="flex">
+                {% for page in pagelinks: %}
+                <li><a href="{{ page['url'] }}"><h3>{{ page['title'] }}</h3></a></li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    {% for post in postlinks: %}
-    <div class="row col-xs-12 col-md-10 col-lg-8 col-sm-12 blog-main">
-        <div class="blog-post">
-            <h3 class="blog-index-title">
-                <a href="{{ post['url'] }}" target="_blank">{{ post['title'] }}</a>
-            </h3>
+        <div>
+            {% for post in postlinks: %}
+            <div>
+                <h4 >
+                    <a href="{{ post['url'] }}" target="_blank">{{ post['title'] }}</a>
+                </h4>
+            </div>
+            {% endfor %}
         </div>
     </div>
-    {% endfor %}
-</div>
 </body>
 </html>
