@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 __author__ = 'laszo'
+import codecs
 import os
 import re
-import yaml
-import codecs
+
 import markdown
+import yaml
 from jinja2 import Template
 
 postTemplatePath = 'template/post.html'
