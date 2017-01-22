@@ -1,8 +1,8 @@
-body, dl, dt, dd, p, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, select, 
+/*body, dl, dt, dd, p, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, select, 
 fieldset, input, button, textarea, blockquote {
   margin: 0;
   padding: 0;
-}
+}*/
 body {
   max-width: 800px;
 }
@@ -31,6 +31,7 @@ h4 {
   font-size: 1.8rem;
 }
 .flex{
+  padding: 0;
 }
 .flex li{
   display:inline-block;

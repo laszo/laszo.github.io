@@ -54,7 +54,7 @@ cerSignRequest文件是在MAC上操作的。其余四项都是在网页上操作
 
 下面来个一图抵千言：
 
-<img height="550px" width="800px" src="../static/images/ios-dev-cer-intro.png" />
+<img height="550px" width="800px" src="../images/ios-dev-cer-intro.png" />
 
 现在回想起来，这点东西并不复杂。但是为什么会这么坑呢？主要是不了解这些东西的相互依赖关系。除了Devices比较独立，也好理解，遇到相关的操作也可以无脑操作。其余的几项，就必须心中有数才能操作了。
 
