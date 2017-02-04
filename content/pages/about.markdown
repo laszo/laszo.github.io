@@ -10,9 +10,17 @@ lasologo(#)gmail.com
 github: [https://github.com/laszo](https://github.com/laszo)
 
 ---
+#### 合拍儿
+[合拍儿](http://www.hepaier.com/)
+
+---
 #### 优乎
 
 [Uhocard](http://www.uhocard.com)
+
+---
+#### 饭钵
+[饭钵，找到你喜欢的主播](http://www.fanbotv.cn/)
 
 ---
 #### 桉云
@@ -22,7 +30,9 @@ github: [https://github.com/laszo](https://github.com/laszo)
 ---
 #### 大家玩方言
 
-图标和APP下载地址
+[大家玩方言](http://appcrawlr.com/ios/2404757)
+
+[视频介绍](http://v.ku6.com/show/ed0QFRPThu1lcm5BKiCkvg...html)
 
 ---
 #### 宸瑞科技
