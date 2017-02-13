@@ -13,10 +13,20 @@ github: [https://github.com/laszo](https://github.com/laszo)
 #### 合拍儿
 [合拍儿](http://www.hepaier.com/)
 
+[合拍儿 - 连起来的视频才叫故事](https://itunes.apple.com/us/app/he-pai-er-lian-qi-lai-shi/id1057000042?l=zh&ls=1&mt=8)
+
+[合拍儿-应用宝下载](http://android.myapp.com/myapp/detail.htm?apkName=com.hepair)
+
+[积木TV](https://itunes.apple.com/us/app/ji-mutv/id1197952024?l=zh&ls=1&mt=8)
+
 ---
 #### 优乎
 
 [Uhocard](http://www.uhocard.com)
+
+[Uhocard -for foreigners in Beijing](https://itunes.apple.com/us/app/uhoo/id962268659)
+
+[优乎-应用宝下载](http://android.myapp.com/myapp/detail.htm?apkName=net.youhoo.bacopa)
 
 ---
 #### 饭钵
