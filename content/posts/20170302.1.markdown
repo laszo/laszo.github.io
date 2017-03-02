@@ -1,0 +1,267 @@
+---
+title: "Minimal project of three Python web framework (Django Tornado and Flask) "
+---
+
+本文试图通过一个最小项目“hello, world”，对比三种主流Python web框架的基本功能和框架风格，
+进一步探究为何这点代码就能够跑起来一个站点。
+
+在一个刚安装完成的“空白”操作系统上建设一个能够输出“hello, world”的动态站点并非看起来那么简单，
+这中间至少包含如下过程：
+
+* 启动服务器进程
+* 接收HTTP请求，并解析
+* 处理请求，返回HTTP响应
+
+下面分别来看三个框架的所需最简代码。
+
+#### Django:
+
+    import sys
+    from django.http import HttpResponse
+    from django.conf.urls import url
+    from django.conf import settings
+    from django.core.management import execute_from_command_line
+
+    def index(request):
+        return HttpResponse('Hello, world')
+
+    urlpatterns=[
+        url(r'^$', index)
+    ]
+
+    settings.configure(
+        DEBUG=True,
+        ROOT_URLCONF=__name__
+    )
+
+    if __name__ == '__main__':
+        execute_from_command_line(sys.argv)
+
+Django官方文档推荐的 [Tutorial] 生成的代码适用于生产系统的项目架构，
+我们这里出于讨论的方便，把所需的最简代码整合到了一处。
+把上边的代码放在一个叫hello.py的文件里，运行：
+
+    python hello.py runserver
+
+然后，使用浏览器打开 [http://127.0.0.1:8000/](http://127.0.0.1:8000/) 就能看到页面输出的“Hello, world”。
+
+下面分别讨论所涉及到的Django模块。
+
+* #### execute_from_command_line
+[django.core.management]是Django提供的一个实用模块，提供了项目管理和配置所需要的各种工具，
+
+* #### settings
+进行项目的配置。
+
+* #### url
+[django.conf.urls] 用于进行http url相关的处理。
+
+* #### HttpResponse
+[django.http] 是框架最核心的部分，框架把客户端的url请求转换成HttpRequest，
+传递给我们自己写的view函数，在上面的代码里就是index。由view函数负责生成HttpResponse对象返回给框架，
+框架根据这个对象做相应的处理，返回给客户端。
+
+以上这些讨论，只涉及到了Django的使用层面，也就是说作为一个web开发者，使用这些接口就可以发开网站。
+下面我们开始讨论Django是如何实现这些框架的。
+
+#### 先列出最主要的代码：
+
+我们程序的入口是`execute_from_command_line`，所传递的参数是`python hello.py runserver`。
+
+    def execute_from_command_line(argv=None):
+        utility = ManagementUtility(argv)
+        utility.execute()
+
+这里只是简单的生成了一个ManagementUtility对象，把命令参数传递给了它，并执行execute。
+
+    class ManagementUtility(object):
+        def fetch_command(self, subcommand):
+            if isinstance(app_name, BaseCommand):
+                # If the command is already loaded, use it directly.
+                klass = app_name
+            else:
+                klass = load_command_class(app_name, subcommand)
+            return klass
+
+        def execute(self):
+            if settings.configured:
+                ...
+                django.setup()
+
+            if subcommand == 'help':
+                ...
+            else:
+                self.fetch_command(subcommand).run_from_argv(self.argv)
+
+ManagementUtility对象的execute，执行了一系列参数和环境检查，包括settings，
+这就是为什么我们的最简项目必须有
+
+    settings.configure(
+        DEBUG=True,
+        ROOT_URLCONF=__name__
+    )
+
+这段代码。在进行了检查和配置以后，execute会根据具体的command，进行相应的操作。
+对于我们现在研究的情况来说，就是 runserver。会执行：
+
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+
+前面我们看到，fetch_command会检查command是否是BaseCommand，返回相应的类：
+
+    if isinstance(app_name, BaseCommand):
+        # If the command is already loaded, use it directly.
+        klass = app_name
+    else:
+        klass = load_command_class(app_name, subcommand)
+
+然后返回的这个类执行`run_from_argv(self.argv)`。那么下一步如何是如何进行的呢？
+
+在 “/Library/Python/2.7/site-packages/django/core/management/__init__.py”
+里可以发现有一个find_commands方法：
+
+    def find_commands(management_dir):
+        """
+        Given a path to a management directory, returns a list of all the command
+        names that are available.
+
+        Returns an empty list if no commands are defined.
+        """
+        command_dir = os.path.join(management_dir, 'commands')
+        return [name for _, name, is_pkg in pkgutil.iter_modules([npath(command_dir)])
+                if not is_pkg and not name.startswith('_')]
+
+原来，所有的command都是从“/Library/Python/2.7/site-packages/django/core/management/commands/”文件夹下面查找，
+这个文件夹下的每一个py文件都代表一个命令，我们运行的`runserver`命令，就来自runserver.py。
+在这个文件里定义了一个Command对象，它继承自BaseCommand：
+
+    class Command(BaseCommand):
+        ...
+
+在“/Library/Python/2.7/site-packages/django/core/management/base.py”文件中查看BaseCommand的定义，
+终于找到了上面所说的run_from_argv方法：
+
+    class BaseCommand(object):
+        def run_from_argv(self, argv):
+            args = cmd_options.pop('args', ())
+            handle_default_options(options)
+            try:
+                self.execute(*args, **cmd_options)
+            except Exception as e:
+                sys.exit(1)
+        
+        def execute(self, *args, **options):
+            try:
+            output = self.handle(*args, **options)
+            if output:
+                self.stdout.write(output)
+
+        def handle(self, *args, **options):
+            raise NotImplementedError('subclasses of BaseCommand must provide a handle() method')
+
+BaseCommand的run_from_argv会执行它自己的execute方法，后者又会调用handle方法。这是一个留待子类去实现的方法。
+再来看runserver.py文件：
+
+    from django.core.servers.basehttp import get_internal_wsgi_application, run
+
+    class Command(BaseCommand):
+        ...
+        def add_arguments(self, parser):
+            ...
+            
+        def execute(self, *args, **options):
+            super(Command, self).execute(*args, **options)
+
+        def get_handler(self, *args, **options):
+            return get_internal_wsgi_application()
+
+        def handle(self, *args, **options):
+            from django.conf import settings
+
+            if not settings.DEBUG and not settings.ALLOWED_HOSTS:
+                raise CommandError('You must set settings.ALLOWED_HOSTS if DEBUG is False.')
+
+            self.use_ipv6 = options['use_ipv6']
+            ...
+            if not options['addrport']:
+                self.addr = ''
+                self.port = self.default_port
+            else:
+                m = re.match(naiveip_re, options['addrport'])
+                if m is None:
+                    raise CommandError('"%s" is not a valid port number '
+                                    'or address:port pair.' % options['addrport'])
+                self.addr, _ipv4, _ipv6, _fqdn, self.port = m.groups()
+            ...
+            self.run(**options)
+
+        def run(self, **options):
+            ...
+            self.inner_run(None, **options)
+
+        def inner_run(self, *args, **options):
+            try:
+                handler = self.get_handler(*args, **options)
+                run(self.addr, int(self.port), handler,
+                    ipv6=self.use_ipv6, threading=threading)
+            except socket.error as e:
+                ...
+                os._exit(1)
+            except KeyboardInterrupt:
+                ...
+                sys.exit(0)
+    
+runserver里的Command进行了很多重要工作，也实现了父类的handle方法。在这个方法里，进行了ip地址等数据的检查，
+然后调用run方法，后者调用了inner_run方法。inner_run是核心的处理函数，
+它获取相应的hanlder，并与地址、端口等参数一起传递给basehttp的run函数（非Command自己的run函数）。
+这里的run函数，存在于“/Library/Python/2.7/site-packages/django/core/servers/basehttp.py”文件中：
+
+    def run(addr, port, wsgi_handler, ipv6=False, threading=False):
+        server_address = (addr, port)
+        if threading:
+            httpd_cls = type(str('WSGIServer'), (socketserver.ThreadingMixIn, WSGIServer), {})
+        else:
+            httpd_cls = WSGIServer
+        httpd = httpd_cls(server_address, WSGIRequestHandler, ipv6=ipv6)
+        if threading:
+            httpd.daemon_threads = True
+        httpd.set_app(wsgi_handler)
+        httpd.serve_forever()
+
+在这里，run函数生成一个WSGIServer对象，并传递给该对象相应的hanlder。调用Server对象的serve_forever方法。
+看名字就知道，该方法会持续运行下去，直到手动关闭该进程。
+
+### Tornado
+
+    import tornado.ioloop
+    import tornado.web
+
+    class MainHandler(tornado.web.RequestHandler):
+        def get(self):
+            self.write("Hello, world")
+
+    def make_app():
+        return tornado.web.Application([
+            (r"/", MainHandler),
+        ])
+
+    if __name__ == "__main__":
+        app = make_app()
+        app.listen(8888)
+        tornado.ioloop.IOLoop.current().start()
+
+### Flask
+
+    from flask import Flask
+    app = Flask(__name__)
+
+    @app.route("/")
+    def hello():
+        return "Hello World!"
+
+    if __name__ == "__main__":
+        app.run()
+
+[Tutorial]: https://docs.djangoproject.com/en/1.10/intro/tutorial01/ "Django Tutorial"
+[django.core.management]: https://docs.djangoproject.com/en/1.10/ref/django-admin/ 
+[django.conf.urls]: https://docs.djangoproject.com/en/1.10/ref/urls/
+[django.http]: https://docs.djangoproject.com/en/1.10/ref/request-response/
