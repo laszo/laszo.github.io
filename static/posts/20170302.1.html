@@ -52,7 +52,7 @@ if __name__ == '__main__':
 <pre><code>python hello.py runserver
 </code></pre>
 <p>然后，使用浏览器打开 <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> 就能看到页面输出的“Hello, world”。</p>
-<p>下面分别讨论所涉及到的Django模块。</p>
+<p>所用到的Django模块：</p>
 <ul>
 <li>
 <h4>execute_from_command_line</h4>
@@ -73,9 +73,7 @@ if __name__ == '__main__':
 框架根据这个对象做相应的处理，返回给客户端。</p>
 </li>
 </ul>
-<p>以上这些讨论，只涉及到了Django的使用层面，也就是说作为一个web开发者，使用这些接口就可以发开网站。
-下面我们开始讨论Django是如何实现这些框架的。</p>
-<h4>先列出最主要的代码：</h4>
+<p>以上这些只涉及到了Django的使用层面，下面我们开始追踪Django是如何实现这些功能的。</p>
 <p>我们程序的入口是<code>execute_from_command_line</code>，所传递的参数是<code>python hello.py runserver</code>。</p>
 <pre><code>def execute_from_command_line(argv=None):
     utility = ManagementUtility(argv)
@@ -123,12 +121,6 @@ else:
 <p>在 “/Library/Python/2.7/site-packages/django/core/management/<strong>init</strong>.py”
 里可以发现有一个find_commands方法：</p>
 <pre><code>def find_commands(management_dir):
-    """
-    Given a path to a management directory, returns a list of all the command
-    names that are available.
-
-    Returns an empty list if no commands are defined.
-    """
     command_dir = os.path.join(management_dir, 'commands')
     return [name for _, name, is_pkg in pkgutil.iter_modules([npath(command_dir)])
             if not is_pkg and not name.startswith('_')]
@@ -140,7 +132,7 @@ else:
     ...
 </code></pre>
 <p>在“/Library/Python/2.7/site-packages/django/core/management/base.py”文件中查看BaseCommand的定义，
-终于找到了上面所说的run_from_argv方法：</p>
+可以看到上面所说的run_from_argv方法：</p>
 <pre><code>class BaseCommand(object):
     def run_from_argv(self, argv):
         args = cmd_options.pop('args', ())
@@ -164,10 +156,6 @@ else:
 <pre><code>from django.core.servers.basehttp import get_internal_wsgi_application, run
 
 class Command(BaseCommand):
-    ...
-    def add_arguments(self, parser):
-        ...
-
     def execute(self, *args, **options):
         super(Command, self).execute(*args, **options)
 
