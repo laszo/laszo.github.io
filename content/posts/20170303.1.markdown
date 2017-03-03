@@ -2,8 +2,69 @@
 title: "-- 未完 - Python标准库和wsgiref库提供的Server和Handler分析"
 ---
 
-HTTPServer、BaseHTTPRequestHandler、SimpleHTTPServer、
-CGIHTTPServer，
+一切的Server，最终都要追踪到socket，我们先来看这段官方文档提供的socket示例代码。
+server端代码，建立socket，绑定地址，监听并接收请求：
+
+    # Echo server program
+    import socket
+
+    HOST = ''                 # Symbolic name meaning all available interfaces
+    PORT = 50007              # Arbitrary non-privileged port
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PORT))
+    s.listen(1)
+    conn, addr = s.accept()
+    print 'Connected by', addr
+    while 1:
+        data = conn.recv(1024)
+        if not data: break
+        conn.sendall(data)
+    conn.close()
+
+客户端代码：
+
+    # Echo client program
+    import socket
+
+    HOST = '127.0.0.1'        # The remote host
+    PORT = 50007              # The same port as used by the server
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((HOST, PORT))
+    s.sendall('Hello, world')
+    data = s.recv(1024)
+    s.close()
+    print 'Received', repr(data)
+
+同样需要建立socket，客户端需要向服务端主动发起连接（connect），然后就可以发送数据和接收数据了。
+
+先运行服务端代码，然后运行客户端代码，可以看到客户端发送了一段字符串'Hello, world'给服务端，
+服务端接收了全部数据然后原样返回给客户端。
+
+我们在这里对服务端代码略作改动，使它能够持续监听客户端的连接，而不是运行一次就退出：
+
+    import socket
+
+    HOST = ''
+    PORT = 50007
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PORT))
+    s.listen(1)
+    while 1:
+        print 'Waitting...'
+        conn, addr = s.accept()
+        print 'Connected by', addr
+        while 1:
+            data = conn.recv(1024)
+            if not data: 
+                print 'No More data, break.'
+                break
+            print 'Receive data:', data
+            conn.sendall(data)
+    conn.close()
+
+这样服务端就可以持续运行了，便于我们进行socket的实验。
+
+HTTPServer、BaseHTTPRequestHandler、SimpleHTTPServer、CGIHTTPServer，
 
 serve_forever由来自Python标准库里的SocketServer所定义
 （/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/SocketServer.py）：
