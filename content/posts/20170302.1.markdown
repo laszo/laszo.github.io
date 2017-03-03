@@ -1,20 +1,15 @@
 ---
-title: "Minimal project of three Python web framework (Django Tornado and Flask) "
+title: "从最简Django项目深入分析Django框架的启动过程"
 ---
 
-本文试图通过一个最小项目“hello, world”，对比三种主流Python web框架的基本功能和框架风格，
-进一步探究为何这点代码就能够跑起来一个站点。
-
-在一个刚安装完成的“空白”操作系统上建设一个能够输出“hello, world”的动态站点并非看起来那么简单，
-这中间至少包含如下过程：
+建设一个能够输出“hello, world”的动态站点并非看起来那么简单，为何这点代码就能够跑起来一个站点，
+这中间至少包含了如下的功能或过程：
 
 * 启动服务器进程
 * 接收HTTP请求，并解析
 * 处理请求，返回HTTP响应
 
-下面分别来看三个框架的所需最简代码。
-
-#### Django:
+下面来看Django版的 Hello world 所需最简代码。
 
     import sys
     from django.http import HttpResponse
@@ -63,7 +58,8 @@ Django官方文档推荐的 [Tutorial] 生成的代码适用于生产系统的�
 
 以上这些只涉及到了Django的使用层面，下面我们开始追踪Django是如何实现这些功能的。
 
-我们程序的入口是`execute_from_command_line`，所传递的参数是`python hello.py runserver`。
+我们程序的入口是`execute_from_command_line`，所传递的参数是`python hello.py runserver`，
+从 /Library/Python/2.7/site-packages/django/core/management/\_\_init__.py 文件可以看到如下代码：
 
     def execute_from_command_line(argv=None):
         utility = ManagementUtility(argv)
@@ -113,7 +109,7 @@ ManagementUtility对象的execute，执行了一系列参数和环境检查，�
 
 然后返回的这个类执行`run_from_argv(self.argv)`。那么下一步如何是如何进行的呢？
 
-在 “/Library/Python/2.7/site-packages/django/core/management/__init__.py”
+在 “/Library/Python/2.7/site-packages/django/core/management/\__init__.py”
 里可以发现有一个find_commands方法：
 
     def find_commands(management_dir):
@@ -202,6 +198,24 @@ runserver里的Command进行了很多重要工作，也实现了父类的handle�
 它获取相应的hanlder，并与地址、端口等参数一起传递给basehttp的run函数（非Command自己的run函数）。
 这里的run函数，存在于“/Library/Python/2.7/site-packages/django/core/servers/basehttp.py”文件中：
 
+    class WSGIServer(simple_server.WSGIServer, object):
+        def server_bind(self):
+            ...
+        def handle_error(self, request, client_address):
+            ...
+
+    class ServerHandler(simple_server.ServerHandler, object):
+        def handle_error(self):
+            ...
+    
+    class WSGIRequestHandler(simple_server.WSGIRequestHandler, object):
+        def handle(self):
+            handler = ServerHandler(
+                self.rfile, self.wfile, self.get_stderr(), self.get_environ()
+            )
+            handler.request_handler = self      # backpointer for logging
+            handler.run(self.server.get_app())
+
     def run(addr, port, wsgi_handler, ipv6=False, threading=False):
         server_address = (addr, port)
         if threading:
@@ -216,37 +230,45 @@ runserver里的Command进行了很多重要工作，也实现了父类的handle�
 
 在这里，run函数生成一个WSGIServer对象，并传递给该对象相应的hanlder。调用Server对象的serve_forever方法。
 看名字就知道，该方法会持续运行下去，直到手动关闭该进程。
+serve_forever由来自Python标准库里的SocketServer所定义
+（/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/SocketServer.py）：
 
-### Tornado
+    class BaseServer:
+        def serve_forever(self, poll_interval=0.5):
+            try:
+                while not self.__shutdown_request:
+                    if self in r:
+                        self._handle_request_noblock()
+            finally:
+                self.__shutdown_request = False
+                self.__is_shut_down.set()
 
-    import tornado.ioloop
-    import tornado.web
+        def _handle_request_noblock(self):
+            try:
+                request, client_address = self.get_request()
+            except socket.error:
+                return
+            if self.verify_request(request, client_address):
+                try:
+                    self.process_request(request, client_address)
+                except:
+                    self.handle_error(request, client_address)
+                    self.shutdown_request(request)
 
-    class MainHandler(tornado.web.RequestHandler):
-        def get(self):
-            self.write("Hello, world")
+        def process_request(self, request, client_address):
+            self.finish_request(request, client_address)
+            self.shutdown_request(request)
 
-    def make_app():
-        return tornado.web.Application([
-            (r"/", MainHandler),
-        ])
+        def finish_request(self, request, client_address):
+            self.RequestHandlerClass(request, client_address, self)
 
-    if __name__ == "__main__":
-        app = make_app()
-        app.listen(8888)
-        tornado.ioloop.IOLoop.current().start()
+可以看到，所谓的Server，它的核心工作就是一个无限的循环，在没有接到关闭的请求之前，
+它每次接收一个请求，传递给预先定义的处理类RequestHandlerClass进行处理。
+到了这一步，就已经跳出了Django框架的范围，由Python标准库来实现。
+对于Django如何启动一个“hello, world”项目的分析也就完成了。
+关于Python标准库提供的HTTPServer、BaseHTTPRequestHandler、SimpleHTTPServer、
+CGIHTTPServer，以及wsgiref库所提供的一系列Handler和Server，留待后篇分析。
 
-### Flask
-
-    from flask import Flask
-    app = Flask(__name__)
-
-    @app.route("/")
-    def hello():
-        return "Hello World!"
-
-    if __name__ == "__main__":
-        app.run()
 
 [Tutorial]: https://docs.djangoproject.com/en/1.10/intro/tutorial01/ "Django Tutorial"
 [django.core.management]: https://docs.djangoproject.com/en/1.10/ref/django-admin/ 
