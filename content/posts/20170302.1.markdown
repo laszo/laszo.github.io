@@ -229,45 +229,11 @@ runserver里的Command进行了很多重要工作，也实现了父类的handle�
         httpd.serve_forever()
 
 在这里，run函数生成一个WSGIServer对象，并传递给该对象相应的hanlder。调用Server对象的serve_forever方法。
-看名字就知道，该方法会持续运行下去，直到手动关闭该进程。
-serve_forever由来自Python标准库里的SocketServer所定义
-（/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/SocketServer.py）：
-
-    class BaseServer:
-        def serve_forever(self, poll_interval=0.5):
-            try:
-                while not self.__shutdown_request:
-                    if self in r:
-                        self._handle_request_noblock()
-            finally:
-                self.__shutdown_request = False
-                self.__is_shut_down.set()
-
-        def _handle_request_noblock(self):
-            try:
-                request, client_address = self.get_request()
-            except socket.error:
-                return
-            if self.verify_request(request, client_address):
-                try:
-                    self.process_request(request, client_address)
-                except:
-                    self.handle_error(request, client_address)
-                    self.shutdown_request(request)
-
-        def process_request(self, request, client_address):
-            self.finish_request(request, client_address)
-            self.shutdown_request(request)
-
-        def finish_request(self, request, client_address):
-            self.RequestHandlerClass(request, client_address, self)
-
-可以看到，所谓的Server，它的核心工作就是一个无限的循环，在没有接到关闭的请求之前，
-它每次接收一个请求，传递给预先定义的处理类RequestHandlerClass进行处理。
-到了这一步，就已经跳出了Django框架的范围，由Python标准库来实现。
+看名字就知道，该方法会持续运行下去，直到手动关闭该进程。到这里，Django框架的代码部分追踪到这里就算技术了，
 对于Django如何启动一个“hello, world”项目的分析也就完成了。
-关于Python标准库提供的HTTPServer、BaseHTTPRequestHandler、SimpleHTTPServer、
-CGIHTTPServer，以及wsgiref库所提供的一系列Handler和Server，留待后篇分析。
+
+再往深层次追究，就已经跳出了Django框架的范围，由Python标准库和wsgiref库来实现了。
+关于Python标准库提供以及wsgiref库所提供的一系列Handler和Server，留待后篇分析。
 
 
 [Tutorial]: https://docs.djangoproject.com/en/1.10/intro/tutorial01/ "Django Tutorial"

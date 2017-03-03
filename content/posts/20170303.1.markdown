@@ -1,0 +1,41 @@
+---
+title: "-- 未完 - Python标准库和wsgiref库提供的Server和Handler分析"
+---
+
+HTTPServer、BaseHTTPRequestHandler、SimpleHTTPServer、
+CGIHTTPServer，
+
+serve_forever由来自Python标准库里的SocketServer所定义
+（/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/SocketServer.py）：
+
+    class BaseServer:
+        def serve_forever(self, poll_interval=0.5):
+            try:
+                while not self.__shutdown_request:
+                    if self in r:
+                        self._handle_request_noblock()
+            finally:
+                self.__shutdown_request = False
+                self.__is_shut_down.set()
+
+        def _handle_request_noblock(self):
+            try:
+                request, client_address = self.get_request()
+            except socket.error:
+                return
+            if self.verify_request(request, client_address):
+                try:
+                    self.process_request(request, client_address)
+                except:
+                    self.handle_error(request, client_address)
+                    self.shutdown_request(request)
+
+        def process_request(self, request, client_address):
+            self.finish_request(request, client_address)
+            self.shutdown_request(request)
+
+        def finish_request(self, request, client_address):
+            self.RequestHandlerClass(request, client_address, self)
+
+可以看到，所谓的Server，它的核心工作就是一个无限的循环，在没有接到关闭的请求之前，
+它每次接收一个请求，传递给预先定义的处理类RequestHandlerClass进行处理。
