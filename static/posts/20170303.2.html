@@ -77,6 +77,8 @@ hello, my command
 <p>需要指出的是，由于我们直接把新命令添加在了Django框架的源代码目录中，这样的添加是全局的，
 也就是说，当你使用<code>django-admin startproject</code>建立新的项目时，
 我们所添加的<code>myhello</code>仍然是可以使用的。</p>
+<p>这里只是为了研究，在生产环境中当然<code>不应该</code>直接修改框架的源代码目录，一般你也没这个权限。
+应该做的是参考官方的文档 <a href="https://docs.djangoproject.com/en/1.10/howto/custom-management-commands/">Writing custom django-admin commands</a>，给单独的项目添加相应的命令。</p>
         </div>
     </div>
 </body>

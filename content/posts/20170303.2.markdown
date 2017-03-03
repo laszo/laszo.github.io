@@ -76,4 +76,8 @@ title: "添加新的 Django management 命令"
 也就是说，当你使用`django-admin startproject`建立新的项目时，
 我们所添加的`myhello`仍然是可以使用的。
 
+这里只是为了研究，在生产环境中当然`不应该`直接修改框架的源代码目录，一般你也没这个权限。
+应该做的是参考官方的文档 [Writing custom django-admin commands]，给单独的项目添加相应的命令。
+
 [django.core.management]: https://docs.djangoproject.com/en/1.10/ref/django-admin/ 
+[Writing custom django-admin commands]: https://docs.djangoproject.com/en/1.10/howto/custom-management-commands/
