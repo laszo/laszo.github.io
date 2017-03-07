@@ -1,5 +1,5 @@
 ---
-title: "-- 未完 - Python标准库和wsgiref库提供的Server和Handler分析"
+title: "Python标准库和提供的Web Server和Handler"
 ---
 
 一切的Server，最终都要追踪到socket，我们先来看这段官方文档提供的socket示例代码。
@@ -64,9 +64,8 @@ server端代码，建立socket，绑定地址，监听并接收请求：
 
 这样服务端就可以持续运行了，便于我们进行socket的实验。
 
-HTTPServer、BaseHTTPRequestHandler、SimpleHTTPServer、CGIHTTPServer，
-
-serve_forever由来自Python标准库里的SocketServer所定义
+在[前文](./20170302.1.html)中，我们追踪到Server对象的serve_forever函数，
+它由来自Python标准库里的SocketServer所定义
 （/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/SocketServer.py）：
 
     class BaseServer:
@@ -100,3 +99,31 @@ serve_forever由来自Python标准库里的SocketServer所定义
 
 可以看到，所谓的Server，它的核心工作就是一个无限的循环，在没有接到关闭的请求之前，
 它每次接收一个请求，传递给预先定义的处理类RequestHandlerClass进行处理。
+
+下面列出Python标准库中所有的Server和Handler：
+
+* #### SocketServer模块
+
+提供 BaseServer、BaseRequestHandler 类。以及继承自 BaseServer 
+的 TCPServer、UDPServer、UnixStreamServer、UnixDatagramServer 四个类。
+
+* #### BaseHTTPServer模块
+
+这个模块提供了基本的HTTP服务器类 HTTPServer，TCPServer。
+
+以及HTTP处理基类 BaseHTTPRequestHandler，它本身只提供接口，不能处理任何HTTP请求。
+必须由它的子类去实现这些处理。
+
+* #### SimpleHTTPServer模块
+
+这个模块提供了上面所说的 BaseHTTPRequestHandler 的子类 SimpleHTTPRequestHandler，
+可以处理最简单的HTTP请求。
+
+* #### CGIHTTPServer模块
+
+这个模块提供了 CGIHTTPRequestHandler 处理类，可以输出执行CGI脚本。
+
+*  #### wsgiref模块
+
+这个模块提供了WSGI（Web Server Gateway Interface）相关的HTTP服务器 simple_server 
+和HTTP处理类 simple_server.WSGIRequestHandler。
