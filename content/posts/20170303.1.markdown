@@ -1,11 +1,11 @@
 ---
-title: "Python标准库和提供的Web Server和Handler"
+title: "Python标准库提供的各种Web Server和Handler分析"
 ---
 
 一切的Server，最终都要追踪到socket，我们先来看这段官方文档提供的socket示例代码。
-server端代码，建立socket，绑定地址，监听并接收请求：
 
-    # Echo server program
+#### server端代码：
+
     import socket
 
     HOST = ''                 # Symbolic name meaning all available interfaces
@@ -21,9 +21,10 @@ server端代码，建立socket，绑定地址，监听并接收请求：
         conn.sendall(data)
     conn.close()
 
-客户端代码：
+建立socket，绑定地址，监听并接收请求。
 
-    # Echo client program
+#### 客户端代码：
+
     import socket
 
     HOST = '127.0.0.1'        # The remote host
@@ -62,7 +63,7 @@ server端代码，建立socket，绑定地址，监听并接收请求：
             conn.sendall(data)
     conn.close()
 
-这样服务端就可以持续运行了，便于我们进行socket的实验。
+这样服务端就可以持续运行了，它就可以称得上是一个“服务器”了。
 
 在[前文](./20170302.1.html)中，我们追踪到Server对象的serve_forever函数，
 它由来自Python标准库里的SocketServer所定义
@@ -70,25 +71,18 @@ server端代码，建立socket，绑定地址，监听并接收请求：
 
     class BaseServer:
         def serve_forever(self, poll_interval=0.5):
-            try:
-                while not self.__shutdown_request:
-                    if self in r:
-                        self._handle_request_noblock()
-            finally:
-                self.__shutdown_request = False
-                self.__is_shut_down.set()
+            ...
+            while not self.__shutdown_request:
+                if self in r:
+                    self._handle_request_noblock()
+            ...
 
         def _handle_request_noblock(self):
-            try:
-                request, client_address = self.get_request()
-            except socket.error:
-                return
-            if self.verify_request(request, client_address):
-                try:
-                    self.process_request(request, client_address)
-                except:
-                    self.handle_error(request, client_address)
-                    self.shutdown_request(request)
+            ...
+            request, client_address = self.get_request()
+            ...
+            self.process_request(request, client_address)
+            ...
 
         def process_request(self, request, client_address):
             self.finish_request(request, client_address)
@@ -97,8 +91,13 @@ server端代码，建立socket，绑定地址，监听并接收请求：
         def finish_request(self, request, client_address):
             self.RequestHandlerClass(request, client_address, self)
 
-可以看到，所谓的Server，它的核心工作就是一个无限的循环，在没有接到关闭的请求之前，
-它每次接收一个请求，传递给预先定义的处理类RequestHandlerClass进行处理。
+可以看到:
+>
+所谓的Server，它的核心工作就是一个无限循环。它每次接收一个请求，
+传递给预先定义的处理类（Handler）进行处理，然后等待接收下一个请求。
+除非接到关闭的请求、或者出现内部错误，才会关闭自己。
+
+这跟我们在上面看到的 socket 库的 server 端代码的核心逻辑是一样的。
 
 下面列出Python标准库中所有的Server和Handler：
 
@@ -106,6 +105,7 @@ server端代码，建立socket，绑定地址，监听并接收请求：
 
 提供 BaseServer、BaseRequestHandler 类。以及继承自 BaseServer 
 的 TCPServer、UDPServer、UnixStreamServer、UnixDatagramServer 四个类。
+BaseServer 的逻辑已经在上面展示过。
 
 * #### BaseHTTPServer模块
 
@@ -117,7 +117,17 @@ server端代码，建立socket，绑定地址，监听并接收请求：
 * #### SimpleHTTPServer模块
 
 这个模块提供了上面所说的 BaseHTTPRequestHandler 的子类 SimpleHTTPRequestHandler，
-可以处理最简单的HTTP请求。
+可以处理最简单的HTTP请求。简单实用的代码如下：
+
+    from BaseHTTPServer import HTTPServer
+    from SimpleHTTPServer import SimpleHTTPRequestHandler
+
+    def simple_http_server():
+        server = HTTPServer(('', 8000), SimpleHTTPRequestHandler)
+        server.serve_forever()
+
+运行代码之后，打开 [http://127.0.0.1:8000](http://127.0.0.1:8000)，
+可以看到浏览器列出了当前目录下的文件。
 
 * #### CGIHTTPServer模块
 
@@ -127,3 +137,51 @@ server端代码，建立socket，绑定地址，监听并接收请求：
 
 这个模块提供了WSGI（Web Server Gateway Interface）相关的HTTP服务器 simple_server 
 和HTTP处理类 simple_server.WSGIRequestHandler。
+
+要使用WSGIServer，首先要定义WSGI标准兼容的applicaton，其实就是一个函数，接收两个参数，
+像如下代码显示：
+
+    def my_app(env, start_response):
+        start_response("200 OK", [("Content-Type", "text/plain")])
+        return "Hello, world! From my_app."
+
+第一个参数env是环境信息，包含了url等数据。第二个参数start_response，
+用于向客户端返回HTTP。
+
+然后创建 WSGIServer， 并传入处理类 WSGIRequestHandler：
+
+    from wsgiref.simple_server import WSGIRequestHandler, WSGIServer
+
+    def wsgiref_wsgi_server():
+        server = WSGIServer(('', 8000), WSGIRequestHandler)
+        server.set_app(my_app)
+        return server
+
+然后调用 WSGIServer对象的 serve_forever 方法，就可以启动服务器了。完整的代码如下：
+
+完整的代码如下：
+
+    from wsgiref.simple_server import WSGIRequestHandler, WSGIServer
+
+    def my_app(env, start_response):
+        start_response("200 OK", [("Content-Type", "text/plain")])
+        return "Hello, world! From myapp."
+
+    def wsgiref_wsgi_server():
+        wsgiserver = WSGIServer(('', 8000), WSGIRequestHandler)
+        wsgiserver.set_app(my_app)
+        return wsgiserver
+
+    if __name__ == "__main__":
+        server = wsgiref_wsgi_server()
+        server.serve_forever()
+
+运行代码之后，打开 http://127.0.0.1:8000， 可以看到浏览器返回了`Hello, world! From myapp.`。
+
+另外值得一提的是，wsgiref库还提供了两个简洁的demo方法，make_server 和 demo_app，
+作用分别于上面的 wsgiref_wsgi_server 和 my_app 作用类似。这两个方法的简单使用如下代码所示：
+
+    from wsgiref.simple_server import make_server, demo_app
+
+    if __name__ == "__main__":
+        make_server('', 8000, demo_app).serve_forever()
