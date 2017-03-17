@@ -1,5 +1,5 @@
 ---
-title: "Django Model 层创建操作总结"
+title: "Django Model 层工作流总结"
 ---
 
 Model层是Django框架的基础部分之一，本文试图总结有关Model层操作的相关代码，包括数据库连接、
