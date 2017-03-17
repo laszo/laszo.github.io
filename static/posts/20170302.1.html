@@ -231,10 +231,11 @@ def run(addr, port, wsgi_handler, ipv6=False, threading=False):
     httpd.serve_forever()
 </code></pre>
 <p>在这里，run函数生成一个WSGIServer对象，并传递给该对象相应的hanlder。调用Server对象的serve_forever方法。
-看名字就知道，该方法会持续运行下去，直到手动关闭该进程。到这里，Django框架的代码部分追踪到这里就算技术了，
+看名字就知道，该方法会持续运行下去，直到手动关闭该进程。到这里，Django框架的代码部分追踪到这里就算结束了，
 对于Django如何启动一个“hello, world”项目的分析也就完成了。</p>
 <p>再往深层次追究，就已经跳出了Django框架的范围，由Python标准库和wsgiref库来实现了。
-关于Python标准库提供以及wsgiref库所提供的一系列Handler和Server，留待后篇分析。</p>
+关于Python标准库提供以及wsgiref库所提供的一系列Handler和Server，
+留待<a href="20170303.1.html">后篇</a>分析。</p>
         </div>
     </div>
 </body>

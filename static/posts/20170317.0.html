@@ -93,7 +93,132 @@ Model 的每一个属性对应数据表的每一个字段。
 <p><code>migrate</code> 执行 migration ，这一步是实际执行的过程，Django 框架帮助你在数据库里执行相关的sql语句。</p>
 </li>
 </ul>
-<!--上面我们已经定义了Model，这时候只要在项目目录下运行如下命令：-->
+<p>下面来具体执行一下。在上面我们已经定义了Model，还需要在 <code>myproject/settings.py</code> 
+文件中的 <code>INSTALLED_APPS</code> 列表中加上 <code>'myapp.apps.MyappConfig'</code>：</p>
+<pre><code>INSTALLED_APPS = [
+    'myapp.apps.MyappConfig',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+</code></pre>
+<p>然后只要在项目目录下运行如下命令：</p>
+<pre><code>python manage.py makemigration
+</code></pre>
+<p>得到输出：</p>
+<pre><code>Migrations for 'myapp':
+myapp/migrations/0001_initial.py:
+    - Create model Pin
+    - Create model User
+</code></pre>
+<p>该命令在 <code>myapp/migrations/</code> 文件夹下生成了一个 <code>0001_initial.py</code>，在 Django 中，
+该文件夹下的每个 py 文件都被看做一个 <code>migration</code>，每个文件中都需要定义一个继承自
+<code>django.db.migrations.Migration</code> 的类，命名为 <code>Migration</code>，
+稍微研究一下即可明白它的语法，这里不再赘述。</p>
+<p>如果我们想看当前的项目下有哪些 migration，可以运行如下命令：</p>
+<pre><code>python manage.py showmigrations
+</code></pre>
+<p>可以看到输出：</p>
+<pre><code>admin
+[ ] 0001_initial
+[ ] 0002_logentry_remove_auto_add
+auth
+[ ] 0001_initial
+[ ] 0002_alter_permission_name_max_length
+[ ] 0003_alter_user_email_max_length
+[ ] 0004_alter_user_username_opts
+[ ] 0005_alter_user_last_login_null
+[ ] 0006_require_contenttypes_0002
+[ ] 0007_alter_validators_add_error_messages
+[ ] 0008_alter_user_username_max_length
+contenttypes
+[ ] 0001_initial
+[ ] 0002_remove_content_type_name
+myapp
+[ ] 0001_initial
+sessions
+[ ] 0001_initial
+</code></pre>
+<p>其中，除了</p>
+<pre><code>myapp
+[ ] 0001_initial
+</code></pre>
+<p>是我们自己创建的模型所生成的 migration，其余的都是 Django 框架自行设置的 middleware 所使用的相关模型，将来我们说到 middleware 时再去研究。</p>
+<p>然后，我们既可以直接执行 <code>migrate</code>，也可以先执行 <code>sqlmigrate</code> 看一下某一个 migration 所代表的SQL语句。</p>
+<pre><code>python manage.py sqlmigrate myapp 0001_initial
+</code></pre>
+<p><code>sqlmigrate</code> 这条命令需要两个参数，第一个参数 <code>myapp</code> 是需要指定的 app 名字，第二个参数 <code>0001_initial</code> 是该 app 下的指定 migration 的名字。得到输出：</p>
+<pre><code>BEGIN;
+--
+-- Create model Pin
+--
+CREATE TABLE `myapp_pin` (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY, `src` varchar(200) NOT NULL, `intro` varchar(128) NOT NULL);
+--
+-- Create model User
+--
+CREATE TABLE `myapp_user` (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY, `name` varchar(128) NOT NULL, `avatar` varchar(200) NOT NULL);
+COMMIT;
+</code></pre>
+<p>这是标准的SQL语句，创建了两个表 <code>myapp_pin</code> 和 <code>myapp_user</code> 。这说明，migration 所生成的表名就是 <code>app名_Model名</code> 的格式。</p>
+<p>虽然我们并没有在 Model 里定义 id 属性，migration 还是自动给我们生成了一个 标准的 id 字段作为主键<sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>。</p>
+<p>下面该执行 <code>migrate</code> 了：</p>
+<pre><code>python manage.py migrate
+</code></pre>
+<p>可以看到如下输出：</p>
+<pre><code>Operations to perform:
+    Apply all migrations: admin, auth, contenttypes, myapp, sessions
+Running migrations:
+    Applying contenttypes.0001_initial... OK
+    Applying auth.0001_initial... OK
+    Applying admin.0001_initial... OK
+    Applying admin.0002_logentry_remove_auto_add... OK
+    Applying contenttypes.0002_remove_content_type_name... OK
+    Applying auth.0002_alter_permission_name_max_length... OK
+    Applying auth.0003_alter_user_email_max_length... OK
+    Applying auth.0004_alter_user_username_opts... OK
+    Applying auth.0005_alter_user_last_login_null... OK
+    Applying auth.0006_require_contenttypes_0002... OK
+    Applying auth.0007_alter_validators_add_error_messages... OK
+    Applying auth.0008_alter_user_username_max_length... OK
+    Applying myapp.0001_initial... OK
+    Applying sessions.0001_initial... OK
+</code></pre>
+<p>每个 migration 都顺利执行了。这时候如果再次执行 <code>showmigrations</code> ：</p>
+<pre><code>python manage.py showmigrations
+</code></pre>
+<p>可以看到跟刚才不一样的输出：</p>
+<pre><code>admin
+[X] 0001_initial
+[X] 0002_logentry_remove_auto_add
+auth
+[X] 0001_initial
+[X] 0002_alter_permission_name_max_length
+[X] 0003_alter_user_email_max_length
+[X] 0004_alter_user_username_opts
+[X] 0005_alter_user_last_login_null
+[X] 0006_require_contenttypes_0002
+[X] 0007_alter_validators_add_error_messages
+[X] 0008_alter_user_username_max_length
+contenttypes
+[X] 0001_initial
+[X] 0002_remove_content_type_name
+myapp
+[X] 0001_initial
+sessions
+[X] 0001_initial
+</code></pre>
+<p>每个 migration 前面的 <code>[ ]</code> 变成了 <code>[X]</code> 。这代表这个 migration 的状态从未执行变成了已执行。</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:note1">
+<p>我们在探索 Django 框架的各个模块时都能感觉到，对于我们在 Web 系统的开发实践中涉及到的各项任务，Django 尽量把其中能够自动化、标准化的重复劳动提取出来，用业内比较成熟的做法自动的替我们完成，这是它区别于其他 Web 框架的一个特点。&#160;<a class="footnote-backref" href="#fnref:note1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
         </div>
     </div>
 </body>

@@ -2,7 +2,7 @@
 title: "添加新的 Django management 命令"
 ---
 
-前文说到，当我们运行
+[前文](20170302.1.html)说到，当我们运行
 
     python hello.py runserver
 

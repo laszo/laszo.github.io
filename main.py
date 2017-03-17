@@ -36,7 +36,7 @@ def read_config(text):
 def createPost(post):
     text = codecs.open(contentpath + post, 'r', encoding='utf8').read()
     mkdtxt, posttitle = read_config(text)
-    content = markdown.markdown(mkdtxt)
+    content = markdown.markdown(mkdtxt, extensions=['markdown.extensions.footnotes'])
     t = codecs.open(postTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(content=content, title=posttitle, blogtitle=blogtitle, baseurl=indexFileName)
 
@@ -49,7 +49,7 @@ def createPost(post):
 def create_page(page, pagelinks):
     text = codecs.open(pagespath + page, 'r', encoding='utf8').read()
     mkdtxt, title = read_config(text)
-    content = markdown.markdown(mkdtxt)
+    content = markdown.markdown(mkdtxt, extensions=['markdown.extensions.footnotes'])
     t = codecs.open(pageTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(content=content, title=title, blogtitle=blogtitle, pagelinks=pagelinks)
 
