@@ -1,0 +1,100 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Django Model 层创建操作总结 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">Django Model 层创建操作总结</h3>
+
+        <div class="post-content">
+            <p>Model层是Django框架的基础部分之一，本文试图总结有关Model层操作的相关代码，包括数据库连接、
+配置信息、API操作，以 MySQL 和 Django 1.10 为例。</p>
+<h4>数据库连接</h4>
+<p>当我们使用如下这样的命令创建了新的Django项目之后:</p>
+<pre><code>django-admin startproject myproject;
+cd myproject;
+django-admin startapp myapp;
+</code></pre>
+<p>Django 为我们配置了默认的数据库连接，在文件 myproject/settings.py 下，默认使用 sqlite：</p>
+<pre><code>DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+</code></pre>
+<p>实际的生产环境中很少用到sqlite，我们把它更改为使用 MySQL ：</p>
+<pre><code>DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'YOURHOST',
+        'USER': 'YOURUSER',
+        'PASSWORD': 'YOURPASSWORD',
+        'NAME': 'YOURDATABASE',
+    }
+}
+</code></pre>
+<p>这里的<code>NAME</code>项指的是数据库名，<code>HOST</code>、<code>USER</code>、<code>PASSWORD</code> 这几项按照具体环境信息填写即可。
+然后我们可以在项目目录下运行:</p>
+<pre><code>python manage.py check
+</code></pre>
+<p>如果数据库配置有问题，会有相应的错误提示，如果完全配置正确，会有如下的信息显示：</p>
+<pre><code>System check identified no issues (0 silenced).
+</code></pre>
+<p>然后我们可以进行下一步。</p>
+<h3>Model 定义</h3>
+<p>在上面的 <code>django-admin startapp myapp</code> 命令下，
+Django 已经为我们设置好了 <code>myapp</code> 项目的架构，
+其中 Model 的定义代码可以放在项目目录的 <code>myapp/models.py</code> 文件下。</p>
+<p>假设我们要开发一个类似于 <a href="http://pinterest.com/">Pinterest</a> 的网站。现在姑且先定义两个Model，User 和 Pin :</p>
+<pre><code>from django.db import models
+
+class User(models.Model):
+    name = models.fields.CharField(max_lenth=128)
+    avatar = models.fields.URLField()
+
+class Pin(models.Model):
+    src = models.fields.URLField()
+    intro = models.fields.CharField()
+</code></pre>
+<p>定义的 Model 必须继承自 <code>django.db.models.Model</code>，然后按照业务逻辑需要定义相关字段即可。
+Django 的 Model 层已经提供了常见的字段类型，具体可见 <a href="https://docs.djangoproject.com/en/1.10/ref/models/fields/">Django Model field reference</a>。</p>
+<h3>Django migration</h3>
+<p>在实际的Web开发中，需要将业务网代码中的 Model 与数据库中的表一一对应，
+Model 的每一个属性对应数据表的每一个字段。
+如果存在某种机制，当我们在代码里定义了 Model 以后，它能够帮我们在数据库里自动生成相关的表，
+更进一步的，如果对 Model 进行了一些改动，比如增删字段、修改字段名等，
+它还能够帮我们对数据库进行相应的改动，这肯定将会大大节省我们的工作量，
+并且还避免了手动键入代码有可能会出现的错误。很多成熟的Web框架都提供了这种机制。</p>
+<p>在 Django 框架里，把这样的机制称为 <code>migration</code>，分为两步：</p>
+<ol>
+<li>生成 migration，</li>
+<li>执行 migration。</li>
+</ol>
+<p>有如下几条相关命令：</p>
+<ul>
+<li>
+<p><code>makemigrations</code> 顾名思义就是生成所谓的 migration ，每次对 Model 层做出改动，都应该执行这条命令，生成一个新的 migration。</p>
+</li>
+<li>
+<p><code>showmigrations</code> 查看所有的 migration 及其状态，包括已执行的和未执行的。</p>
+</li>
+<li>
+<p><code>sqlmigrate</code> 查看某一项  migration 所对应的 sql 语句。</p>
+</li>
+<li>
+<p><code>migrate</code> 执行 migration ，这一步是实际执行的过程，Django 框架帮助你在数据库里执行相关的sql语句。</p>
+</li>
+</ul>
+<!--上面我们已经定义了Model，这时候只要在项目目录下运行如下命令：-->
+        </div>
+    </div>
+</body>
+</html>
