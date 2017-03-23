@@ -1,0 +1,82 @@
+---
+title: "Django 中的 django-admin 与 manage.py"
+---
+
+使用 Django 创建一个项目的命令我们都很熟悉，如下：
+
+    django-admin startproject ProjectName
+
+这个命令会创建项目的目录、manage.py 文件、以及一个与项目同名的 Python package，
+内含项目所需的各种配置项，一共生成了如下的目录结构：
+
+    .
+    └── ProjectName
+        ├── ProjectName
+        │   ├── __init__.py
+        │   ├── settings.py
+        │   ├── urls.py
+        │   └── wsgi.py
+        └── manage.py
+
+我们来看一下 manage.py 的代码：
+
+    #!/usr/bin/env python
+    import os
+    import sys
+
+    if __name__ == "__main__":
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ProjectName.settings")
+        try:
+            from django.core.management import execute_from_command_line
+        except ImportError:
+            # The above import may fail for some other reason. Ensure that the
+            # issue is really that Django is missing to avoid masking other
+            # exceptions on Python 2.
+            try:
+                import django
+            except ImportError:
+                raise ImportError(
+                    "Couldn't import Django. Are you sure it's installed and "
+                    "available on your PYTHONPATH environment variable? Did you "
+                    "forget to activate a virtual environment?"
+                )
+            raise
+        execute_from_command_line(sys.argv)
+
+
+manage.py 的代码内容很好理解，就是为了执行与 `django-admin` 命令，
+不同的是它预先配置了一个名为 `DJANGO_SETTINGS_MODULE` 的环境变量。
+
+django-admin 的子命令有一些需要这个变量，有一些不需要。对于不需要这个变量的命令，
+比如 `startapp` 或 `help`，执行：
+
+    django-admin startapp myapp
+
+与执行：
+
+    python manage.py startapp myapp
+
+或：
+
+    ./manage.py startapp myapp
+
+效果是完全一样的。
+
+而其余的大部分 `django-admin` 子命令都需要 `DJANGO_SETTINGS_MODULE` 环境变量，
+这时候必须以 `./manage.py` 开头，而不能够以 `django-admin` 开头。比如 `runserver`,
+你就必须在项目目录下执行 
+
+    python manage.py runserver
+    
+或 
+    
+    ./manage.py runserver
+    
+而如果执行：
+
+    django-admin runserver
+
+是会报错的。
+
+为了方便，我们建议除了在生成项目执行 `startproject` 命令时使用 `django-admin`，
+其余任何命令都使用 `./manage.py`。

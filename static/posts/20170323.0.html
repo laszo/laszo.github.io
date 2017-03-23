@@ -1,0 +1,85 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Django 中的 django-admin 与 manage.py - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">Django 中的 django-admin 与 manage.py</h3>
+
+        <div class="post-content">
+            <p>使用 Django 创建一个项目的命令我们都很熟悉，如下：</p>
+<pre><code>django-admin startproject ProjectName
+</code></pre>
+<p>这个命令会创建项目的目录、manage.py 文件、以及一个与项目同名的 Python package，
+内含项目所需的各种配置项，一共生成了如下的目录结构：</p>
+<pre><code>.
+└── ProjectName
+    ├── ProjectName
+    │   ├── __init__.py
+    │   ├── settings.py
+    │   ├── urls.py
+    │   └── wsgi.py
+    └── manage.py
+</code></pre>
+<p>我们来看一下 manage.py 的代码：</p>
+<pre><code>#!/usr/bin/env python
+import os
+import sys
+
+if __name__ == "__main__":
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ProjectName.settings")
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError:
+        # The above import may fail for some other reason. Ensure that the
+        # issue is really that Django is missing to avoid masking other
+        # exceptions on Python 2.
+        try:
+            import django
+        except ImportError:
+            raise ImportError(
+                "Couldn't import Django. Are you sure it's installed and "
+                "available on your PYTHONPATH environment variable? Did you "
+                "forget to activate a virtual environment?"
+            )
+        raise
+    execute_from_command_line(sys.argv)
+</code></pre>
+<p>manage.py 的代码内容很好理解，就是为了执行与 <code>django-admin</code> 命令，
+不同的是它预先配置了一个名为 <code>DJANGO_SETTINGS_MODULE</code> 的环境变量。</p>
+<p>django-admin 的子命令有一些需要这个变量，有一些不需要。对于不需要这个变量的命令，
+比如 <code>startapp</code> 或 <code>help</code>，执行：</p>
+<pre><code>django-admin startapp myapp
+</code></pre>
+<p>与执行：</p>
+<pre><code>python manage.py startapp myapp
+</code></pre>
+<p>或：</p>
+<pre><code>./manage.py startapp myapp
+</code></pre>
+<p>效果是完全一样的。</p>
+<p>而其余的大部分 <code>django-admin</code> 子命令都需要 <code>DJANGO_SETTINGS_MODULE</code> 环境变量，
+这时候必须以 <code>./manage.py</code> 开头，而不能够以 <code>django-admin</code> 开头。比如 <code>runserver</code>,
+你就必须在项目目录下执行 </p>
+<pre><code>python manage.py runserver
+</code></pre>
+<p>或 </p>
+<pre><code>./manage.py runserver
+</code></pre>
+<p>而如果执行：</p>
+<pre><code>django-admin runserver
+</code></pre>
+<p>是会报错的。</p>
+<p>为了方便，我们建议除了在生成项目执行 <code>startproject</code> 命令时使用 <code>django-admin</code>，
+其余任何命令都使用 <code>./manage.py</code>。</p>
+        </div>
+    </div>
+</body>
+</html>

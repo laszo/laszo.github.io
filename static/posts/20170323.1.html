@@ -1,0 +1,157 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Django 中的 application 的概念、配置、文件结构 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">Django 中的 application 的概念、配置、文件结构</h3>
+
+        <div class="post-content">
+            <p>在 Django 的语境中，<code>project</code> 指的是整个 Web 项目/网站/系统，
+<code>application</code> 指的是这个项目中的模块组件，负责实现项目的一部分功能。
+比如一个电子商务系统，如果用 Django 来开发，它的账户体系、支付系统、商品体系等模块的代码，
+就可以分别组织成不同的 application。所有的 application 加在一起，再加上项目的全局配置，
+组成了 project。虽然叫 application，它其实是一个标准的 Python package。</p>
+<p>一般来说一个 Django 项目的组成结构如下：</p>
+<pre><code>.
+└── ProjectName
+    ├── manage.py
+    ├── ProjectName
+    │   ├── settings.py
+    │   ├── urls.py
+    │   └── wsgi.py
+    ├── application1
+    │   ├── ...
+    ├── application2
+    │   ├── ...
+    └── application3
+    │   ├── ...
+    │────── ...
+</code></pre>
+<p>生成一个 application 非常简单，需要用到 <code>startapp</code> 命令，在项目目录下执行：</p>
+<pre><code>./manage.py startapp myapp
+</code></pre>
+<p>就在当前项目下添加了一个名为 myapp 的 application。但是这时候在整个项目范围内，
+还无法使用这个 application，还需要进行所谓的激活或注册。</p>
+<p>刚才的命令，生成的文件结构如下：</p>
+<pre><code>├── myapp
+    │   ├── __init__.py
+    │   ├── admin.py
+    │   ├── apps.py
+    │   ├── migrations
+    │   ├── models.py
+    │   ├── tests.py
+    │   └── views.py
+</code></pre>
+<p>其中，<code>apps.py</code> 文件中定义了一个名为 <code>MyappConfig</code> 的类，继承自 <code>django.apps.AppConfig</code>:</p>
+<pre><code>from django.apps import AppConfig
+
+class MyappConfig(AppConfig):
+    name = 'myapp'
+</code></pre>
+<p>这个类是 <code>startapp</code> 命令自动生成的。要进行 myapp 的激活，需要修改 <code>INSTALLED_APPS</code> 变量。
+在文件 <code>ProjectName\settings.py</code> 中，可以看到这个变量的配置代码：</p>
+<pre><code>INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+</code></pre>
+<p>这是 Django 预定义的内置 application，我们把刚才生成的 <code>MyappConfig</code> 添加到这个列表中：</p>
+<pre><code>INSTALLED_APPS = [
+    'myapp.apps.MyappConfig', # 添加自己的 application
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+</code></pre>
+<p>让我们来使用 django-admin 的 <code>shell</code> 命令来查看项目的配置：</p>
+<pre><code>./manage.py shell
+</code></pre>
+<p>这时候就进入了 Python 交互环境，能够看到命令提示符 <code>&gt;&gt;&gt;</code> ，
+使用 <code>django.apps.apps.get_app_configs</code> 方法查看已注册的 application ：</p>
+<pre><code>&gt;&gt;&gt; from django.apps import apps
+&gt;&gt;&gt; apps.get_app_configs()
+[&lt;MyappConfig: myapp&gt;, &lt;AdminConfig: admin&gt;, &lt;AuthConfig: auth&gt;, &lt;ContentTypesConfig:
+contenttypes&gt;, &lt;SessionsConfig: sessions&gt;, &lt;MessagesConfig: messages&gt;, &lt;StaticFilesCon
+fig: staticfiles&gt;]
+</code></pre>
+<p>可以看到，<code>MyappConfig: myapp</code> 就是我们刚才添加的 application。</p>
+<p>在 <code>INSTALLED_APPS</code> 中，如果我们添加的不是 <code>'myapp.apps.MyappConfig'</code> ，
+而直接是 <code>'myapp'</code>，也是可以的:</p>
+<pre><code>INSTALLED_APPS = [
+    'myapp', # 直接使用 application 的名字
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+</code></pre>
+<p>只是这时候再去看 <code>django.apps.apps.get_app_configs</code> 方法， 就变成了：</p>
+<pre><code>&gt;&gt;&gt; apps.get_app_configs()
+[&lt;AppConfig: myapp&gt;, &lt;AdminConfig: admin&gt;, &lt;AuthConfig: auth&gt;, &lt;ContentTypesConfig: co
+ntenttypes&gt;, &lt;SessionsConfig: sessions&gt;, &lt;MessagesConfig: messages&gt;, &lt;StaticFilesConfi
+g: staticfiles&gt;]
+</code></pre>
+<p>我们自己添加的 application 从 <code>MyappConfig: myapp</code> 变成了 <code>AppConfig: myapp</code>。</p>
+<p>也就是说，<code>INSTALLED_APPS</code> 这个列表变量，可以接受 <code>AppConfig</code> 类、也可以接受它的子类。
+如果我们再去添加一个 application：</p>
+<pre><code>./manage.py startapp myapp1
+</code></pre>
+<p>并注册：</p>
+<pre><code>INSTALLED_APPS = [
+    'myapp1.apps.Myapp1Config',
+    'myapp',
+    'django.contrib.admin',
+    ...
+]
+</code></pre>
+<p>再来看 <code>apps.get_app_configs</code> ：</p>
+<pre><code>&gt;&gt;&gt; from django.apps import apps
+&gt;&gt;&gt; apps.get_app_configs()
+[&lt;Myapp1Config: myapp1&gt;, &lt;AppConfig: myapp&gt;, &lt;AdminConfig: admin&gt;, &lt;AuthConfig: auth&gt;,
+&lt;ContentTypesConfig: contenttypes&gt;, &lt;SessionsConfig: sessions&gt;, &lt;MessagesConfig: mess
+ages&gt;, &lt;StaticFilesConfig: staticfiles&gt;]
+</code></pre>
+<p>得到了想要的效果。</p>
+<p>下面我们来看预定义的 application 文件结构的其余部分：</p>
+<pre><code>├── myapp
+    │   ├── __init__.py
+    │   ├── admin.py
+    │   ├── apps.py
+    │   ├── migrations
+    │   ├── models.py
+    │   ├── tests.py
+    │   └── views.py
+</code></pre>
+<p>其中， <code>migrations</code>是一个文件夹，用于数据模型与数据库结构的同步，
+<code>models.py</code>用于定义数据模型，前面我们在 <a href="20170317.0.html">Django Model 层工作流总结</a>中已经做了说明。
+<code>apps.py</code> 文件已经在上面刚刚解释过。
+现在还剩下三个文件：<code>admin.py</code>、<code>tests.py</code>、<code>views.py</code>。</p>
+<p>需要说明的是， application 进行这样的文件结构设计，是为了进行代码逻辑的分离，
+体现单一职责等设计原则，这是一种行之有效的行业实践，而并非是必须这么做才能运行 Django 项目。
+比如，我们在前面<a href="20170302.1.html">从最简Django项目深入分析Django框架的启动过程</a>中定义的项目，
+就没有使用这样的文件结构，甚至没有使用 application，也是能够运行的。</p>
+<p>但是如果你做实际的项目时把所有的代码都放到同一个文件里，代码很快就会像一团乱麻一样，
+根本就找不到，你也会因此痛苦不堪。
+做任何实际的项目，还是应该像推荐的那样，把不同的代码逻辑放在不同的文件、目录、模块中去，
+并进行良好的命名，随着项目的发展，结构组织良好的代码会越来越体现出它的优点来。</p>
+        </div>
+    </div>
+</body>
+</html>
