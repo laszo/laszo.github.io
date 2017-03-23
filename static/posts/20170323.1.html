@@ -142,10 +142,12 @@ ages&gt;, &lt;StaticFilesConfig: staticfiles&gt;]
 <p>其中， <code>migrations</code>是一个文件夹，用于数据模型与数据库结构的同步，
 <code>models.py</code>用于定义数据模型，前面我们在 <a href="20170317.0.html">Django Model 层工作流总结</a>中已经做了说明。
 <code>apps.py</code> 文件已经在上面刚刚解释过。
-现在还剩下三个文件：<code>admin.py</code>、<code>tests.py</code>、<code>views.py</code>。</p>
-<p>需要说明的是， application 进行这样的文件结构设计，是为了进行代码逻辑的分离，
+<code>admin.py</code> 是为了供 <code>django.contrib.admin</code> 模块管理我们创建的数据模型，后面我们再说。
+<code>tests.py</code> 是为了供单元测试使用，后面我们会专门说到 Django 里的测试功能。
+<code>views.py</code> 这个文件是我们写主要的业务逻辑的地方，我们也留待以后再说。</p>
+<p>application 进行这样的文件结构设计，是为了进行代码逻辑的分离，
 体现单一职责等设计原则，这是一种行之有效的行业实践，而并非是必须这么做才能运行 Django 项目。
-比如，我们在前面<a href="20170302.1.html">从最简Django项目深入分析Django框架的启动过程</a>中定义的项目，
+比如，我们在前面 <a href="20170302.1.html">从最简Django项目深入分析Django框架的启动过程</a> 中的示例项目，
 就没有使用这样的文件结构，甚至没有使用 application，也是能够运行的。</p>
 <p>但是如果你做实际的项目时把所有的代码都放到同一个文件里，代码很快就会像一团乱麻一样，
 根本就找不到，你也会因此痛苦不堪。
