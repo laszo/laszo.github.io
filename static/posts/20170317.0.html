@@ -59,6 +59,8 @@ Django 已经为我们设置好了 <code>myapp</code> 项目的架构，
 class User(models.Model):
     name = models.fields.CharField(max_lenth=128)
     avatar = models.fields.URLField()
+    address = models.fields.CharField(max_length=1024)
+    email = models.fields.EmailField()
 
 class Pin(models.Model):
     src = models.fields.URLField()
@@ -211,6 +213,70 @@ sessions
 [X] 0001_initial
 </code></pre>
 <p>每个 migration 前面的 <code>[ ]</code> 变成了 <code>[X]</code> 。这代表这个 migration 的状态从未执行变成了已执行。</p>
+<h3>CRUD</h3>
+<p>对于一个 Web 系统来说，最基本的操作就是对于数据的增、查、改、删，任何复杂的业务逻辑也要基于此。
+以前面我们定义的模型为例，分别来看看 Django 提供的相关 API。</p>
+<h4>增加一条数据：</h4>
+<pre><code>u = User(name='myname', avatar='http://image.com/user.png')
+u.save()
+</code></pre>
+<p>或者：</p>
+<pre><code>u = User()
+u.name = 'myname'
+u.avatar = 'http://image.com/user.png'
+u.save()
+</code></pre>
+<h4>查询数据：</h4>
+<pre><code>results = User.objects.filter(name='myname')
+</code></pre>
+<p>这时候返回的是一个集合，包含所有符合 name 是 <code>myname</code> 的 User 模型，
+这是一个 <code>QuerySet</code> 类的实例。QuerySet 代表了从数据库中查到的所有符合查询条件的对象，
+类比于 SQL 语句中的 <code>select * from User where name='myname'</code>，
+就像 SQL 中的 <code>select</code> 语句一样，返回的结果有可能是 0 条、 1 条、或者多条。
+构建什么样的查询条件，主要取决于我们给 <code>filter</code> 函数传递什么样的参数，具体的语法可参看
+<a href="https://docs.djangoproject.com/en/1.10/topics/db/queries/#retrieving-objects">Retrieving objects</a>。 </p>
+<p>要通过 QuerySet 获得具体的数据模型对象，就像从普通的 Python 列表中获取对象一样：</p>
+<pre><code>u1 = results[0]
+print u1.name
+
+uf = results.first()
+print uf.name
+
+ulast = results.last()
+print ulast.name
+
+for u in results:
+    print u.name
+</code></pre>
+<p>除了 filter 函数用于获取结果集之外，还有一个 <code>get</code> 函数，用于获取单个查询结果：</p>
+<pre><code>u = User.objects.get(name='myname')
+</code></pre>
+<p>这里必须要提醒的是，get 函数只用于查询单条数据，如果从数据库中查到了多条数据，就会报错：</p>
+<pre><code>MultipleObjectsReturned: get() returned more than one User -- it returned 2!
+</code></pre>
+<p>所以，get 函数最好是只用来查询 <code>unique</code> 字段。</p>
+<p>另外，还有一个 <code>exclude</code> 函数，它的作用与 filter 正好相反，返回所有不符合查询条件的参数：</p>
+<pre><code>results = User.objects.exclude(name='myname')
+</code></pre>
+<p>该语句同样会返回一个 QuerySet，包含所有 name 不是 myname 的数据对象。</p>
+<p>对于查询得到的 QuerySet，还可以再次使用 filter 或 exclude 函数，形成一个多重的查询：</p>
+<pre><code>results = User.objects.filter(name='myname').filter(email='user@email.com').exclude(address='Beijing')
+</code></pre>
+<h4>修改数据：</h4>
+<p>对于一个数据模型的实例，我们可以对它的字段进行赋值，然后调用 <code>save</code> 方法，就实现了数据的更新：</p>
+<pre><code>user = User.objects.filter(name='myname').first()
+user.address = 'Shanghai'
+user.save()
+</code></pre>
+<h4>删除数据</h4>
+<p>删除数据很简单，调用数据实例的 <code>delete</code> 方法即可：</p>
+<pre><code>user = User.objects.filter(name='myname').first()
+user.delete()
+</code></pre>
+<p>调用了 delete 方法之后，数据库中虽然删掉了这条数据，但是在程序运行的范围内，
+这条数据模型的实例作为一个 Python 对象仍然是存在的，访问 <code>user.name</code> 、 <code>user.email</code>
+等属性仍然跟调用 <code>delete</code> 之前是完全一样的，但是，实例的 <code>id</code> 或 <code>pk</code> 这两个属性变成了 <code>None</code>。
+这时候如果再次调用 <code>save</code> 方法，会向数据库中再次插入这条数据。</p>
 <div class="footnote">
 <hr />
 <ol>
