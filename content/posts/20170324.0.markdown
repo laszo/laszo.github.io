@@ -1,0 +1,65 @@
+---
+title: 'Python ORM 框架 pony 介绍'
+---
+
+使用 Python 做 Web 开发，免不了要跟数据库打交道。虽然我们可以直接拼写 SQL 语句，
+利用 Python 的数据库 API直接操作，但是这样太原始和繁琐了。
+我们一般把跟数据库操作相关的代码提取出来，形成独立的一层。
+在 Python 中这样的库很多， `SQLAlchemy` 和 `Pony` 都是其中的佼佼者，今天来介绍 Pony。
+
+它的安装就是我们最常用的 `pip`:
+
+    pip install pony
+
+#### 数据库连接
+
+    from pony.orm import *
+    db = Database()
+    db.bind('mysql', host='localhost', user='user', passwd='password', db='dbname')
+
+#### 数据模型定义
+
+在 Pony 中定义数据模型的字段与其他的 ORM 模型稍微有点不一样，
+包括模型本身在 Pony 里也是称做 `Entity`， 定义的语法如下：
+
+    class EntityName(inherits_from)
+        attr_name = attr_kind(attr_type, attr_options)
+
+`attr_name` 就是我们要定义的字段名，也就是数据库表里的字段名。
+`attr_kind` 是字段的种类，有如下几个种类：
+
+* Required - 相当于 SQL 里的 Not Null。指明该字段不能为空。
+* Optional - 该字段可以为空
+* PrimaryKey - 看名字就知道，这个是指明该字段是主键
+* Set - 代表一个集合，用于 一对多 或者 多对多 的关系
+* Discriminator - 用于 Entity 的继承
+
+`attr_type` 是字段的数据类型，有如下类型：
+
+* str
+* unicode
+* int
+* float
+* Decimal
+* datetime
+* date
+* time
+* timedelta
+* bool
+* buffer - 二进制数据，Python 2 and 3
+* bytes - 二进制数据 in Python 3
+* LongStr - used for large strings
+* LongUnicode - used for large strings
+* UUID
+* Json - used for mapping to native database JSON type
+
+`attr_options` 规定了该字段的一些限制和配置，比如 `default`、 `max`等。
+具体的适用情况要看字段的类型而定，详细可参看 [Attribute options]。
+
+下面我们来定义一个数据模型：
+
+    class User(db.Entity):
+        name = Required(str)
+        age = Optional(int)
+
+[Attribute options]: https://docs.ponyorm.com/api_reference.html#attribute-options

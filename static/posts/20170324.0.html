@@ -1,0 +1,73 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Python ORM 框架 pony 介绍 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">Python ORM 框架 pony 介绍</h3>
+
+        <div class="post-content">
+            <p>使用 Python 做 Web 开发，免不了要跟数据库打交道。虽然我们可以直接拼写 SQL 语句，
+利用 Python 的数据库 API直接操作，但是这样太原始和繁琐了。
+我们一般把跟数据库操作相关的代码提取出来，形成独立的一层。
+在 Python 中这样的库很多， <code>SQLAlchemy</code> 和 <code>Pony</code> 都是其中的佼佼者，今天来介绍 Pony。</p>
+<p>它的安装就是我们最常用的 <code>pip</code>:</p>
+<pre><code>pip install pony
+</code></pre>
+<h4>数据库连接</h4>
+<pre><code>from pony.orm import *
+db = Database()
+db.bind('mysql', host='localhost', user='user', passwd='password', db='dbname')
+</code></pre>
+<h4>数据模型定义</h4>
+<p>在 Pony 中定义数据模型的字段与其他的 ORM 模型稍微有点不一样，
+包括模型本身在 Pony 里也是称做 <code>Entity</code>， 定义的语法如下：</p>
+<pre><code>class EntityName(inherits_from)
+    attr_name = attr_kind(attr_type, attr_options)
+</code></pre>
+<p><code>attr_name</code> 就是我们要定义的字段名，也就是数据库表里的字段名。
+<code>attr_kind</code> 是字段的种类，有如下几个种类：</p>
+<ul>
+<li>Required - 相当于 SQL 里的 Not Null。指明该字段不能为空。</li>
+<li>Optional - 该字段可以为空</li>
+<li>PrimaryKey - 看名字就知道，这个是指明该字段是主键</li>
+<li>Set - 代表一个集合，用于 一对多 或者 多对多 的关系</li>
+<li>Discriminator - 用于 Entity 的继承</li>
+</ul>
+<p><code>attr_type</code> 是字段的数据类型，有如下类型：</p>
+<ul>
+<li>str</li>
+<li>unicode</li>
+<li>int</li>
+<li>float</li>
+<li>Decimal</li>
+<li>datetime</li>
+<li>date</li>
+<li>time</li>
+<li>timedelta</li>
+<li>bool</li>
+<li>buffer - 二进制数据，Python 2 and 3</li>
+<li>bytes - 二进制数据 in Python 3</li>
+<li>LongStr - used for large strings</li>
+<li>LongUnicode - used for large strings</li>
+<li>UUID</li>
+<li>Json - used for mapping to native database JSON type</li>
+</ul>
+<p><code>attr_options</code> 规定了该字段的一些限制和配置，比如 <code>default</code>、 <code>max</code>等。
+具体的适用情况要看字段的类型而定，详细可参看 <a href="https://docs.ponyorm.com/api_reference.html#attribute-options">Attribute options</a>。</p>
+<p>下面我们来定义一个数据模型：</p>
+<pre><code>class User(db.Entity):
+    name = Required(str)
+    age = Optional(int)
+</code></pre>
+        </div>
+    </div>
+</body>
+</html>
