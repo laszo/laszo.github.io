@@ -1,29 +1,34 @@
 ---
-title: 'Python ORM 框架 pony 介绍'
+title: 'Python ORM 框架 Pony 介绍'
 ---
 
 使用 Python 做 Web 开发，免不了要跟数据库打交道。虽然我们可以直接拼写 SQL 语句，
 利用 Python 的数据库 API直接操作，但是这样太原始和繁琐了。
 我们一般把跟数据库操作相关的代码提取出来，形成独立的一层。
-在 Python 中这样的库很多， `SQLAlchemy` 和 `Pony` 都是其中的佼佼者，今天来介绍 Pony。
+在 Python 中这样的库很多， `SQLAlchemy` 和 `Pony` 都是其中的佼佼者，
+今天简单介绍 [Pony ORM]
 
 它的安装就是我们最常用的 `pip`:
 
     pip install pony
 
+----
 #### 数据库连接
 
     from pony.orm import *
     db = Database()
     db.bind('mysql', host='localhost', user='user', passwd='password', db='dbname')
 
+----
 #### 数据模型定义
 
 在 Pony 中定义数据模型的字段与其他的 ORM 模型稍微有点不一样，
-包括模型本身在 Pony 里也是称做 `Entity`， 定义的语法如下：
+包括模型本身在 Pony 里也是称做“实体”（`Entity`），其定义的语法如下：
 
     class EntityName(inherits_from)
         attr_name = attr_kind(attr_type, attr_options)
+
+`inherits_from` 指定模型要继承的类，一般指定 `db.Entity` 即可。
 
 `attr_name` 就是我们要定义的字段名，也就是数据库表里的字段名。
 `attr_kind` 是字段的种类，有如下几个种类：
@@ -58,8 +63,79 @@ title: 'Python ORM 框架 pony 介绍'
 
 下面我们来定义一个数据模型：
 
+    from datetime import datetime
+
     class User(db.Entity):
         name = Required(str)
-        age = Optional(int)
+        age = Required(int)
+        create_time = Optinal(datetime, default=datetime.now())
 
+对一个 ORM 框架的基本要求是增删改查，下面我们来分别看看对应的语法。
+
+----
+#### 增加一条数据
+
+    db.generate_mapping()
+    u = User(name='myname', age=18)
+    commit()
+
+新建一个对象模型的实例与其他 ORM 框架并无区别，在新建的时候要把必填字段作为参数传递给构造函数。
+但是，模型的保存并不是常见的 `u.save()`，而是需要调用 `commit()` 函数，只有调用了 commit 函数，
+才进行了实际的数据库操作。并且，在此之前必须先调用 `db.generate_mapping()`，
+将模型映射到数据库的对应表，如果制定了参数 `create_tables=True` ，
+generate_mapping 还会检查表是否存在，如果不存在则创建表，这有点类似于 Django 框架
+里的 `migration` 。
+
+----
+#### 查找数据
+
+查找数据的语法是 Pony 比较有特点的地方，像是 SQL 语句和函数式编程两者的结合。
+举例来说，假如我们要查找姓名是 `myname` 的用户：
+
+    query = select(u for u in User if u.name=='myname')
+
+这时候得到的 `query` 变量是一个 `pony.orm.core.Query` 类的实例。如果想得到响应的模型，
+还需要把它转换成一个 `pony.orm.core.QueryResult`：
+
+    results = query[:]
+
+这时候按照访问列表的形式访问 `results` 即可：
+
+    user = results[0]
+    print user.name
+
+如果只进行简单的属性查询，还可以使用模型的 `get` 方法：
+
+    user = User.get(name='myname')
+
+注意这里传递的插叙参数是 `name='myname'` 而不是 `name=='myname'`，只写一个等号即可。
+这时候得到的 `user` 对象就是 `User` 模型的实例对象，而不是 `Query` 类型，
+所以可以直接访问模型的属性：
+
+    print user.name
+
+更加复杂的查询语法可以参看 Pony 的文档 [Queries] 和 [Queries and functions]。
+
+----
+#### 更新数据
+
+更新数据分为两步：
+
+1. 给模型实例赋值
+2. 提交到数据库
+
+这里的第一步操作与其他框架类似，而第二步仍然是调用 commit 函数：
+
+    user.age += 1
+    commit()
+
+----
+####删除数据
+
+    user.delete()
+    commit()
+
+[Pony ORM]: https://ponyorm.com
 [Attribute options]: https://docs.ponyorm.com/api_reference.html#attribute-options
+[Queries]: https://docs.ponyorm.com/queries.html
+[Queries and functions]: https://docs.ponyorm.com/api_reference.html#queries-and-functions

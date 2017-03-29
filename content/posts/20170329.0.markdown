@@ -1,0 +1,67 @@
+---
+title: 'SqlAlchemy 使用简介'
+---
+
+今天我们来看一下 [SqlAlchemy] 的简单使用。
+
+### 安装
+
+    pip install sqlalchemy
+
+### 数据库连接
+
+数据库的连接需要使用 `create_engine` 函数，传入数据库的 URL 作为参数，URL 的语法是：
+
+    dialect+driver://username:password@host:port/database
+
+对于我们使用的 MySQL-Python 来说，就是：
+
+    from sqlalchemy import create_engine
+
+    engine = create_engine('mysql+mysqldb://uname:passwd@localhost:3306/databasename')
+
+其他数据库配置可参看 [Database Urls]。
+
+### 定义数据模型
+
+我们使用任何 ORM 框架，在定义数据模型时，框架一般都会要求我们指定一个特定的基类，
+在 SqlAlchemy 里，这个类需要用`declarative_base` 函数创建。
+
+    from sqlalchemy.ext.declarative import declarative_base
+    
+    Base = declarative_base()
+
+然后就可以定义模型了，当然还要引入框架的数据类型：
+
+    from sqlalchemy import Column, Integer, String
+    
+    class User(Base):
+        id = Column(Integer, primary_key=True)
+        name = Column(String(128))
+
+SQLAlchemy 要求模型必须有一个字段为主键[^note1]，即指定了 `primary_key=True` 的 Column。
+
+### 建立 Session
+
+在 SQLAlchemy 里，在跟数据库进行实际交互之前，必须先建立 `Session`， 由 Session 完成交互。
+这个 Session 是由 `session_maker` 来辅助创建的：
+
+    from sqlalchemy.orm import sessionmaker
+
+    MySessionMaker = sessionmaker(bind=engine)
+    ms_session = MySessionMaker()
+
+注意，这里的 sessionmaker 是一个工厂类，专门用于创建 `sqlalchemy.orm.session.Session` 类。
+`MySessionMaker` 是这个工厂类的实例，而 `ms_session` 是由这个实例创建的一个 Session 实例。
+
+    >>> type(sessionmaker)
+    <type 'type'>
+    >>> type(MySessionMaker)
+    <class 'sqlalchemy.orm.session.sessionmaker'>
+    >>> type(ms_session)
+    <class 'sqlalchemy.orm.session.Session'>
+
+[SqlAlchemy]: http://www.sqlalchemy.org/
+[Database Urls]: http://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls
+[^note1]: Django Model 和 Pony 会在我们没有指定主键的时候自动为我们创建一个自增长的主键字段。
+[^note2]: 这里稍微有点绕，使用了 Python 的语法特性。参见文章 []

@@ -1,0 +1,77 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SqlAlchemy 使用简介 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">SqlAlchemy 使用简介</h3>
+
+        <div class="post-content">
+            <p>今天我们来看一下 <a href="http://www.sqlalchemy.org/">SqlAlchemy</a> 的简单使用。</p>
+<h3>安装</h3>
+<pre><code>pip install sqlalchemy
+</code></pre>
+<h3>数据库连接</h3>
+<p>数据库的连接需要使用 <code>create_engine</code> 函数，传入数据库的 URL 作为参数，URL 的语法是：</p>
+<pre><code>dialect+driver://username:password@host:port/database
+</code></pre>
+<p>对于我们使用的 MySQL-Python 来说，就是：</p>
+<pre><code>from sqlalchemy import create_engine
+
+engine = create_engine('mysql+mysqldb://uname:passwd@localhost:3306/databasename')
+</code></pre>
+<p>其他数据库配置可参看 <a href="http://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls">Database Urls</a>。</p>
+<h3>定义数据模型</h3>
+<p>我们使用任何 ORM 框架，在定义数据模型时，框架一般都会要求我们指定一个特定的基类，
+在 SqlAlchemy 里，这个类需要用<code>declarative_base</code> 函数创建。</p>
+<pre><code>from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+</code></pre>
+<p>然后就可以定义模型了，当然还要引入框架的数据类型：</p>
+<pre><code>from sqlalchemy import Column, Integer, String
+
+class User(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(128))
+</code></pre>
+<p>SQLAlchemy 要求模型必须有一个字段为主键<sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>，即指定了 <code>primary_key=True</code> 的 Column。</p>
+<h3>建立 Session</h3>
+<p>在 SQLAlchemy 里，在跟数据库进行实际交互之前，必须先建立 <code>Session</code>， 由 Session 完成交互。
+这个 Session 是由 <code>session_maker</code> 来辅助创建的：</p>
+<pre><code>from sqlalchemy.orm import sessionmaker
+
+MySessionMaker = sessionmaker(bind=engine)
+ms_session = MySessionMaker()
+</code></pre>
+<p>注意，这里的 sessionmaker 是一个工厂类，专门用于创建 <code>sqlalchemy.orm.session.Session</code> 类。
+<code>MySessionMaker</code> 是这个工厂类的实例，而 <code>ms_session</code> 是由这个实例创建的一个 Session 实例。</p>
+<pre><code>&gt;&gt;&gt; type(sessionmaker)
+&lt;type 'type'&gt;
+&gt;&gt;&gt; type(MySessionMaker)
+&lt;class 'sqlalchemy.orm.session.sessionmaker'&gt;
+&gt;&gt;&gt; type(ms_session)
+&lt;class 'sqlalchemy.orm.session.Session'&gt;
+</code></pre>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:note1">
+<p>Django Model 和 Pony 会在我们没有指定主键的时候自动为我们创建一个自增长的主键字段。&#160;<a class="footnote-backref" href="#fnref:note1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:note2">
+<p>这里稍微有点绕，使用了 Python 的语法特性。参见文章 []&#160;<a class="footnote-backref" href="#fnref:note2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </div>
+</body>
+</html>

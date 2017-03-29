@@ -1,0 +1,112 @@
+---
+title: 'Python 里的工厂方法，使用 type 和 __call__'
+---
+### 动机
+
+SQLAlchemy 的一段示例代码是这样的：
+
+    from sqlalchemy.orm import sessionmaker
+
+    MySessionMaker = sessionmaker(bind=engine)
+    ms_session = MySessionMaker()
+    ...
+    ms_session.commit()
+
+照着这样的方式去使用 SQLAlchemy 是没问题的，但是如果深究一下，
+为何需要连续调用两次 `sessionmaker(bind=engine)` 和 `MySessionMaker()` 呢？
+如果说
+
+    MySessionMaker = sessionmaker(bind=engine)
+
+是生成了一个新的变量，为什么这个新的变量 `MySessionMaker` 还能再次被调用： 
+
+    ms_session = MySessionMaker()
+
+再次调用所生成的这个 `ms_session` 又是什么类型呢？我看了下 SQLAlchemy 的源代码，
+原来它使用了 `type` 和 `__call__` 这两个 Python 语言特性。下面分别介绍。
+
+
+### type
+
+type 这个内置函数我们都用过，最常见的用法是查看一个实体的类型：
+
+    >>> type('a')
+    <type 'str'>
+    >>> type(type)
+    <type 'type'>
+
+当有三个参数时，type 用作声明一个类。我们来看一个最简单的类定义：
+
+    class X(object):
+        a = 1
+
+这声明了一个名为 `X` 的类。下面来看使用 type 的写法：
+
+    X = type('X', (object,), dict(a=1))
+
+上面的两段代码做的是完全相同的事情。然后我们可以像正常的类那样去使用：
+
+    x1 = X()
+    print x.a
+
+### `__call__`
+
+`__call__` 使得类的实例可以调用像函数那样去调用。以上面的类 `X` 和实例 `x1` 为例：
+
+    x1 = X()
+    print x.a
+    x1()
+
+这里的 `x1()` 是个什么鬼？上面代码在运行的时候的确也会报错：
+
+    TypeError: 'X' object is not callable
+
+但是，如果我们修改一下类 X 的定义，添加一个 `__call__` 函数：
+
+    class X(object):
+        a = 1
+
+        def __call__(self):
+            print 'Hi, I am a X.'
+
+这时候再去运行 `x1()`，就会得到：
+
+    Hi, I am a X.
+
+也就是说，我们在调用 `x1()` 的时候，实际上调用了 `x1.__call__()`。如Python 的文档所说：
+
+>
+Class instances are callable only when the class has a `__call__()` method; 
+`x(arguments)` is a shorthand for `x.__call__(arguments)`.
+
+
+### 完整的定义
+
+知道了上面这两点之后，我们可以来看下面一段完整的代码：
+
+    class Pie(object):
+        def __call__(self):
+            print 'Hi, I am a Pie!'
+
+    class Pizza(object):
+        def __call__(self):
+            print 'Hi, I am a Pizza!'
+
+    class Maker(object):
+        def __init__(self, class_=Pie):
+            self.class_ = type(class_.__name__, (class_,), {})
+
+        def __call__(self):
+            return self.class_()
+
+
+    if __name__ == '__main__':
+        pie_maker = Maker(Pie)
+        a_pie = pie_maker()
+        pizza_maker = Maker(Pizza)
+        a_pizza = pizza_maker()
+        a_pie()
+        a_pizza()
+
+
+
