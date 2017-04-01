@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Django 中的 URL 配置 - Lv Xiaoyu `Site</title>
+    <title>Django 中的 URL 配置与静态文件的路径配置 - Lv Xiaoyu `Site</title>
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
 </head>
@@ -11,10 +11,28 @@
             <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
         </div>
 
-        <h3 class="blog-post-title">Django 中的 URL 配置</h3>
+        <h3 class="blog-post-title">Django 中的 URL 配置与静态文件的路径配置</h3>
 
         <div class="post-content">
-            
+            <p>本文关注 Django 中的 URL 配置，让我们从最初的 Django 项目开始。</p>
+<p>有如下这些 URL：</p>
+<pre><code>http://localhost/
+http://localhost/jack
+http://localhost/jack/pins
+http://localhost/jack/likes
+http://localhost/jack/board
+http://localhost/jack/board/flowers
+http://localhost/pin/
+http://localhost/
+</code></pre>
+<p>我们知道，Django 项目的所有 URL 配置都得以 <code>urlpatterns</code> 变量开始，这变量仅仅是一个列表，
+包含一系列 <code>django.conf.urls.url</code> 的实例。</p>
+<p>我们如果要深入研究 Django 中的 URL 配置，</p>
+<h2>静态文件的路由配置</h2>
+<p>参考文档：</p>
+<p><a href="https://docs.djangoproject.com/en/1.10/topics/http/urls/">URL dispatcher</a></p>
+<p><a href="https://docs.djangoproject.com/en/1.10/ref/urlresolvers/">django.urls utility functions</a></p>
+<p><a href="https://docs.djangoproject.com/en/1.10/ref/urls/">django.conf.urls utility functions</a></p>
         </div>
     </div>
 </body>

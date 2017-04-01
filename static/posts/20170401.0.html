@@ -1,0 +1,172 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Django 中的 URL 配置 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">Django 中的 URL 配置</h3>
+
+        <div class="post-content">
+            <p>本文关注 Django 中的 URL 配置。
+Django 项目的所有 URL 配置都以 <code>urlpatterns</code> 变量开始，这变量是一个列表，
+列表中的单个元素称为 <code>url pattern</code>，即 url 模式。</p>
+<p>。比如：</p>
+<pre><code>from django.conf.urls import url
+from . import views
+
+urlpatterns = [
+    url(r'^articles/2003/$', views.special_case_2003),
+    url(r'^articles/([0-9]{4})/$', views.year_archive),
+    url(r'^articles/([0-9]{4})/([0-9]{2})/$', views.month_archive),
+    url(r'^articles/([0-9]{4})/([0-9]{2})/([0-9]+)/$', views.article_detail),
+]
+</code></pre>
+<p>可以看到， urlpatterns 列表里的元素、即一个 <code>url pattern</code>对象
+必须是 <code>django.conf.urls.url()</code> 函数生成的对象。</p>
+<p>我们来看函数的定义：</p>
+<pre><code>def url(regex, view, kwargs=None, name=None):
+    ...
+</code></pre>
+<p>共四个参数：</p>
+<ul>
+<li>
+<p><code>regex</code>：是一个正则表达式的字符串，当 Django 接收到一个客户端请求时，会在 <code>urlpatterns</code>
+    列表中从上到下查找能够匹配的正则表达式，找到第一个匹配的元素就停止，然后将 客户端请求以
+    <code>HttpRequest</code> 实例的方式传递给 <code>view</code>。如果没有找到则报错。
+    这样的一个正则表达式可以成为一个 <code>url 模式</code>(url patterns)。</p>
+</li>
+<li>
+<p><code>view</code>：是一个函数，有我们自己定义。它必须接收一个参数，并返回 <code>HttpResponse</code> 对象。
+    比如一个最简单的 view：</p>
+<pre><code>def hello(request):
+    return HttpResponse('Hello, world!')
+</code></pre>
+<p>另外，view 也可以是 <code>include()</code> 函数的返回值，或者 Django 中一些 <code>class-based view</code> 的
+<code>as_view()</code> 函数的返回值</p>
+</li>
+<li>
+<p><code>kwargs</code>：可以给 view 传递的额外的 key-value 参数，
+    比如定义如下的 view 和 urlpatterns：</p>
+<pre><code>def hello(request, name=None):
+    return HttpResponse('Hello, ' + name)
+
+urlpatterns = [
+    url(r'^hello', hello, {'name': 'jack'}),
+    ...
+]
+</code></pre>
+<p>那么在处理客户端的 url 请求 hello 时，Django 除了把 request 参数传递给 hello 函数之外，
+同时还会参数 <code>name=jack</code>。注意，view 函数必须预先已经定义了 key-value 参数，
+否则不能给它传递这样的参数。</p>
+</li>
+<li>
+<p><code>name</code>：可以给该 url 模式起一个名字，这主要用于 <a href="https://docs.djangoproject.com/en/1.10/topics/http/urls/#reverse-resolution-of-urls">URL reversing</a>，这个话题后续再讨论。</p>
+</li>
+</ul>
+<h3>regex 中的参数</h3>
+<p>如果我们在的正则表达式 regex 中的某些字符串以圆括号 <code>()</code> 包围起来，括号内的字符会作为参数传递给
+view 函数。如果有多个这样的字符串，则会按顺序传递多个参数。比如：</p>
+<pre><code>urlpatterns = [
+    url(r'^articles/([0-9]{4})/([0-9]{2})/$', views.month_archive),
+    ...
+]
+</code></pre>
+<p>该 url 中有两个这样的字符串： <code>([0-9]{4})</code> 和 <code>([0-9]{2})</code>。如果 <code>month_archive()</code> 定义为：</p>
+<pre><code>def month_archive(request, year, month):
+    ...
+</code></pre>
+<p>那么，在请求 <code>http://localhost/articles/2017/04/</code> 这样的 url 时，month_archive 会收到
+两个参数 <code>year=2017</code> 和 <code>month=04</code>。第一个参数 request 永远是 Django 自动传递的 HttpRequest 实例。</p>
+<h4>指定参数的名字</h4>
+<p>我们在圆括号里，还可以指定参数的名字。指定的方法是在圆括号的开端 <code>(</code> 后面添加 <code>?P&lt;arg_name&gt;</code>。
+这里的 <code>arg_name</code> 就是 view 函数定义的参数名。比如，定义如下的 url 和 view：</p>
+<pre><code>urlpatterns = [
+    url(r'^(?P&lt;year&gt;[0-9]*)/(?P&lt;month&gt;[0-9]*)', hello)
+]
+
+def hello(request, year, month):
+    return HttpResponse('year: %s, month: %s' % (year, month))
+</code></pre>
+<p>在访问 url 为 <code>http://127.0.0.1:8000/2017/04</code> 时，2017 会作为 year 参数、
+04 会作为 month 参数传递给 hello() 函数。访问这个 url ，浏览器上会显示：</p>
+<pre><code>year: 2017, month: 04
+</code></pre>
+<p>另外，既然定义了参数的名字，那么 Django 就会按照名字、而不是出现的顺序把参数传递给 view 函数。
+比如，如果在 urlpatterns 里互换 year 和 month 的位置：</p>
+<pre><code>urlpatterns = [
+    url(r'^(?P&lt;month&gt;[0-9]*)/(?P&lt;year&gt;[0-9]*)', hello)
+]
+</code></pre>
+<p>把 month 放在前面，year放在后面，再次访问 <code>http://127.0.0.1:8000/2017/04</code> 时，会得到：</p>
+<pre><code>year: 04, month: 2017
+</code></pre>
+<p>这说明，2017 作为 month 参数、04 作为 year 参数传递给了 hello()函数。 </p>
+<h2>include() 函数</h2>
+<p>前面提到，url() 函数的第二个参数 view 既可以是一个接收 HttpRequest、返回 HttpResponse 的函数，
+也可以是一个 <code>include()</code> 的返回值，这主要用于引用其他的 urlpatterns。
+include() 函数的参数既可以是一个列表变量，也可以是一个指明了其他 module 的字符串。</p>
+<h4>列表变量的情况：</h4>
+<pre><code>extra_patterns = [
+    url(r'^$', credit_views.mainpage),
+    url(r'^reports/$', credit_views.report),
+    url(r'^charge/$', credit_views.charge),
+]
+
+urlpatterns = [
+    url(r'^$', main_views.homepage),
+    url(r'^help/', main_views.helppage),
+    url(r'^credit/', include(extra_patterns)), # include extra_patterns
+]
+</code></pre>
+<p>在上述例子中：</p>
+<ul>
+<li>http://localhost/ 会匹配 main_views.homepage 函数。</li>
+<li>http://localhost/help/ 会匹配 main_views.helppage 函数。</li>
+<li>http://localhost/credit/ 会匹配 credit_views.mainpage 函数。</li>
+<li>http://localhost/credit/reports/ 会匹配 credit_views.report 函数。</li>
+<li>http://localhost/credit/charge/ 会匹配 credit_views.charge 函数。</li>
+</ul>
+<p>可见，如果包含 include() 函数，url 匹配会以 regex 作为前缀，后接 include() 所包含的
+urlpattern 中的 regex。</p>
+<h4>引用其他 module 的情况：</h4>
+<p>如果 include() 的参数是一个字符串，指明了另外一个 module 的路径，include() 会在该 module
+下查找名为 urlpatterns 的列表变量，把列表中的每一个元素也作为参与 url 匹配的 pattern。</p>
+<p>我们在 myapp 模块下，添加一个 urls.py 文件，内容是：</p>
+<pre><code>from django.conf.urls import url
+import credit_views
+
+urlpatterns = [
+    url(r'^$', credit_views.mainpage),
+    url(r'^reports/$', credit_views.report),
+    url(r'^charge/$', credit_views.charge),
+]
+</code></pre>
+<p>然后在 project 级别的 urls.py 中定义：</p>
+<pre><code>urlpatterns = [
+    url(r'^$', main_views.homepage),
+    url(r'^help/', main_views.helppage),
+    url(r'^credit/', include('myapp.urls')), 
+]
+</code></pre>
+<p>会得到与前面类似的 url 匹配情况：</p>
+<ul>
+<li>http://localhost/ 会匹配 main_views.homepage 函数。</li>
+<li>http://localhost/help/ 会匹配 main_views.helppage 函数。</li>
+<li>http://localhost/credit/ 会匹配 credit_views.mainpage 函数。</li>
+<li>http://localhost/credit/reports/ 会匹配 credit_views.report 函数。</li>
+<li>http://localhost/credit/charge/ 会匹配 credit_views.charge 函数。    </li>
+</ul>
+<h4>有参数的情况</h4>
+<p>如果一个 url pattern 的 regex 里包含参数，同时使用了 include() 函数，
+那么捕获的所有参数都会传递给 include() 函数所包含的每一个 url pattern。</p>
+        </div>
+    </div>
+</body>
+</html>

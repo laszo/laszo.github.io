@@ -40,6 +40,10 @@ title: 'SqlAlchemy 使用简介'
         name = Column(String(128))
 
 SQLAlchemy 要求模型必须有一个字段为主键[^note1]，即指定了 `primary_key=True` 的 Column。
+如果这个表在数据库里还不存在，我们可以使用下面的语句进行创建：
+
+    Base.metadata.create_all(engine)
+
 
 ### 建立 Session
 
@@ -52,7 +56,7 @@ SQLAlchemy 要求模型必须有一个字段为主键[^note1]，即指定了 `pr
     ms_session = MySessionMaker()
 
 注意，这里的 sessionmaker 是一个工厂类，专门用于创建 `sqlalchemy.orm.session.Session` 类。
-`MySessionMaker` 是这个工厂类的实例，而 `ms_session` 是由这个实例创建的一个 Session 实例。
+`MySessionMaker` 是这个工厂类的实例，而 `ms_session` 是由这个实例创建的一个 Session 实例[^note2]。
 
     >>> type(sessionmaker)
     <type 'type'>
@@ -61,7 +65,72 @@ SQLAlchemy 要求模型必须有一个字段为主键[^note1]，即指定了 `pr
     >>> type(ms_session)
     <class 'sqlalchemy.orm.session.Session'>
 
+有了 Session 实例之后，就可以进行数据库的增删改查了。
+
+### 增加一个对象
+
+    u = User(name='laszo')
+    ms_session.add(u)
+    ms_session.commit()
+
+新建一个模型对象实例的方法与新建一个普通对象并无区别，但是在保存对象的环节，并不是常见的 `u.save`，
+而是通过 Session 来完成与数据库的操作。即 `ms_session.add(u)` 和 `ms_session.commit()`。
+
+### 查找对象
+
+查找数据仍然需要通过 `Session` 对象，该类型的实例有一个 `query()` 方法用于查找，该方法返回一个
+`Query` 对象。查找所有对象：
+
+    q = ms_session.query(User).all()
+
+query() 函数也可以接受对象的字段作为参数：
+
+    q = ms_session.query(User.name, User.id).all()
+
+类似于 SQL 语句的 `select name, id from user`。
+
+根据字段查找数据，需要用到 `Query` 对象的 `filter` 或 `filter_by` 函数：
+
+    q = ms_session.query(User).filter_by(name='myname')
+
+或者
+
+    q = ms_session.query(User).filter(User.name=='laszo')
+
+注意，在使用 filter 的时候传入的查询条件必须是两个等号 `==`。 
+filter 或 filter_by 函数还可以多次叠加，实现复合查询：
+
+    q = ms_session.query(User).filter(User.name=='laszo').filter_by(id=2)
+
+关于 filter 的详细用法可以参看 [Common Filter Operators]。
+
+我们上面代码中的变量 `q` 是一个 Query 的实例，可以像普通列表那样操作，
+以得到数据对象：
+
+    print q.first().name
+    print q[0].id
+
+### 修改数据
+
+查询到数据之后，可以对想要修改的字段直接赋值，然后再调用 Session 的 `add` 和 `commit` 函数更新数据库。
+
+    u = ms_session.query(User).filter(User.name=='myname1').first()
+    u.name = 'myname2'
+    ms_session.add(u)
+    ms_session.commit()
+
+### 删除数据
+
+想要删除数据，直接调用 Session 的 `delete` 方法即可，传入的参数是数据对应的模型对象：
+
+    u = ms_session.query(User).filter(User.name=='myname1').first()
+    ms_session.delete(u)
+    ms_session.commit()
+
 [SqlAlchemy]: http://www.sqlalchemy.org/
 [Database Urls]: http://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls
+[Common Filter Operators]: http://docs.sqlalchemy.org/en/rel_1_1/orm/tutorial.html#common-filter-operators
+
+
 [^note1]: Django Model 和 Pony 会在我们没有指定主键的时候自动为我们创建一个自增长的主键字段。
-[^note2]: 这里稍微有点绕，使用了 Python 的语法特性。参见文章 []
+[^note2]: 这里稍微有点绕，使用了 Python 的语法特性。参见[这篇文章](20170329.1.html)
