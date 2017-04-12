@@ -1,0 +1,160 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Django Template 系统及其与Jinja2 的几点区别 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">Django Template 系统及其与Jinja2 的几点区别</h3>
+
+        <div class="post-content">
+            <p>动态网站与静态网站的本质区别就是HTML代码的生成过程。静态网站预先编辑好HTML文件放在服务器上，
+客户端浏览器发出请求时，Web服务器读取HTML文件的内容，以HTTP协议规定的格式返回给客户端。
+动态网站在收到客户端的请求时，会根据请求的内容进行某种计算和数据库的查询，把查询和计算得到的数据
+拼装成HTML代码，以HTTP协议规定的格式返回给客户端。在Django里，
+把数据拼装成HTML代码的过程是由模板系统（Template System）来完成的。
+简单来说，整个模板系统需要如下三个部分协调工作：</p>
+<h4>1.动态数据，</h4>
+<p>比如从数据库中查询得到：</p>
+<pre><code>user.name = 'Jack';
+user.age = 21
+</code></pre>
+<h4>2.模板文件，</h4>
+<p>这是一个混合了HTML代码和模板标记的代码文件：</p>
+<pre><code>&lt;html&gt;
+    &lt;head&gt;
+    &lt;title&gt;
+        Hello, {{ user.name }}
+    &lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        Hi, {{ user.name }}, your age is {{ user.age }}.
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>在上面文件中，除了普通的HTML标记之外，<code>{{ user.name }}</code>和<code>{{ user.age }}</code>都是模板的标记，
+模板系统的引擎根据这些模板的标记进行相应的处理。</p>
+<h4>3.模板引擎</h4>
+<p>模板引擎读取模板文件和动态数据，根据模板中的标记把动态数据替换其中，形成最终的纯粹的HTML代码。
+这个过程一般称为渲染（render）。
+在上面的例子里，模板文件最终渲染成为如下HTML代码：</p>
+<pre><code>&lt;html&gt;
+    &lt;head&gt;
+    &lt;title&gt;
+        Hello, Jack
+    &lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        Hi, Jack, your age is 21.
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h2>配置 Django Template</h2>
+<p>当我们使用 <code>django-admin</code> 的 <code>startproject</code> 命令新建一个项目时，
+项目文件下已经自动预设了模板的相关配置，在<code>settings.py</code>文件中有一个<code>TEMPLATES</code>变量：</p>
+<pre><code>TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplagte',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+</code></pre>
+<p>可以看到TEMPLATES是一个列表，每一项元素都是一个字典，指明了其中一个模板的配置。字典包含如下项：</p>
+<ul>
+<li>
+<p>BACKEND：指定了要使用的模板引擎。Django默认使用<code>django.template.backends.django.DjangoTemplagte</code>。</p>
+</li>
+<li>
+<p>DIRS：指明模板文件的存放路径，是一个文件目录的列表。引擎从这些目录中顺序查找模板文件。</p>
+</li>
+<li>
+<p>APP_DIRS：这是一个布尔值。指明是否从当前项目的<code>installed applications</code>里查找模板。</p>
+</li>
+<li>
+<p>OPTIONS：指定的额外选项。不同的引擎使用不同的额外参数。比如Django自带的引擎可以指定<code>context_processors</code>参数。具体有哪些参数可参看<a href="https://docs.djangoproject.com/en/1.10/topics/templates/#django.template.backends.django.DjangoTemplates">DjangoTemplates</a>。</p>
+</li>
+</ul>
+<h3>模板文件的存放目录</h3>
+<p>模板文件的名称，是一个普通的相对路径的文件名，如<code>'index.html'</code>或<code>'myapp/index.html'</code>。</p>
+<p>如果指定了<code>APP_DIRS</code>为<code>True</code>，Django会在application的目录下查找一个<code>templates</code>目录，
+从里面查找模板文件。
+比如说如果我们有一个项目名为<code>myproject</code>，下面有一个application名为<code>myapp</code>，
+templates的路径应该是：<code>~/myproject/myapp/tempaltes/</code>。</p>
+<p>按照惯例，还应该在templates目录下再建一个子目录，以application的名字命名，
+即<code>~/myproject/myapp/tempaltes/myapp/</code>，比如一个<code>'myapp/index.html'</code>模板文件，
+它的完整路径应该是<code>~/myproject/myapp/tempaltes/myapp/index.html</code><sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>。</p>
+<p>如果<code>DIRS</code>和<code>APP_DIRS</code>同时生效，并且相关的目录下有相同的相对路径的模板文件，
+引擎会以<code>DIRS</code>为优先匹配。比如指定<code>'DIRS': [/var/www/template/]</code>，
+在查找<code>myapp/index.html</code>时，既有<code>/var/www/template/myapp/index.html</code>，
+也有<code>~/myproject/myapp/tempaltes/myapp/index.html</code>，
+会先匹配到<code>/var/www/template/myapp/index.html</code>。</p>
+<h2>使用 Django Template</h2>
+<p>对于模板的使用主要在 view 的代码里操作：</p>
+<pre><code>from django.http import HttpResponse
+from django.template import loader
+
+def index(request):
+    context = {
+        'message': 'hello, world!'
+    }
+    template = loader.get_template('base.html')
+    return HttpResponse(template.render(context, request))
+</code></pre>
+<p>上述代码涉及到如下API：</p>
+<ul>
+<li>
+<p>django.template.loader.get_template()：
+    读取模板文件，生成并返回一个<code>Template</code>的实例对象</p>
+</li>
+<li>
+<p>render：
+    <code>Template</code>的实例对象的方法，读取context和request参数。
+    context包含了需要传入给模板的动态数据，request即HttpRequest类的对象。
+    render函数生成了 <code>django.utils.safestring.SafeText</code>对象，可以认为就是字符串。</p>
+</li>
+<li>
+<p>HttpResponse()：
+    HttpResponse把字符串包装成符合HTTP协议的Response，由服务器返回给客户端。</p>
+</li>
+</ul>
+<h2>Django Template的语法</h2>
+<ul>
+<li>
+<p>变量</p>
+</li>
+<li>
+<p>tag</p>
+</li>
+</ul>
+<h2>模板的继承体系</h2>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:note1">
+<p>当然这一条并非是必须的，
+如果你把模板文件存放在<code>~/myproject/myapp/tempaltes/index.html</code>，
+然后以<code>'index.html'</code>来查找模板文件也是可以的。但是我们最好还是遵循这种惯例，试想如果是一个大型项目，
+下面有非常多的application，有大量的模板文件诸如<code>user.html</code>、<code>display.html</code>这样的名字，
+很容易搞不清哪个是哪个。如果前面加上application的名字，形成类似命名空间的效果，就清晰的多了。&#160;<a class="footnote-backref" href="#fnref:note1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </div>
+</body>
+</html>
