@@ -133,15 +133,21 @@ def index(request):
 </li>
 </ul>
 <h2>Django Template的语法</h2>
+<p>总得来说Django Template的语法元素就是一系列被 <code>{{ }}</code> 和 <code>{% %}</code> 包起来的代码块。有如下几类元素：</p>
 <ul>
 <li>
-<p>变量</p>
+<p>变量：比如上面例子中的 <code>{{ user.name }}</code>，一般来说就是普通的Python变量。在render阶段，模板引擎会使用变量的实际值来替换模板中的变量名。</p>
 </li>
 <li>
-<p>tag</p>
+<p>过滤器（Filters）：过滤器可以对变量进行某种操作和改进，比如转换大小写等，详细可参看<a href="https://docs.djangoproject.com/en/1.10/ref/templates/builtins/#ref-templates-builtins-filters">Built-in filter reference</a>。</p>
+</li>
+<li>
+<p>标记（Tags）：使用<code>{% %}</code>包裹的代码段，可用于流程控制、循环、函数调用、模板继承等操作。相当于一门小型的语言，详细可参看<a href="https://docs.djangoproject.com/en/1.10/ref/templates/builtins/#ref-templates-builtins-tags">Built-in tag reference</a>。</p>
+</li>
+<li>
+<p>注释（Comments）：用于在模板里添加注释，使用<code>{# #}</code>包裹。</p>
 </li>
 </ul>
-<h2>模板的继承体系</h2>
 <div class="footnote">
 <hr />
 <ol>

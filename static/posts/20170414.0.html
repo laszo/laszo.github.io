@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title> - Lv Xiaoyu `Site</title>
+    <title>Python 中的 select.select - Lv Xiaoyu `Site</title>
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
 </head>
@@ -11,10 +11,79 @@
             <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
         </div>
 
-        <h3 class="blog-post-title"></h3>
+        <h3 class="blog-post-title">Python 中的 select.select</h3>
 
         <div class="post-content">
-            
+            <p>从一段最简单的网络服务器代码开始：</p>
+<pre><code>import socket
+
+s = socket.socket()
+s.bind(('', 50007))
+s.listen(5)
+while True:
+    print 'Waitting from client ...'
+    conn, addr = s.accept() # 在这一行阻塞
+    print 'Connected by', addr
+    while True:
+        data = conn.recv(1024)
+        if not data: break
+        print 'receive data: ' + data 
+        conn.sendall(data)
+    conn.close()
+</code></pre>
+<p>这是一个最简单的网络服务器，当客户端发送任何请求时，它会原封不动的返回请求数据，然后等待下一个连接，无限循环。当没有任何请求连接的客户端时，它会阻塞在<code>conn, addr = s.accept()</code>这一句。</p>
+<p>如果不想让它这样阻塞，可以使用<code>select</code>机制。这里需要说明一下两个概念：</p>
+<ul>
+<li>waitable object</li>
+<li>ready object</li>
+</ul>
+<p>这两个概念都是指可以进行读或写操作的对象，包含如下这些：</p>
+<ul>
+<li>普通的文件对象，比如 open() 函数的返回值</li>
+<li>sys.stdin</li>
+<li>socket对象，即 socket.socket() 函数的返回值</li>
+<li>io.fileno() 函数的返回值</li>
+</ul>
+<p>区别在于，在程序中对于 <code>ready object</code> 进行操作时，程序不会阻塞，而是立即执行，所以该对象的状态会称为<code>ready</code>。而对于<code>waitable object</code>进行操作时，程序会阻塞，一直等待到对象可以被操作为止。比如上面的例子，socket服务器执行到<code>conn, addr = s.accept()</code>这一句时会一直等待到有新的客户端请求为止。</p>
+<p>理解了这两类对象，对于select机制也就容易理解了。select函数会检查多个waitable object并阻塞，直到它变成ready object为止，并返回相应的ready object列表。</p>
+<p>Python标准库提供了select模块，支持这一机制：</p>
+<pre><code>import socket
+import select
+
+s = socket.socket()
+s.bind(('', 50007))
+s.listen(5)
+inputs = [s]
+num = 0
+while True:
+    rs, ws, es = select.select(inputs, [], [])
+    for r in rs:
+        if r is s:
+            c, addr = s.accept()
+            print 'got conn from :', addr
+            inputs.append(c)
+        else:
+            data = r.recv(1024)
+            r.sendall('You send: ' +  data)
+            if not data:
+                inputs.remove(r)
+            else:
+                print 'receive data : ', data
+</code></pre>
+<p><code>select.select</code>接收四个参数：</p>
+<ol>
+<li>用于读操作的 waitable object 列表</li>
+<li>用于写操作的 waitable object 列表</li>
+<li>表示异常的 waitable object 列表</li>
+<li>超时时间</li>
+</ol>
+<p>返回三项返回值：</p>
+<ol>
+<li>用于读操作的 ready object 列表</li>
+<li>用于写操作的 ready object 列表</li>
+<li>表示异常的 ready object 列表</li>
+</ol>
+<p>最后一个参数指定了函数的等待超时时间。前面说到，select函数会检查waitable object并阻塞，直到变成 ready object为止。但是如果指定了超时时间，等待超过此时间以后select函数也会返回，此时返回的三个列表为空。</p>
         </div>
     </div>
 </body>

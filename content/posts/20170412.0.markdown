@@ -129,16 +129,23 @@ templates的路径应该是：`~/myproject/myapp/tempaltes/`。
 
 ## Django Template的语法
 
-* 变量
+总得来说Django Template的语法元素就是一系列被 `{{ }}` 和 `{% %}` 包起来的代码块。有如下几类元素：
 
-* tag
+* 变量：比如上面例子中的 `{{ user.name }}`，一般来说就是普通的Python变量。在render阶段，模板引擎会使用变量的实际值来替换模板中的变量名。
 
-## 模板的继承体系
+* 过滤器（Filters）：过滤器可以对变量进行某种操作和改进，比如转换大小写等，详细可参看[Built-in filter reference]。
 
+* 标记（Tags）：使用`{% %}`包裹的代码段，可用于流程控制、循环、函数调用、模板继承等操作。相当于一门小型的语言，详细可参看[Built-in tag reference]。
+
+* 注释（Comments）：用于在模板里添加注释，使用`{# #}`包裹。
 
 
 
 [DjangoTemplates]: https://docs.djangoproject.com/en/1.10/topics/templates/#django.template.backends.django.DjangoTemplates
+
+[Built-in tag reference]:https://docs.djangoproject.com/en/1.10/ref/templates/builtins/#ref-templates-builtins-tags
+
+[Built-in filter reference]:https://docs.djangoproject.com/en/1.10/ref/templates/builtins/#ref-templates-builtins-filters
 
 [^note1]:当然这一条并非是必须的，
 如果你把模板文件存放在`~/myproject/myapp/tempaltes/index.html`，
