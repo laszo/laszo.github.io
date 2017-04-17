@@ -135,10 +135,9 @@ templates的路径应该是：`~/myproject/myapp/tempaltes/`。
 
 * 过滤器（Filters）：过滤器可以对变量进行某种操作和改进，比如转换大小写等，详细可参看[Built-in filter reference]。
 
-* 标记（Tags）：使用`{% %}`包裹的代码段，可用于流程控制、循环、函数调用、模板继承等操作。相当于一门小型的语言，详细可参看[Built-in tag reference]。
+* 标记（Tags）：使用`{% %}`包裹的代码段，可用于流程控制、函数调用、模板继承等操作。相当于一门小型的语言，详细可参看[Built-in tag reference]。对于几个重要标记的使用方法，将在下面详细介绍。
 
 * 注释（Comments）：用于在模板里添加注释，使用`{# #}`包裹。
-
 
 
 [DjangoTemplates]: https://docs.djangoproject.com/en/1.10/topics/templates/#django.template.backends.django.DjangoTemplates
