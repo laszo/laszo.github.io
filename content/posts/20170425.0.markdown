@@ -1,0 +1,13 @@
+---
+title: 'Virtual Studio Code 与 virtualenv 协同工作'
+---
+
+默认情况下，VS Code只能识别系统级别的Python库，我们在virtualenv环境下安装的库是不被VS Code识别的，最简单的办法是在`settings.json`文件中配置：
+
+    "python.pythonPath": "${workspaceRoot}/venv/bin/python"
+
+以后我们在使用virtualenv创建虚拟环境时，一定要把`DEST_DIR`参数指定为`venv`，即：
+
+    virtualenv venv
+
+这样可以解决所有问题。
