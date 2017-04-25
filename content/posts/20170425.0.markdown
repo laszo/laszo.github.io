@@ -10,4 +10,6 @@ title: 'Virtual Studio Code 与 virtualenv 协同工作'
 
     virtualenv venv
 
-这样可以解决所有问题。
+如果pylint出现问题，可以参看[Troubleshooting Linting]。
+
+[Troubleshooting Linting]:https://github.com/DonJayamanne/pythonVSCode/wiki/Troubleshooting-Linting
