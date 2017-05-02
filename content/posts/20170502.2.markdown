@@ -2,25 +2,142 @@
 title: 'Python中的迭代器（iterator）'
 ---
 
-Python supports a concept of iteration over containers. This is implemented using two distinct methods; these are used to allow user-defined classes to support iteration. Sequences, described below in more detail, always support the iteration methods.
+循环可以说是任何一门程序语言中都必备的基本功能，进一步的，很多当代语言提供了迭代器（iterator）的概念，用于在序列（Sequences）类型、或者可以转换为序列的类型上进行循环。比如下面的代码：
 
-One method needs to be defined for container objects to provide iteration support:
+    foo = [3, 4, 5, 6]
+    for i in foo:
+        print i
 
-container.__iter__()
-Return an iterator object. The object is required to support the iterator protocol described below. If a container supports different types of iteration, additional methods can be provided to specifically request iterators for those iteration types. (An example of an object supporting multiple forms of iteration would be a tree structure which supports both breadth-first and depth-first traversal.) This method corresponds to the tp_iter slot of the type structure for Python objects in the Python/C API.
+在上面代码中，`foo`是一个list对象，我们使用了最常见的` for in `语句来遍历它的成员。除此之外，还可以使用迭代器（[Iterators]）来进行遍历。首先用内置函数[iter]得到foo的迭代器：
 
-The iterator objects themselves are required to support the following two methods, which together form the iterator protocol:
+    >>> it = iter(foo)
+    
+通过dir函数查看迭代器it的属性：
 
-iterator.__iter__()
-Return the iterator object itself. This is required to allow both containers and iterators to be used with the for and in statements. This method corresponds to the tp_iter slot of the type structure for Python objects in the Python/C API.
+    >>> dir(it)
+    ['__class__', '__delattr__', '__doc__', '__format__', '__getattribute__', '__hash__'
+    , '__init__', '__iter__', '__length_hint__', '__new__', '__reduce__', '__reduce_ex__
+    ', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'next']
 
-iterator.next()
-Return the next item from the container. If there are no further items, raise the StopIteration exception. This method corresponds to the tp_iternext slot of the type structure for Python objects in the Python/C API.
+我们关注其中的两个方法：
 
-Python defines several iterator objects to support iteration over general and specific sequence types, dictionaries, and other more specialized forms. The specific types are not important beyond their implementation of the iterator protocol.
+* `__iter__`：这个方法返回一个迭代器，对于已经是迭代器的对象来说，它返回自身。
 
-The intention of the protocol is that once an iterator’s next() method raises StopIteration, it will continue to do so on subsequent calls. Implementations that do not obey this property are deemed broken. (This constraint was added in Python 2.3; in Python 2.2, various iterators are broken according to this rule.)
+* `next`：返回制定序列的下一个元素，如果next第一次被调用，返回的是序列中的第一个元素。
 
+能够提供上述两个方法的对象，我们就可以称之为迭代器。
+
+那么我们当然可以定义自己的迭代器类型：
+
+    class MyIntIterator(object):
+        def __init__(self, num):
+            self.number = num
+
+        def __iter__(self):
+            return self
+
+        def next(self):
+            self.number += 2
+            if self.number > 9:
+                raise StopIteration
+            return self.number
+
+这里定义了一个简单的迭代器类型，`__init__`方法用于接收初始化参数，保存在对象的`number`属性中。`__iter__`方法直接返回自身，`next`把当前的`number`属性加上2并返回，当`number`大于9时抛出`StopIteration`异常。下面来测试一下这个类：
+
+    >>> foo = MyIntIterator(2)
+    >>> foo.next()
+    4
+    >>> foo.next()
+    6
+    >>> foo.next()
+    8
+    >>> foo.next()
+    Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    File "t1.py", line 58, in next
+        raise StopIteration
+    StopIteration
+
+第一次运行`foo.next()`返回4，第二次返回6，第三次返回8，运行到第四次时`number`已经等于10，大于9符合StopIteration的条件，于是抛出异常。
+
+我们同样也可以使用`for in`语句来进行遍历：
+
+    >>> bar = MyIntIterator(2)
+    >>> for i in bar:
+    ...     print i
+    ...
+    4
+    6
+    8
+    >>>
+
+同样返回了4、6、8三个数字。不同的是，程序没有抛出StopIteration异常，而是运行到8之后就停止了遍历。
+
+我们可以认为，`for in`语句是可用迭代器的方式等价转换的，比如本文一开始的代码：
+
+    foo = [3, 4, 5, 6]
+    for i in foo:
+        print i
+
+可以改写成如下的等价语句：
+
+    foo = [3, 4, 5, 6]
+    it = iter(foo)
+    while True:
+        try:
+            i = it.next()
+            print i
+        except StopIteration:
+            break
+
+这样的写法比直接使用for in语句要麻烦的多，但是却更加接近for in语句的本质含义，正如python文档所说：
+
+>
+The expression list is evaluated once; it should yield an iterable object. An iterator is created for the result of the expression_list. The suite is then executed once for each item provided by the iterator, in the order of ascending indices. 
+
+上面讨论了迭代器对象，它必须提供`__iter__`和`next`两个方法，如果一个对象只有`__iter__`方法，也是可以对它使用`iter()`内置函数的，但是该`__iter__`方法必须返回一个迭代器对象，否则会抛出`TypeError`异常：
+
+    class only_iter(object):
+        def __iter__(self):
+            return 1
+
+来测试一下：
+
+    >>> foo = only_iter()
+    >>> iter(foo)
+    Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    TypeError: iter() returned non-iterator of type 'int'
+
+这里抛出了`TypeError`异常。但是我们从中可以看出，内置函数`iter()`其实就是对指定对象调用`__iter__`方法，然后检查该方法的返回值，如果返回值不是iterator对象，则抛出`TypeError`异常，如果是则返回该返回值。
+
+这里我们又忽发奇想，如果一个对象只提供next方法，它是否是一个迭代器呢？我们来写如下的代码：
+
+    class next_only(object):
+        def next(self):
+            return 1
+
+    class only_iter(object):
+        def __iter__(self):
+            return next_only()
+
+定义一个`next_only`，只提供next方法，然后定义`only_iter`类型，提供`__iter__`方法。下面来进行测试：
+
+    >>> foo = only_iter()
+    >>> bar = iter(foo)
+    >>> bar
+    <t1.next_only object at 0x10f194250>
+
+可以看到，在这样的定义下，对only_iter类型的对象调用内置函数`iter()`，不会再抛出`TypeError`异常了，而是返回了一个`next_only`类型的对象bar。这个对象是否就是迭代器类型呢？
+
+    >>> for i in bar:
+    ...     print i
+    ...
+    Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    TypeError: 'next_only' object is not iterable
+
+可以看到，对bar执行 for in语句，又跑出了TypeError异常。看来仅仅提供next方法，虽然可以过iter这一关，但仍然不能算是迭代器类型。
 
     class mnonitercls(object):
         def hi(self):
@@ -75,8 +192,25 @@ iterator对象如果执行next完毕，再执行会抛出异常StopIteration。
     StopIteration
 
 
+参考：
+
+[Iterators]
+
+[Iterator Types]
+
+[The for statement]
+
+[itertools — Functions creating iterators for efficient looping]
+
+
+
+
+[iter]: https://docs.python.org/2.7/library/functions.html#iter
+
 [Iterators]: https://docs.python.org/2.7/tutorial/classes.html#iterators
 
-[Iterator Types¶]: https://docs.python.org/2.7/library/stdtypes.html?highlight=iterator#iterator-types
+[Iterator Types]: https://docs.python.org/2.7/library/stdtypes.html?highlight=iterator#iterator-types
+
+[The for statement]: https://docs.python.org/2.7/reference/compound_stmts.html#the-for-statement
 
 [itertools — Functions creating iterators for efficient looping]: https://docs.python.org/2.7/library/itertools.html#module-itertools
