@@ -1,0 +1,11 @@
+---
+title: 'Python 中的 yield 函数与 generator对象'
+---
+
+[Generator Tricks for Systems Programmers]: http://www.dabeaz.com/generators/
+
+[Generator Tricks for Systems Programmers - Version 2.0]: http://www.dabeaz.com/generators-uk/
+
+[Generators: The Final Frontier]: http://www.dabeaz.com/finalgenerator/
+
+[Functional Programming HOWTO]: https://docs.python.org/2.7/howto/functional.html?highlight=iterator#generator-expressions-and-list-comprehensions

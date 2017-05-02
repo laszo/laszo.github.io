@@ -1,0 +1,22 @@
+---
+title: '进程、线程、阻塞、非阻塞、异步、同步、并发(concurrency)、并行(parallelism)、协程(coroutine)等概念的理解'
+---
+
+
+
+[Asynchronous Programming in Python | Asyncio]: http://djangostars.com/blog/asynchronous-programming-in-python-asyncio/
+
+[如何深入理解多进程，多线程，非阻塞/异步IO(callback) 以及Coroutine模型？]: https://www.zhihu.com/question/21896633
+
+[并发之痛 Thread，Goroutine，Actor]: http://jolestar.com/parallel-programming-model-thread-goroutine-actor/
+
+[考不上三本也能懂系列 - vczh的日常]: https://zhuanlan.zhihu.com/p/25959684
+
+[怎么理解coroutine ？]: https://www.zhihu.com/question/21483863
+
+[【深入Lua】理解Lua中最强大的特性-coroutine（协程）]: https://my.oschina.net/wangxuanyihaha/blog/186401
+
+[A Curious Course on Coroutines and Concurrency]: http://www.dabeaz.com/coroutines/
+
+[PEP 342 -- Coroutines via Enhanced Generators]: https://www.python.org/dev/peps/pep-0342/
+

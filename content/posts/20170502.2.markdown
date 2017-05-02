@@ -1,0 +1,8 @@
+---
+title: 'Python中的迭代器（iterator）'
+---
+
+
+[Iterators]: https://docs.python.org/2.7/tutorial/classes.html#iterators
+
+[itertools — Functions creating iterators for efficient looping]: https://docs.python.org/2.7/library/itertools.html#module-itertools
