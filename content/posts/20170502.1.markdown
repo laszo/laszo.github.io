@@ -1,18 +1,250 @@
 ---
-title: 'Python 中的 生成器（generator）与 yield关键字'
+title: 'Python 中的生成器（generator）与 yield关键字'
 ---
 
-关于generator，最好的参考资料除了python文档之外，中文资料最好的当属[《Python参考手册》](https://book.douban.com/subject/5401851/)的第六章，英文资料我认为是[Generator Tricks for Systems Programmers]，两者的作者也是同一个人[David Beazley](http://www.dabeaz.com/)。
+关于生成器（generator），最好的参考资料除了python文档之外，中文资料最好的当属[《Python参考手册》](https://book.douban.com/subject/5401851/)的第六章，英文资料我认为是[Generator Tricks for Systems Programmers]，两者的作者也是同一个人[David Beazley](http://www.dabeaz.com/)。中英文的参考资料，大致内容都差不多，甚至所用的代码例子也是同一套。但是中文的资料虽然叙述准确，但是过于简单了，如果没有相关的积累，单纯的把资料看一遍、把代码对着敲一遍，仅仅能够称得上是大概了解一个皮毛，刚刚知道有这么一个东西而已。想要深入的掌握，我认为至少还要做如下三件事：
 
-#### generator的概念和类型
+1. 思考生成器这个概念想要解决什么问题，该问题的背景是什么
+
+2. 有大量的应用场景，使得在写代码的时候能够真正到它
+
+3. 对比其他语言中类似的概念和实现方式
+
+做到了这些，才能够把这个概念融入到自己的思维方式里去，在写代码的时候能够自然而然的正确使用生成器。这样的过程，就好比在学英语里面，把自己的“被动词汇”升级为“主动词汇”。其实不仅仅是生成器，对于编程里面的多线程、异步这些比较“高级”的概念，都应该采用这样的步骤去掌握。
+
+### generator的概念和类型
+
+理解生成器的基础是先要熟悉迭代器（iterator），可参看我的[这篇博客](20170502.2.html)。
+
+generator是python里的一种函数，它有如下特点特点：
+
+* 函数体内使用了`yield`关键字
+
+* 函数的返回值可作为迭代器（iterator）使用
+
+来看一段代码：
+
+    def simple_generator(start, end):
+        for i in range(start, end):
+            yield i
+
+上面的函数`simple_generator`就是一个generator，对它进行简单测试：
+
+    >> from t1 import *
+    >>> ge = simple_generator(0, 5)
+    >>> for i in ge:
+    ...     print i
+    ...
+    0
+    1
+    2
+    3
+    4
+    >>>
+
+对生成器it使用type函数可得到：
+
+    >>> type(ge)
+    <type 'generator'>
+    
+ 使用dir函数可得到：
+    
+    >>> dir(ge)
+    ['__class__', '__delattr__', '__doc__', '__format__', '__getattribute__', '__hash__',
+    '__init__', '__iter__', '__name__', '__new__', '__reduce__', '__reduce_ex__', '__rep
+    r__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'close', 'gi_code',
+    'gi_frame', 'gi_running', 'next', 'send', 'throw']   
+
+可以看到，it对象有`__iter__`方法和`next`方法，也就可以看作是一个iterator，所以它能够在for语句中使用。细心的话可以看到它还有一个`send`方法，后面我们会讨论。
+
+这里我们不禁想到，如果只是为了得到iterator，即便我们不用yield关键字，使用普通的函数似乎同样可以办到：
 
 
+    def my_iterator(start, end):
+        foo = range(start, end)
+        return iter(foo)
+
+测试my_iterator:
+
+    >>> it = my_iterator(0, 5)
+    >>> for i in it:
+    ...     print i
+    ...
+    0
+    1
+    2
+    3
+    4
+    >>>
+
+效果是一模一样的，同样使用内置函数type和dir来查看它的类型和属性：
+
+    >>> type(it)
+    <type 'listiterator'>
+    >>>
+    >>> dir(it)
+    ['__class__', '__delattr__', '__doc__', '__format__', '__getattribute__', '__hash__',
+    '__init__', '__iter__', '__length_hint__', '__new__', '__reduce__', '__reduce_ex__',
+    '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'next']
+    >>>
+
+是一个`listiterator`类型，同样毫不意外的也有`__iter__`和`next`方法。
+
+那么generator究竟还能干嘛呢？为了探究这一点，我们把`simple_generator`函数改写成如下的样子：
+
+    def simple_generator(start, end):
+        for i in range(start, end):
+            print 'i: %d, before yield' % i
+            yield i
+            print 'i: %d, after yield' % i
+
+    def test_generator():
+        ge = simple_generator(0, 5)
+        for i in ge:
+            print 'i: %d, I am in test_generator' % i
+            
+这里在`simple_generator`函数的`yield i`语句之前和之后分别加上了print输出，增加了`test_generator`函数用来测试，也加上了print输出，我们来运行一下，重点观察各个print语句输出的顺序，这也代表了程序的执行顺序：
+        
+    >>> test_generator()
+    begin test_generator:
+    i: 0, before yield
+    i: 0, I am in test_generator
+    i: 0, after yield
+    i: 1, before yield
+    i: 1, I am in test_generator
+    i: 1, after yield
+    i: 2, before yield
+    i: 2, I am in test_generator
+    i: 2, after yield
+    i: 3, before yield
+    i: 3, I am in test_generator
+    i: 3, after yield
+    i: 4, before yield
+    i: 4, I am in test_generator
+    i: 4, after yield
+    end test_generator
+
+如果你之前没有接触过generator类似的概念，会觉得这里发生了“神奇”的事情，`simple_generator`函数和`test_generator`函数中的print语句居然是交替执行的。输出的第一行是：
+
+    begin test_generator:
+    
+说明程序的确是从`test_generator`开始执行，然后输出的下一行是：
+
+    i: 0, before yield
+
+说明这时跳转到了`simple_generator`函数中去，再然后下一行是：
+
+    i: 0, I am in test_generator
+
+说明这时候又跳转到了`test_generator`函数中去，下一行的输出是：
+
+    i: 0, after yield
+
+又跳转到了`simple_generator`函数中，如此循环往复在两个函数中交替跳转，直到`i=4`以后停止循环，程序的最后一行输出是：
+
+    end test_generator
+
+说明程序在`test_generator`函数中结束。我们在[这篇文章]()中提到，for循环语句实际上是对迭代器做了简化的语法糖。我们可以用多次调用`next`方法的方式来查看generator函数的执行情况：
+
+    >>> ge = simple_generator(0, 5)
+    >>> type(ge)
+    <type 'generator'>
+    >>> ge.next()
+    i: 0, before yield
+    0
+    >>> ge.next()
+    i: 0, after yield
+    i: 1, before yield
+    1
+    >>> ge.next()
+    i: 1, after yield
+    i: 2, before yield
+    2
+    >>> ge.next()
+    i: 2, after yield
+    i: 3, before yield
+    3
+    >>> ge.next()
+    i: 3, after yield
+    i: 4, before yield
+    4
+    >>> ge.next()
+    i: 4, after yield
+    Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    StopIteration
+    >>>
+
+可以看到，在调用`simple_generator`函数时，并没有执行任何print语句，而是仅仅返回了一个`generator`类型的值。在第一次调用`ge.next()`时，得到了如下输出：
+
+    i: 0, before yield
+    0
+
+输出的第一行`i: 0, before yield`，而看不到`i: 0, after yield`这样的输出，说明`simple_generator`函数执行到了`print 'i: %d, before yield' % i`语句之后，而在`print 'i: %d, after yield' % i`语句之前停止了。也就是说，函数执行到了`yield i`语句[note^1]。第二行`0`则是`ge.next()`语句的返回值。
 
 
-#### generator的运行时机
+再次执行`ge.next()`，得到输出：
 
+    i: 0, after yield
+    i: 1, before yield
+    1
 
-#### yeild关键字的进一步讨论
+输出的第一行`i: 0, after yield`，说明`simple_generator`函数接着上一次的`yield i`之后的语句`print 'i: %d, before yield' % i`继续执行，这时候`i`的值还是`0`。然后往下执行，由于当前语句在for循环内部，于是开始执行下一次for循环，这时候`i`的值变成了`1`，这时候会先执行`print 'i: %d, before yield' % i`，也就是输出的第二行`i: 1, before yield`，下一句又遇到了`yield i`语句，返回`i`的值之后停止执行。第三行的`1`是`ge.next()`语句的返回值。如此循环执行直到`i=4`之后，再次调用`ge.next()`，`simple_generator`函数输出`i: 4, after yield`之后，抛出异常`StopIteration`，迭代器停止。
+
+作为对比，我们把`my_iterator`同样做了改写，在类似的地方加入print语句：
+    
+    def my_iterator(start, end):
+        foo = list()
+        for i in range(start, end):
+            print 'i: %d, before append' % i
+            foo.append(i)
+            print 'i: %d, after append' % i
+        return iter(foo)
+
+    def test_iterator():
+        print 'before test_iterator'
+        it = my_iterator(0, 5)
+        for i in it:
+            print 'i: %d, I am in test_iterator' % i
+        print 'end test_iterator'
+
+测试得到了如下的输出结果：
+
+    >>> test_iterator()
+    before test_iterator
+    i: 0, before append
+    i: 0, after append
+    i: 1, before append
+    i: 1, after append
+    i: 2, before append
+    i: 2, after append
+    i: 3, before append
+    i: 3, after append
+    i: 4, before append
+    i: 4, after append
+    i: 0, I am in test_iterator
+    i: 1, I am in test_iterator
+    i: 2, I am in test_iterator
+    i: 3, I am in test_iterator
+    i: 4, I am in test_iterator
+    end test_iterator
+
+可以看到，程序从`test_iterator`开始执行，在调用`my_iterator`函数时，`my_iterator`在for循环中执行完了所有的print语句，在输出`i: 4, after append`之后，程序才跳转到`test_iterator`函数，`test_iterator`函数也在自己的for循环中执行了所有自己的print语句，两个函数并没有交替执行。
+
+这一点，可以认为是generator函数与普通函数的主要区别，即：
+
+* generator函数在被调用时，函数体并没有立即执行，而是返回一个迭代器。在迭代器的每次遍历中，generator函数才开始执行，并且只执行到它的yield语句为止，然后程序跳转到迭代器的外部语句中（在本例中就是`test_generator`函数）。
+* 在迭代器的下一次遍历时，generator函数接着上次执行到的yield语句的下一句开始执行，并再次循环到yield语句为止。
+
+yield这个词在英文里有“放弃、退让”的意思，也有“产生、带来”的意思。我们可以认为，在该语句出现的地方，generator函数生成一个值，把这个值和当前对CPU的控制权都交给迭代器的调用方（generator函数外部的代码）。
+
+我们在这里看到的所有yield关键字出现的代码，都是yield出现在代码行的左边，除此之外，yield还可以出现在语句的右边，并使用圆括号包起来，类似于下面这样的表达方式：
+
+    n = (yield)
+
+以这种方式使用yield语句的函数称为协程（coroutine），这是一个更复杂的概念，参看我的[这篇文章](20170502.0.html)。
+
+[note^1]: 那么`simple_generator`函数是在执行`yield i`语句之前就停止了，还是执行了此语句之后才停止的呢？通过前面print语句是无法判断这一点的，当我们可以通过逐步跟踪调试的方式去探究，结果发现函数是在执行了`yield i`语句之后才停止的。
 
 [Generator Tricks for Systems Programmers]: http://www.dabeaz.com/generators/
 
@@ -24,4 +256,6 @@ title: 'Python 中的 生成器（generator）与 yield关键字'
 
 [Generator expressions]: https://docs.python.org/2.7/reference/expressions.html?highlight=iterator#generator-expressions
 
+[PEP 255 -- Simple Generators]: https://www.python.org/dev/peps/pep-0255/
 
+[Yield expressions]:file:///C:/Users/lvxia/Documents/python-2.7.13-docs-html/reference/expressions.html#grammar-token-yield_expression

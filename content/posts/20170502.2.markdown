@@ -187,7 +187,9 @@ for语句正是对循环对象（容器）调用了iter()函数，得到一个�
 
 [itertools — Functions creating iterators for efficient looping]
 
+[PEP 0234 -- Iterators]
 
+-----
 
 [iter]: https://docs.python.org/2.7/library/functions.html#iter
 
@@ -198,3 +200,6 @@ for语句正是对循环对象（容器）调用了iter()函数，得到一个�
 [The for statement]: https://docs.python.org/2.7/reference/compound_stmts.html#the-for-statement
 
 [itertools — Functions creating iterators for efficient looping]: https://docs.python.org/2.7/library/itertools.html#module-itertools
+
+
+[PEP 0234 -- Iterators]: https://www.python.org/dev/peps/pep-0234/
