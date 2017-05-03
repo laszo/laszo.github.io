@@ -94,10 +94,11 @@ while True:
     except StopIteration:
         break
 </code></pre>
-<p>这样的写法比直接使用for in语句要麻烦的多，但是却更加接近for in语句的本质含义，正如python文档所说：</p>
+<p>这样的写法比直接使用for in语句要麻烦的多，但是却更加接近for in语句的本质含义，正如python文档里所说：</p>
 <blockquote>
-<p>The expression list is evaluated once; it should yield an iterable object. An iterator is created for the result of the expression_list. The suite is then executed once for each item provided by the iterator, in the order of ascending indices. </p>
+<p>Behind the scenes, the for statement calls iter() on the container object. The function returns an iterator object that defines the method next() which accesses elements in the container one at a time. When there are no more elements, next() raises a StopIteration exception which tells the for loop to terminate. </p>
 </blockquote>
+<p>for语句正是对循环对象（容器）调用了iter()函数，得到一个迭代器，每次循环都调用迭代器的next()方法得到下一个元素，如果没有更多元素，这抛出StopIteration异常来结束循环。这真是我们上面的代码所做的。</p>
 <p>上面讨论了迭代器对象，它必须提供<code>__iter__</code>和<code>next</code>两个方法，如果一个对象只有<code>__iter__</code>方法，也是可以对它使用<code>iter()</code>内置函数的，但是该<code>__iter__</code>方法必须返回一个迭代器对象，否则会抛出<code>TypeError</code>异常：</p>
 <pre><code>class only_iter(object):
     def __iter__(self):
@@ -134,16 +135,12 @@ Traceback (most recent call last):
 File "&lt;stdin&gt;", line 1, in &lt;module&gt;
 TypeError: 'next_only' object is not iterable
 </code></pre>
-<p>可以看到，对bar执行 for in语句，又跑出了TypeError异常。看来仅仅提供next方法，虽然可以过iter这一关，但仍然不能算是迭代器类型。</p>
-<pre><code>class mnonitercls(object):
-    def hi(self):
-        print 'hi'
-
-class foocls(object):
+<p>可以看到，对bar执行 for in语句，又跑出了TypeError异常。看来仅仅提供next方法，虽然可以过iter这一关，但仍然不能算是迭代器类型。只有像下面这样完整的定义了<code>__iter__</code>和<code>next</code>方法的类型才算是迭代器类型：</p>
+<pre><code>class iter_only(object):
     def __iter__(self):
         return barcls(9)
 
-class barcls(object):
+class iterator_cls(object):
     def __init__(self, num):
         self.num = num
     def __iter__(self):
@@ -154,35 +151,23 @@ class barcls(object):
             raise StopIteration
         return self.num
 </code></pre>
-<p>测试：
-对mnonitercls的实例调用iter：</p>
-<pre><code>&gt;&gt;&gt; mno = mnonitercls()
-&gt;&gt;&gt; iter(mno)
-Traceback (most recent call last):
-File "&lt;stdin&gt;", line 1, in &lt;module&gt;
-TypeError: 'mnonitercls' object is not iterable
-</code></pre>
-<p>可以看到，会报错。而对foocls的实例调用iter：</p>
-<pre><code>&gt;&gt;&gt; foo = foocls()
-&gt;&gt;&gt; f1 = iter(foo)
-&gt;&gt;&gt; for i in f1:
+<p>测试对mnonitercls的实例调用iter：</p>
+<pre><code>&gt;&gt;&gt; foo = iter_only()
+&gt;&gt;&gt; it = iter(foo)
+&gt;&gt;&gt; for i in it:
 ...     print i
+...
+10
+11
+12
+13
+14
+15
+&gt;&gt;&gt;
 </code></pre>
-<p>不会报错，能够生成迭代器对象。可见所谓的iter函数的主要工作就是调用它的参数的<code>__iter__</code>方法（即便这个方法返回的对象不是iterator对象）。</p>
-<pre><code>&gt;&gt;&gt; f1
-&lt;t1.barcls object at 0x105c37cd0&gt;
-&gt;&gt;&gt; f2 = iter(f1)
-&gt;&gt;&gt; f2
-&lt;t1.barcls object at 0x105c37cd0&gt;
-</code></pre>
-<p>iterator对象如果执行next完毕，再执行会抛出异常StopIteration。</p>
-<pre><code>&gt;&gt;&gt; f2.next()
-Traceback (most recent call last):
-File "&lt;stdin&gt;", line 1, in &lt;module&gt;
-File "t1.py", line 31, in next
-    raise StopIteration
-StopIteration
-</code></pre>
+<p>可以得到预期的结果。</p>
+<p>值得一提的是，Python提供了标准库itertools，内置了很多实用的函数用于生成数字和字符相关的各种迭代器，详细可参看<a href="https://docs.python.org/2.7/library/itertools.html#module-itertools">itertools — Functions creating iterators for efficient looping</a>。</p>
+<p>花了这么多篇幅来讨论iterator，并不仅仅是为了探讨for循环语句的背后原理，更重要的是iterator是python里另外一个重要概念generator（生成器）的基础，关于generator，常见我的<a href="20170502.1.html">这篇博客</a>。</p>
 <p>参考：</p>
 <p><a href="https://docs.python.org/2.7/tutorial/classes.html#iterators">Iterators</a></p>
 <p><a href="https://docs.python.org/2.7/library/stdtypes.html?highlight=iterator#iterator-types">Iterator Types</a></p>
