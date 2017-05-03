@@ -223,7 +223,8 @@ end test_iterator
 <p>可以看到，程序从<code>test_iterator</code>开始执行，在调用<code>my_iterator</code>函数时，<code>my_iterator</code>在for循环中执行完了所有的print语句，在输出<code>i: 4, after append</code>之后，程序才跳转到<code>test_iterator</code>函数，<code>test_iterator</code>函数也在自己的for循环中执行了所有自己的print语句，两个函数并没有交替执行。</p>
 <p>这一点，可以认为是generator函数与普通函数的主要区别，即：</p>
 <ul>
-<li>generator函数在被调用时，函数体并没有立即执行，而是返回一个迭代器。在迭代器的每次遍历中，generator函数才开始执行，并且只执行到它的yield语句为止，然后程序跳转到迭代器的外部语句中（在本例中就是<code>test_generator</code>函数）。</li>
+<li>generator函数在被调用时，函数体并没有立即执行，而是返回一个迭代器，供“外部”语句调用。</li>
+<li>在迭代器的遍历中，generator函数才开始执行，并且只执行到它的yield语句为止，然后程序跳转到迭代器的外部语句中（在本例中就是<code>test_generator</code>函数）。</li>
 <li>在迭代器的下一次遍历时，generator函数接着上次执行到的yield语句的下一句开始执行，并再次循环到yield语句为止。</li>
 </ul>
 <p>yield这个词在英文里有“放弃、退让”的意思，也有“产生、带来”的意思。我们可以认为，在该语句出现的地方，generator函数生成一个值，把这个值和当前对CPU的控制权都交给迭代器的调用方（generator函数外部的代码）。</p>
