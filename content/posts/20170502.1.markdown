@@ -239,6 +239,12 @@ generator是python里的一种函数，它有如下特点特点：
 
 yield这个词在英文里有“放弃、退让”的意思，也有“产生、带来”的意思。我们可以认为，在该语句出现的地方，generator函数生成一个值，把这个值和当前对CPU的控制权都交给迭代器的调用方（generator函数外部的代码）。
 
+### 生成器表达式（generator expression）
+
+    foo = (i for i in os.walk(os.getcwd()))
+    bar = [i for i in os.walk(os.getcwd())]
+
+
 我们在这里看到的所有yield关键字出现的代码，都是yield出现在代码行的左边，除此之外，yield还可以出现在语句的右边，并使用圆括号包起来，类似于下面这样的表达方式：
 
     n = (yield)
