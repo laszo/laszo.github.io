@@ -1,0 +1,46 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WSGI初探 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">WSGI初探</h3>
+
+        <div class="post-content">
+            <p>最简单的WSGI Application代码，没有用到FrameWork，</p>
+<pre><code># test.py
+def app(env, start_response):
+    start_response('200 OK', [('Content-type', 'text/plain')])
+    return ['hello, world']
+</code></pre>
+<p>使用<code>gunicorn</code>可以运行：</p>
+<pre><code>gunicorn test:app
+</code></pre>
+<p>可以看到运行的输出：</p>
+<pre><code>[2017-05-08 11:41:58 +0800] [1133] [INFO] Starting gunicorn 19.7.0
+[2017-05-08 11:41:58 +0800] [1133] [INFO] Listening at: http://127.0.0.1:8000 (1133)
+[2017-05-08 11:41:58 +0800] [1133] [INFO] Using worker: sync
+[2017-05-08 11:41:58 +0800] [1136] [INFO] Booting worker with pid: 1136
+</code></pre>
+<p>或者使用Python标准库自带的wsgiref库：</p>
+<pre><code>from wsgiref.simple_server import make_server
+
+def app(env, start_response):
+    start_response('200 OK', [('Content-type', 'text/plain')])
+    return ['Hello, world!']
+
+if __name__ == '__main__':
+    s = make_server('', 8000, app)
+    s.serve_forever()
+</code></pre>
+        </div>
+    </div>
+</body>
+</html>
