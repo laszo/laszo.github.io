@@ -81,7 +81,7 @@ def main():
     posts.reverse()
     postlinks = []
     for p in posts:
-        if not check_file_ext(p, 'markdown'):
+        if not check_file_ext(p, 'markdownmd'):
             continue
         if os.path.isfile(contentpath+p):
             url, title = createPost(p)
@@ -89,7 +89,7 @@ def main():
     pagefiles = os.listdir(pagespath)
     temp_links = []
     for p in pagefiles:
-        if not check_file_ext(p, 'markdown'):
+        if not check_file_ext(p, 'markdownmd'):
             continue
         text = codecs.open(pagespath + p, 'r', encoding='utf8').read()
         mkdtxt, title = read_config(text)
@@ -97,7 +97,7 @@ def main():
         temp_links.append({'title': title, 'url': url})
     pagelinks = []
     for p in pagefiles:
-        if not check_file_ext(p, 'markdown'):
+        if not check_file_ext(p, 'markdownmd'):
             continue
         url, title = get_page_info(p)
         pagelinks.append({'title': title, 'url': url})
@@ -116,5 +116,12 @@ def check_file_ext(fname, ext):
             return True
     return False
 
+def get_files():
+    for dirpath, dirnames, filenames in os.walk('content'):
+        for fn in filenames:
+            yield os.path.join(dirpath, fn)
+
+
 if __name__ == '__main__':
     main()
+    
