@@ -196,8 +196,75 @@ s.serve_forever()
 <p>Handle one request at a time until shutdown.
 （每次处理一个请求，直到关闭。）</p>
 </blockquote>
-<p>方法先是执行<code>self.__is_shut_down.clear()</code>，从前面BaseServer的构造方法中我们知道<code>__is_shut_down</code>是一个<code>threading.Event</code>，</p>
-<p>这句话也说明了代码的逻辑。（另有一句话：If you need to do periodic(定期的) tasks, do them inanother thread. 待办）</p>
+<p>方法先是执行<code>self.__is_shut_down.clear()</code>，从前面BaseServer的构造方法中我们知道<code>__is_shut_down</code>是一个<code>threading.Event</code>，使用这个成员的代码我们后面才会看到。</p>
+<p>然后的逻辑在就是一直监听客户端请求，并处理请求。监听请求使用的是<code>select.select</code>，这个我们在前面的文章里已经介绍过。处理请求使用<code>_handle_request_noblock</code>方法，下面来看这个方法的代码：</p>
+<pre><code>def _handle_request_noblock(self):
+    try:
+        request, client_address = self.get_request()
+    except socket.error:
+        return
+    if self.verify_request(request, client_address):
+        try:
+            self.process_request(request, client_address)
+        except:
+            self.handle_error(request, client_address)
+            self.shutdown_request(request)
+</code></pre>
+<p>去除捕获和异常处理的部分，我们可以认为代码的逻辑如下：</p>
+<pre><code>request, client_address = self.get_request()
+if self.verify_request(request, client_address):
+    self.process_request(request, client_address)
+</code></pre>
+<p>即：</p>
+<ol>
+<li>获取请求：get_request</li>
+<li>验证请求：verify_request</li>
+<li>处理请求：process_request</li>
+</ol>
+<p>在BaseServer中并无get_request这个方法，我们在前面已经看过TCPServer类中的这个方法，就是单纯的返回<code>socket.accept()</code>的返回值。</p>
+<p>BaseServer中的verify_request方法非常简单，单纯返回True：</p>
+<pre><code>def verify_request(self, request, client_address):
+    return True
+</code></pre>
+<p>这个方法显然留给子类去覆写的。</p>
+<p>下面来看process_request方法和相关的几个方法的代码：</p>
+<pre><code>def process_request(self, request, client_address):
+    self.finish_request(request, client_address)
+    self.shutdown_request(request)
+
+def finish_request(self, request, client_address):
+    self.RequestHandlerClass(request, client_address, self)
+
+def shutdown_request(self, request):
+    self.close_request(request)
+
+def close_request(self, request):
+    pass
+</code></pre>
+<p>这里的逻辑是非常简单的，处理请求的流程是：</p>
+<ol>
+<li>调用处理类处理请求 -&gt; RequestHandlerClass</li>
+<li>关闭请求 -&gt; shutdown_request -&gt; close_request</li>
+</ol>
+<p>close_request显然也是留给子类去实现的，在TCPServer中我们已经见过了它的覆写：</p>
+<pre><code>def close_request(self, request):
+    request.close()
+</code></pre>
+<p>即关闭与此次请求的客户端的socket连接。</p>
+<h3>BaseServer总结</h3>
+<p>看到这里我们可以发现，BaseServer最重要的是提供了服务端运行的流程框架，这个流程可以概括为：</p>
+<pre><code>while &lt;不需要关闭&gt;:
+    &lt;监听客户端请求&gt;
+    &lt;获取请求&gt;
+    &lt;验证请求&gt;
+    &lt;调用处理类进行处理&gt;
+    &lt;关闭请求&gt;
+</code></pre>
+<p>除了<code>&lt;监听客户端请求&gt;</code>这一过程是使用<code>select.select</code>来实现，<code>&lt;获取请求&gt;</code>、<code>&lt;验证请求&gt;</code>、<code>&lt;关闭请求&gt;</code>这几个过程，都是在TCPServer中通过socket来具体实现的。</p>
+<p>这样的设计方式，在设计模式中称为<code>模板方法</code>，即父类提供大概的流程框架，子类负责具体流程的实现。</p>
+<p>我们可以设想有一个大型商场，在它刚刚建造完工之后，虽然已经规划标明了一层是化妆品、二层是服装鞋帽、三层是母婴用品、四层是饮食、电梯在某某位置、卫生间在某某位置，但是这时候具体的商家还没有入住，顾客来到商场会发现，表明化妆品的地方并没有化妆品的柜台，去服装的房间也并没有衣服卖，去餐饮区也没有食物，电梯间并没有电梯，去卫生间也看不到马桶...。这样状态的商场，可以认为是提供了“框架”。</p>
+<p>等到商场完成了精装修和商家入驻，正式对外营业的时候，顾客再进来就会发现可以在一层买到化妆品、四层可以吃饭、上下楼有电梯、也可以去卫生间方便了...。这些具体的服务，服饰商家、餐厅、电梯、马桶等，就可以看做是子类。</p>
+<p>关于<code>&lt;调用处理类进行处理&gt;</code>这一过程，参看另外一篇文章的讨论。</p>
         </div>
     </div>
 </body>

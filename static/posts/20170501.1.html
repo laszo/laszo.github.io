@@ -1,0 +1,79 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>RequestHandler分析 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">RequestHandler分析</h3>
+
+        <div class="post-content">
+            <p>上篇文章我们分析了Python标准库中的基础Server的逻辑，这可以说只是一个完整服务端的一半，一个服务端其实包含两种对象：Server和RequestHandler，Server负责一直监听客户端请求，每次获得请求就传递给RequestHandler，RequestHandler进行实际的请求处理。</p>
+<p>今天我们来分析各种Handler，从BaseServer的代码看起：</p>
+<pre><code>class BaseServer:
+    def __init__(self, server_address, RequestHandlerClass):
+        self.RequestHandlerClass = RequestHandlerClass
+</code></pre>
+<p>Server在初始化的时候必须传入RequestHandlerClass，指明了要使用那个处理类，并保存在自身的同名成员中。在上篇文章中已经看到，<code>serve_forever</code>中最核心的一步就是调用<code>finish_request</code>，而后者则是调用了处理类成员，</p>
+<pre><code>def finish_request(self, request, client_address):
+    self.RequestHandlerClass(request, client_address, self)
+</code></pre>
+<p>至于各种处理类究竟是如何处理的，我们从最基本的BaseRequestHandler看起：</p>
+<pre><code>class BaseRequestHandler:
+    def __init__(self, request, client_address, server):
+        self.request = request
+        self.client_address = client_address
+        self.server = server
+        self.setup()
+        try:
+            self.handle()
+        finally:
+            self.finish()
+
+    def setup(self):
+        pass
+
+    def handle(self):
+        pass
+
+    def finish(self):
+        pass
+</code></pre>
+<p>它的逻辑非常简单，像BaseServer一样，它仅仅提供了处理类的流程框架，没有进行任何实际的处理，但是保存了<code>request, client_address, server</code>等几个成员。在构造方法里调用了<code>handle</code>方法，一看便知这个方法是该类的核心，也是服务类处理客户端请求的实质逻辑。</p>
+<p>再来看<code>StreamRequestHandler</code>：</p>
+<pre><code>class StreamRequestHandler(BaseRequestHandler):
+    rbufsize = -1
+    wbufsize = 0
+    timeout = None
+
+    disable_nagle_algorithm = False
+
+    def setup(self):
+        self.connection = self.request
+        if self.timeout is not None:
+            self.connection.settimeout(self.timeout)
+        if self.disable_nagle_algorithm:
+            self.connection.setsockopt(socket.IPPROTO_TCP,
+                                    socket.TCP_NODELAY, True)
+        self.rfile = self.connection.makefile('rb', self.rbufsize)
+        self.wfile = self.connection.makefile('wb', self.wbufsize)
+
+    def finish(self):
+        if not self.wfile.closed:
+            try:
+                self.wfile.flush()
+            except socket.error:
+                pass
+        self.wfile.close()
+        self.rfile.close()
+</code></pre>
+        </div>
+    </div>
+</body>
+</html>

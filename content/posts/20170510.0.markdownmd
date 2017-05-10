@@ -1,0 +1,8 @@
+---
+title: 'Python标准库SocketServer的异步和多线程处理'
+---
+
+BaseServer的serve_forever的注释中有这么一句话：
+
+>
+If you need to do periodic(定期的) tasks, do them inanother thread. 

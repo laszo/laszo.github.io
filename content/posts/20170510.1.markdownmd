@@ -1,0 +1,208 @@
+---
+title: 'RequestHandler分析'
+---
+上篇文章我们分析了Python标准库中的基础Server的逻辑，这可以说只是一个完整服务端的一半，一个服务端其实包含两种对象：Server和RequestHandler，Server负责一直监听客户端请求，每次获得请求就传递给RequestHandler，RequestHandler进行实际的请求处理。
+
+今天我们来分析各种Handler，从BaseServer的代码看起：
+
+    class BaseServer:
+        def __init__(self, server_address, RequestHandlerClass):
+            self.RequestHandlerClass = RequestHandlerClass
+        
+Server在初始化的时候必须传入RequestHandlerClass，指明了要使用那个处理类，并保存在自身的同名成员中。在上篇文章中已经看到，`serve_forever`中最核心的一步就是调用`finish_request`，而后者则是调用了处理类成员，
+
+    def finish_request(self, request, client_address):
+        self.RequestHandlerClass(request, client_address, self)
+
+至于各种处理类究竟是如何处理的，我们从最基本的BaseRequestHandler看起：
+
+    class BaseRequestHandler:
+        def __init__(self, request, client_address, server):
+            self.request = request
+            self.client_address = client_address
+            self.server = server
+            self.setup()
+            try:
+                self.handle()
+            finally:
+                self.finish()
+
+        def setup(self):
+            pass
+
+        def handle(self):
+            pass
+
+        def finish(self):
+            pass
+
+它的逻辑非常简单，像BaseServer一样，它仅仅提供了处理类的流程框架，没有进行任何实际的处理，但是保存了`request, client_address, server`等几个成员。在构造方法里调用了`handle`方法，一看便知这个方法是该类的核心，也是服务类处理客户端请求的实质逻辑。
+
+再来看`StreamRequestHandler`：
+
+    class StreamRequestHandler(BaseRequestHandler):
+        rbufsize = -1
+        wbufsize = 0
+        timeout = None
+
+        disable_nagle_algorithm = False
+
+        def setup(self):
+            self.connection = self.request
+            if self.timeout is not None:
+                self.connection.settimeout(self.timeout)
+            if self.disable_nagle_algorithm:
+                self.connection.setsockopt(socket.IPPROTO_TCP,
+                                        socket.TCP_NODELAY, True)
+            self.rfile = self.connection.makefile('rb', self.rbufsize)
+            self.wfile = self.connection.makefile('wb', self.wbufsize)
+
+        def finish(self):
+            if not self.wfile.closed:
+                try:
+                    self.wfile.flush()
+                except socket.error:
+                    pass
+            self.wfile.close()
+            self.rfile.close()
+
+StreamRequestHandler覆写了setup和finish，这里最重要的一步是把自身持有的connection成员（代表服务端与客户端的连接）通过makefile转化为两个成员wfile和rfile。这样，就把对socket的操作recv和send，简化为了对rfile的read和对wfile的write。这在后续的子类中是非常有用的包装。
+
+由于没有提供handle方法，StreamRequestHandler显然也是不能够实际使用的。我们还要看它的子类，我们这里关心的是`BaseHTTPRequestHandler`，这里我提前预告一下，这个类是实际处理HTTP请求的一个类，代码也比较多，需要如下两个条件：
+
+1. 了解HTTP协议
+2. 平心静气，一步一步来
+
+一部分一部分来看：
+
+    class BaseHTTPRequestHandler(SocketServer.StreamRequestHandler):
+        def handle(self):
+            self.close_connection = 1
+            self.handle_one_request()
+            while not self.close_connection:
+                self.handle_one_request()
+
+handle方法简单来说就是持续调用handle_one_request，如果需要停止调用，就需要把close_connection置为False。再来看handle_one_request：
+
+    def handle_one_request(self):
+        try:
+            self.raw_requestline = self.rfile.readline(65537)
+            if len(self.raw_requestline) > 65536:
+                self.requestline = ''
+                self.request_version = ''
+                self.command = ''
+                self.send_error(414)
+                return
+            if not self.raw_requestline:
+                self.close_connection = 1
+                return
+            if not self.parse_request():
+                return
+            mname = 'do_' + self.command
+            if not hasattr(self, mname):
+                self.send_error(501, "Unsupported method (%r)" % self.command)
+                return
+            method = getattr(self, mname)
+            method()
+            self.wfile.flush() #actually send the response if not already done.
+        except socket.timeout, e:
+            self.log_error("Request timed out: %r", e)
+            self.close_connection = 1
+            return
+
+代码有点多，简单来有如下几步：
+
+1. 调用`rfile.readline(65537)`读取客户端请求，保存在`raw_requestline`成员。`65536`即64K是HTTP协议规定的最大请求。
+2. 调用`parse_request()`方法，把原始的请求解析为具体的属性，包括`command`。
+3. 根据具体的command，构造出一个`do_command`字符串，检查是否有同名方法，没有则报错并返回，不再进行下一步
+3. 如果有`do_command`方法，则调用这个方法。如果command是`GET`则调用`do_GET`，如果是`POSR`则调用`do_POST`。
+4. 调用`wfile.flush()`，把响应返回给客户端
+
+我们查看了BaseHTTPRequestHandler的代码，并无任何以`do_`开头的方法，说明具体的方法留给子类去实现了。再来看`parse_request()`，它的代码过长，我们只给出核心操作的部分，并分步来看：
+
+    def parse_request(self):
+        self.close_connection = 1
+        requestline = self.raw_requestline
+        requestline = requestline.rstrip('\r\n')
+        self.requestline = requestline
+        words = requestline.split()
+        ...
+
+1. 把客户端原始的请求字符串（按换行符`'\r\n'`）分割成许多行的列表，保存在requestline中
+2. 把requestline按空格分割，存储在words中
+
+接着往下看：
+
+        if len(words) == 3:
+            command, path, version = words
+            if version[:5] != 'HTTP/':
+                self.send_error(400, "Bad request version (%r)" % version)
+                return False
+            try:
+                base_version_number = version.split('/', 1)[1]
+                version_number = base_version_number.split(".")
+                if len(version_number) != 2:
+                    raise ValueError
+                version_number = int(version_number[0]), int(version_number[1])
+            except (ValueError, IndexError):
+                self.send_error(400, "Bad request version (%r)" % version)
+                return False
+            if version_number >= (1, 1) and self.protocol_version >= "HTTP/1.1":
+                self.close_connection = 0
+            if version_number >= (2, 0):
+                self.send_error(505, "Invalid HTTP Version (%s)" % base_version_number)
+                return False
+
+如果words有三个元素，则。。。
+
+来看words有两个元素的情况：
+
+        elif len(words) == 2:
+            command, path = words
+            self.close_connection = 1
+            if command != 'GET':
+                self.send_error(400,
+                                "Bad HTTP/0.9 request type (%r)" % command)
+                return False
+
+继续往下看：
+
+        elif not words:
+            return False
+        else:
+            self.send_error(400, "Bad request syntax (%r)" % requestline)
+            return False
+
+words的数量不对，会报错并返回。
+
+        self.command, self.path, self.request_version = command, path, version
+
+在正确解析之后，保存在了自身的成员`self.command, self.path, self.request_version`中。
+
+        # Examine the headers and look for a Connection directive
+        self.headers = self.MessageClass(self.rfile, 0)
+
+这里调用了标准库`mimetools.Message`类，这个类我们后续再去分析，简单来说就是对rfile对象进行解析，获取必要的数据保存在自身的headers成员中。
+
+        conntype = self.headers.get('Connection', "")
+        if conntype.lower() == 'close':
+            self.close_connection = 1
+        elif (conntype.lower() == 'keep-alive' and
+              self.protocol_version >= "HTTP/1.1"):
+            self.close_connection = 0
+        return True
+
+后面通过检查`conntype`、也就是服务端请求中的`Connection`属性，看是否需要保持连接，并写入close_connection。前面我们看到过，close_connection会影响到handle方法是否继续执行handle_one_request方法，即是否持续的接收并处理请求。
+
+再来看一个重要的方法
+
+
+#### 总结BaseHTTPRequestHandler
+
+我们可以说，BaseHTTPRequestHandler有如下作用：
+
+* 提供了处理HTTP请求的框架、
+* 接收请求
+* 解析请求并保存数据到相关的成员中，以供后续的子类在处理请求时使用
+
+具体的处理方法留给了子类。
