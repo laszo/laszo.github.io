@@ -153,7 +153,7 @@ handle方法简单来说就是持续调用handle_one_request，如果需要停�
                 self.send_error(505, "Invalid HTTP Version (%s)" % base_version_number)
                 return False
 
-如果words有三个元素，则。。。
+上面是如果words有三个元素，主要是进行各种检查，检查不通过则报错并返回。
 
 来看words有两个元素的情况：
 
@@ -165,6 +165,8 @@ handle方法简单来说就是持续调用handle_one_request，如果需要停�
                                 "Bad HTTP/0.9 request type (%r)" % command)
                 return False
 
+同样是进行各种检查，检查不通过则报错并返回。
+
 继续往下看：
 
         elif not words:
@@ -173,16 +175,15 @@ handle方法简单来说就是持续调用handle_one_request，如果需要停�
             self.send_error(400, "Bad request syntax (%r)" % requestline)
             return False
 
-words的数量不对，会报错并返回。
+words的数量不对，会报错并返回。再往下看：
 
         self.command, self.path, self.request_version = command, path, version
 
-在正确解析之后，保存在了自身的成员`self.command, self.path, self.request_version`中。
+在正确解析之后，保存在了自身的成员`self.command, self.path, self.request_version`中。继续往下看，下一句：
 
-        # Examine the headers and look for a Connection directive
         self.headers = self.MessageClass(self.rfile, 0)
 
-这里调用了标准库`mimetools.Message`类，这个类我们后续再去分析，简单来说就是对rfile对象进行解析，获取必要的数据保存在自身的headers成员中。
+这里调用了标准库`mimetools.Message`类，这个类我们后续再去分析，简单来说就是对rfile对象进行解析，获取必要的数据保存在自身的headers成员中。再往下看：
 
         conntype = self.headers.get('Connection', "")
         if conntype.lower() == 'close':
@@ -192,7 +193,7 @@ words的数量不对，会报错并返回。
             self.close_connection = 0
         return True
 
-后面通过检查`conntype`、也就是服务端请求中的`Connection`属性，看是否需要保持连接，并写入close_connection。前面我们看到过，close_connection会影响到handle方法是否继续执行handle_one_request方法，即是否持续的接收并处理请求。
+这段代码主要是判断是否需要保持持续连接。通过检查`conntype`、也就是服务端请求中的`Connection`属性，看是否需要保持连接，并写入close_connection。前面我们看到过，close_connection会影响到handle方法是否继续执行handle_one_request方法，即是否持续的接收并处理请求。
 
 
 #### 总结BaseHTTPRequestHandler
@@ -209,18 +210,18 @@ words的数量不对，会报错并返回。
 
 直接来看`WSGIRequestHandler`：
 
-class WSGIRequestHandler(BaseHTTPRequestHandler):
-    def handle(self):
-        self.raw_requestline = self.rfile.readline(65537)
-        ...
-        if not self.parse_request(): 
-            return
+    class WSGIRequestHandler(BaseHTTPRequestHandler):
+        def handle(self):
+            self.raw_requestline = self.rfile.readline(65537)
+            ...
+            if not self.parse_request(): 
+                return
 
-        handler = ServerHandler(
-            self.rfile, self.wfile, self.get_stderr(), self.get_environ()
-        )
-        handler.request_handler = self      # backpointer for logging
-        handler.run(self.server.get_app())
+            handler = ServerHandler(
+                self.rfile, self.wfile, self.get_stderr(), self.get_environ()
+            )
+            handler.request_handler = self      # backpointer for logging
+            handler.run(self.server.get_app())
 
 这里必须提醒读者，WSGIRequestHandler虽然继承自BaseHTTPRequestHandler，但是它的handle方法生成了一个ServerHandler的实例，实际是调用了ServerHandler的run方法来进行处理。传递给该类的构造方法的几个参数：`self.rfile, self.wfile, self.get_stderr(), self.get_environ()`，后续会提到。
 

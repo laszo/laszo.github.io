@@ -1,0 +1,101 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Python中的Web和WSGI的各组件总结 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">Python中的Web和WSGI的各组件总结</h3>
+
+        <div class="post-content">
+            <p>通过[WSGI的Server端分析]和[RequestHandler分析]这两篇文章，我们基本了解了Python Web服务中涉及到的各个组件。现在从最基本的开始，我们总结出来其中的要点：</p>
+<ol>
+<li>
+<p>Web的基本模式，客户端 &lt; —— &gt; 服务端模型。服务端持续运行，监听请求。客户端向服务端发送请求，服务端处理请求，向服务端发送响应。</p>
+</li>
+<li>
+<p>在服务端，又分为Server和Handler两类对象，简称为服务类和处理类。两种对象协同工作，共同完成对请求的响应。</p>
+</li>
+<li>
+<p>服务类负责如下工作：</p>
+<ol>
+<li>初始化环境配置</li>
+<li>监听请求</li>
+<li>将请求传递给处理类</li>
+</ol>
+</li>
+<li>
+<p>处理类接收请求，处理，返回响应。通过服务类返回响应给服务端。</p>
+</li>
+<li>
+<p>在WSGI规范下，服务类接收一个application对象，在传递请求时将这个对象也传递给处理类，由application对象进行具体的处理，并把结果返回给处理类。</p>
+</li>
+</ol>
+<p>下面来看看在Python标准库的具体实现上的关键点。</p>
+<h4>SocketServer模块</h4>
+<ol>
+<li>
+<p>BaseServer层面</p>
+<ul>
+<li>BaseServer是最基本的服务类，提供了基本的服务端处理流程框架，但没有实现任何具体过程。它的流程框架中最关键的一点是，持续监听、接收请求、调用处理类处理请求。</li>
+<li>BaseRequestHandler，提供了基本的处理类逻辑框架，没有实现任何具体过程。处理逻辑中最关键的一点是在自身的构造方法中调用了自身的handle方法。</li>
+</ul>
+</li>
+<li>
+<p>TCPServer层面</p>
+<ul>
+<li>TCPServer提供了服务端在传输层的实现，具体来说就是创建和持有socket对象，使用该对象实现具体过程，这些过程包括：服务端的绑定、激活、获取请求、关闭请求、关闭服务端等。</li>
+<li>StreamRequestHandler，最重要的工作是使用rfile和wfile简化了服务端与客户端的通信。</li>
+</ul>
+</li>
+</ol>
+<h4>BaseHTTPServer模块</h4>
+<ol>
+<li>HTTPServer继承自TCPServer，只覆写了父类的server_bound方法</li>
+<li>BaseHTTPRequestHandler继承自StreamRequestHandler，提供如下逻辑：<ul>
+<li>获取请求，通过上面提到的rfile</li>
+<li>解析请求，保存各种请求的参数</li>
+<li>提供根据请求的参数调用相应的方法，但不提供该方法的实现</li>
+</ul>
+</li>
+</ol>
+<h4>wsgiref模块</h4>
+<p>这个模块主要提供WSGI规范的支持，相对于HTTPServer，主要增加了environment和application的概念，具体规范参看PEP333.</p>
+<ol>
+<li>
+<p>WSGIServer继承自HTTPServer，有如下改进：</p>
+<ol>
+<li>覆写了server_bound</li>
+<li>添加了setup_environ方法</li>
+<li>添加了get_app和set_app方法</li>
+</ol>
+</li>
+<li>
+<p>WSGIRequestHandler继承自BaseHTTPRequestHandler，覆写了handle方法，该方法的核心逻辑是初始化了一个ServerHandler类，然后调用这个类的实例的run方法。</p>
+</li>
+<li>
+<p>ServerHandler继承自SimpleHandler，注意它与上面提到其他模块中的各种RequestHandler不是一个继承体系。</p>
+</li>
+<li>
+<p>SimpleHandler继承自BaseHandler。这类的主要工作是对stdin、stdout等输入输出源进行了重新定位。</p>
+</li>
+<li>
+<p>BaseHandler提供了下面三个重要方法：</p>
+<ol>
+<li>run：负责配置环境、调用application、调用finish_response</li>
+<li>start_response：本质上是一个write方法，用于向客户端发送数据，主要是发送HTTP头</li>
+<li>finish_response：负责把application的运行结果（即所谓的“响应”）发送到客户端</li>
+</ol>
+</li>
+</ol>
+<p>通过如上的一套体系，再加上我们自己写的WSGI application，就提供了一套完整的web服务端。</p>
+        </div>
+    </div>
+</body>
+</html>
