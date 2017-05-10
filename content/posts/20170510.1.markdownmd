@@ -262,7 +262,7 @@ SimpleHandler继承自BaseHandler，代码比简单，直接贴上全部的：
 
 可以看到，SimpleHandler最重要的工作是对输入输出进行了重新定位，这样在WSGI application进行输入输出的时候，最终实际上定位到了WSGIRequestHandler的wfile和rfile，也就是代表服务端与客户端连接的socket。通过这样的方式，WSGI application能够将响应发送到客户端。
 
-最后来看一下`BaseHandler`，先列出最重要的两个方法：
+最后来看一下`BaseHandler`，先列出最重要的三个方法：
 
     class BaseHandler:
         def run(self, application):
@@ -277,19 +277,19 @@ SimpleHandler继承自BaseHandler，代码比简单，直接贴上全部的：
                     self.close()
                     raise
 
-    def start_response(self, status, headers,exc_info=None):
-        self.status = status
-        self.headers = self.headers_class(headers)
-        return self.write
+        def start_response(self, status, headers,exc_info=None):
+            self.status = status
+            self.headers = self.headers_class(headers)
+            return self.write
 
-    def finish_response(self):
-        try:
-            if not self.result_is_file() or not self.sendfile():
-                for data in self.result:
-                    self.write(data)
-                self.finish_content()
-        finally:
-            self.close()
+        def finish_response(self):
+            try:
+                if not self.result_is_file() or not self.sendfile():
+                    for data in self.result:
+                        self.write(data)
+                    self.finish_content()
+            finally:
+                self.close()
 
 注意，这是一个wsgiref库的BaseHanlder，与SocketServer库的BaseRequestHandler不是一回事。
 

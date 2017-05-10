@@ -1,0 +1,52 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>对WSGI environ的分析 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">对WSGI environ的分析</h3>
+
+        <div class="post-content">
+            <p>来看wsgiref库的BaseHandler：</p>
+<pre><code>def run(self, application):
+    try:
+        self.setup_environ()
+    ...
+
+def setup_environ(self):
+    """Set up the environment for one request"""
+
+    env = self.environ = self.os_environ.copy()
+    self.add_cgi_vars()
+
+    env['wsgi.input']        = self.get_stdin()
+    env['wsgi.errors']       = self.get_stderr()
+    env['wsgi.version']      = self.wsgi_version
+    env['wsgi.run_once']     = self.wsgi_run_once
+    env['wsgi.url_scheme']   = self.get_scheme()
+    env['wsgi.multithread']  = self.wsgi_multithread
+    env['wsgi.multiprocess'] = self.wsgi_multiprocess
+
+    if self.wsgi_file_wrapper is not None:
+        env['wsgi.file_wrapper'] = self.wsgi_file_wrapper
+
+    if self.origin_server and self.server_software:
+        env.setdefault('SERVER_SOFTWARE',self.server_software)
+</code></pre>
+<p>注意，在每次调用run函数的时候都会调用一次setup_environ，进行环境变量设置，首先：</p>
+<pre><code>env = self.environ = self.os_environ.copy()
+</code></pre>
+<p>这句代码保证了environ被重新赋值，上一次处理请求所使用的environ不会被复用到下一次请求处理。而os_environ则来自操作系统的环境变量：</p>
+<pre><code>os_environ = dict(os.environ.items())
+</code></pre>
+        </div>
+    </div>
+</body>
+</html>

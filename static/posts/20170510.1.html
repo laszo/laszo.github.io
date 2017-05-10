@@ -248,7 +248,7 @@
         self._flush = self.stdout.flush
 </code></pre>
 <p>可以看到，SimpleHandler最重要的工作是对输入输出进行了重新定位，这样在WSGI application进行输入输出的时候，最终实际上定位到了WSGIRequestHandler的wfile和rfile，也就是代表服务端与客户端连接的socket。通过这样的方式，WSGI application能够将响应发送到客户端。</p>
-<p>最后来看一下<code>BaseHandler</code>，先列出最重要的两个方法：</p>
+<p>最后来看一下<code>BaseHandler</code>，先列出最重要的三个方法：</p>
 <pre><code>class BaseHandler:
     def run(self, application):
         try:
@@ -262,19 +262,19 @@
                 self.close()
                 raise
 
-def start_response(self, status, headers,exc_info=None):
-    self.status = status
-    self.headers = self.headers_class(headers)
-    return self.write
+    def start_response(self, status, headers,exc_info=None):
+        self.status = status
+        self.headers = self.headers_class(headers)
+        return self.write
 
-def finish_response(self):
-    try:
-        if not self.result_is_file() or not self.sendfile():
-            for data in self.result:
-                self.write(data)
-            self.finish_content()
-    finally:
-        self.close()
+    def finish_response(self):
+        try:
+            if not self.result_is_file() or not self.sendfile():
+                for data in self.result:
+                    self.write(data)
+                self.finish_content()
+        finally:
+            self.close()
 </code></pre>
 <p>注意，这是一个wsgiref库的BaseHanlder，与SocketServer库的BaseRequestHandler不是一回事。</p>
 <ul>
