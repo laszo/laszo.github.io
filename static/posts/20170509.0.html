@@ -167,7 +167,19 @@ def close_request(self, request):
 s = make_server('', 8000, myapp.app)
 s.serve_forever()
 </code></pre>
-<p>Server调用了<code>serve_forever</code>方法，就从这里来吧：</p>
+<p>Server调用了<code>serve_forever</code>方法，这个是Server的核心逻辑。但在此之前我们先要看一下SocketServer模块中定义的一个函数<code>_eintr_retry</code>的代码：</p>
+<pre><code>def _eintr_retry(func, *args):
+    """restart a system call interrupted by EINTR"""
+    while True:
+        try:
+            return func(*args)
+        except (OSError, select.error) as e:
+            if e.args[0] != errno.EINTR:
+                raise
+</code></pre>
+<p>这个函数的逻辑是运行指定的<code>func</code>，如果func能够成功运行则直接返回func的返回值，如果有异常就捕获异常，如果捕获的异常是<code>errno.EINTR</code>就抛出异常。如果捕获的异常不是<code>errno.EINTR</code>，就会进行下一次循环。</p>
+<p>总的来说<code>_eintr_retry</code>的逻辑就是反复尝试执行func一直到执行成功、遇到<code>errno.EINTR</code>为止，这个异常代表系统中断（<code>Interrupted system call</code>）。</p>
+<p>下面来看<code>serve_forever</code>的代码：</p>
 <pre><code>def serve_forever(self, poll_interval=0.5):
     self.__is_shut_down.clear()
     try:
@@ -179,22 +191,13 @@ s.serve_forever()
         self.__shutdown_request = False
         self.__is_shut_down.set()
 </code></pre>
-<p>这个方法的作用可以从它的第一句注释总结：</p>
+<p><code>serve_forever</code>方法是服务器的核心逻辑，它的作用可以从它的第一句注释来概括：</p>
 <blockquote>
 <p>Handle one request at a time until shutdown.
 （每次处理一个请求，直到关闭。）</p>
 </blockquote>
+<p>方法先是执行<code>self.__is_shut_down.clear()</code>，从前面BaseServer的构造方法中我们知道<code>__is_shut_down</code>是一个<code>threading.Event</code>，</p>
 <p>这句话也说明了代码的逻辑。（另有一句话：If you need to do periodic(定期的) tasks, do them inanother thread. 待办）</p>
-<p><code>_eintr_retry</code>其实就是循环调用方法并处理异常。</p>
-<pre><code>def _eintr_retry(func, *args):
-    """restart a system call interrupted by EINTR"""
-    while True:
-        try:
-            return func(*args)
-        except (OSError, select.error) as e:
-            if e.args[0] != errno.EINTR:
-                raise
-</code></pre>
         </div>
     </div>
 </body>

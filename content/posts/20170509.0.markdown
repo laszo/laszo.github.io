@@ -170,7 +170,22 @@ BaseServer终于没有再继承其他类了，它的构造方法做了如下几�
     s = make_server('', 8000, myapp.app)
     s.serve_forever()
 
-Server调用了`serve_forever`方法，就从这里来吧：
+Server调用了`serve_forever`方法，这个是Server的核心逻辑。但在此之前我们先要看一下SocketServer模块中定义的一个函数`_eintr_retry`的代码：
+
+    def _eintr_retry(func, *args):
+        """restart a system call interrupted by EINTR"""
+        while True:
+            try:
+                return func(*args)
+            except (OSError, select.error) as e:
+                if e.args[0] != errno.EINTR:
+                    raise
+
+这个函数的逻辑是运行指定的`func`，如果func能够成功运行则直接返回func的返回值，如果有异常就捕获异常，如果捕获的异常是`errno.EINTR`就抛出异常。如果捕获的异常不是`errno.EINTR`，就会进行下一次循环。
+
+总的来说`_eintr_retry`的逻辑就是反复尝试执行func一直到执行成功、遇到`errno.EINTR`为止，这个异常代表系统中断（`Interrupted system call`）。
+
+下面来看`serve_forever`的代码：
 
     def serve_forever(self, poll_interval=0.5):
         self.__is_shut_down.clear()
@@ -184,21 +199,15 @@ Server调用了`serve_forever`方法，就从这里来吧：
             self.__is_shut_down.set()
 
 
-这个方法的作用可以从它的第一句注释总结：
+`serve_forever`方法是服务器的核心逻辑，它的作用可以从它的第一句注释来概括：
 
 >
 Handle one request at a time until shutdown.
 （每次处理一个请求，直到关闭。）
 
+方法先是执行`self.__is_shut_down.clear()`，从前面BaseServer的构造方法中我们知道`__is_shut_down`是一个`threading.Event`，
+
+
 这句话也说明了代码的逻辑。（另有一句话：If you need to do periodic(定期的) tasks, do them inanother thread. 待办）
 
-`_eintr_retry`其实就是循环调用方法并处理异常。
 
-    def _eintr_retry(func, *args):
-        """restart a system call interrupted by EINTR"""
-        while True:
-            try:
-                return func(*args)
-            except (OSError, select.error) as e:
-                if e.args[0] != errno.EINTR:
-                    raise
