@@ -212,7 +212,57 @@
     handler.request_handler = self      # backpointer for logging
     handler.run(self.server.get_app())
 </code></pre>
-<p>这里必须提醒读者，WSGIRequestHandler虽然继承自BaseHTTPRequestHandler，但是它的handle方法生成了一个ServerHandler的实例，实际是调用了ServerHandler的run方法来进行处理。</p>
+<p>这里必须提醒读者，WSGIRequestHandler虽然继承自BaseHTTPRequestHandler，但是它的handle方法生成了一个ServerHandler的实例，实际是调用了ServerHandler的run方法来进行处理。传递给该类的构造方法的几个参数：<code>self.rfile, self.wfile, self.get_stderr(), self.get_environ()</code>，后续会提到。</p>
+<p>ServerHandler继承自SimpleHandler：</p>
+<pre><code>class ServerHandler(SimpleHandler):
+    ...
+</code></pre>
+<p>SimpleHandler继承自BaseHandler，代码比简单，直接贴上全部的：</p>
+<pre><code>class SimpleHandler(BaseHandler):
+
+    def __init__(self,stdin,stdout,stderr,environ,
+        multithread=True, multiprocess=False
+    ):
+        self.stdin = stdin
+        self.stdout = stdout
+        self.stderr = stderr
+        self.base_env = environ
+        self.wsgi_multithread = multithread
+        self.wsgi_multiprocess = multiprocess
+
+    def get_stdin(self):
+        return self.stdin
+
+    def get_stderr(self):
+        return self.stderr
+
+    def add_cgi_vars(self):
+        self.environ.update(self.base_env)
+
+    def _write(self,data):
+        self.stdout.write(data)
+        self._write = self.stdout.write
+
+    def _flush(self):
+        self.stdout.flush()
+        self._flush = self.stdout.flush
+</code></pre>
+<p>可以看到，SimpleHandler最重要的工作是对输入输出进行了重新定位，这样在WSGI application进行输入输出的时候，最终实际上定位到了WSGIRequestHandler的wfile和rfile，也就是代表服务端与客户端连接的socket。通过这样的方式，WSGI application能够将响应发送到客户端。</p>
+<p>最后来看一下<code>BaseHandler</code>：</p>
+<pre><code>class BaseHandler:
+    def run(self, application):
+        try:
+            self.setup_environ()
+            self.result = application(self.environ, self.start_response)
+            self.finish_response()
+        except:
+            try:
+                self.handle_error()
+            except:
+                self.close()
+                raise
+</code></pre>
+<p>注意，这是一个wsgiref库的BaseHanlder，与SocketServer库的BaseRequestHandler不是一回事。</p>
         </div>
     </div>
 </body>
