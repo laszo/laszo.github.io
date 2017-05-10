@@ -248,7 +248,7 @@
         self._flush = self.stdout.flush
 </code></pre>
 <p>可以看到，SimpleHandler最重要的工作是对输入输出进行了重新定位，这样在WSGI application进行输入输出的时候，最终实际上定位到了WSGIRequestHandler的wfile和rfile，也就是代表服务端与客户端连接的socket。通过这样的方式，WSGI application能够将响应发送到客户端。</p>
-<p>最后来看一下<code>BaseHandler</code>：</p>
+<p>最后来看一下<code>BaseHandler</code>，先列出最重要的两个方法：</p>
 <pre><code>class BaseHandler:
     def run(self, application):
         try:
@@ -261,8 +261,32 @@
             except:
                 self.close()
                 raise
+
+def start_response(self, status, headers,exc_info=None):
+    self.status = status
+    self.headers = self.headers_class(headers)
+    return self.write
+
+def finish_response(self):
+    try:
+        if not self.result_is_file() or not self.sendfile():
+            for data in self.result:
+                self.write(data)
+            self.finish_content()
+    finally:
+        self.close()
 </code></pre>
 <p>注意，这是一个wsgiref库的BaseHanlder，与SocketServer库的BaseRequestHandler不是一回事。</p>
+<ul>
+<li>run函数用于配置环境，并调用WSGI application。关于后者我们已经很熟悉了，它的返回值保存在result成员中。</li>
+<li>start_response函数返回write函数，我们前面分析过，它其实关联到了服务器与客户端连接的socket，在WSGI application调用start_response函数时，实际上是在向客户端发送相应的数据</li>
+<li>finish_response调用write函数，向客户端发送自己的result成员中的数据。</li>
+</ul>
+<p>到了这里，我们再来看以前自己写过的最简单的WSGI application，是不是有一种似曾相识而又恍然大悟的感觉呢？</p>
+<pre><code>def app(env, start_response):
+    start_response('200 OK', [('Content-type', 'text/plain')])
+    return 'Hello, world!\n'
+</code></pre>
         </div>
     </div>
 </body>
