@@ -194,8 +194,6 @@ words的数量不对，会报错并返回。
 
 后面通过检查`conntype`、也就是服务端请求中的`Connection`属性，看是否需要保持连接，并写入close_connection。前面我们看到过，close_connection会影响到handle方法是否继续执行handle_one_request方法，即是否持续的接收并处理请求。
 
-再来看一个重要的方法
-
 
 #### 总结BaseHTTPRequestHandler
 
@@ -206,3 +204,24 @@ words的数量不对，会报错并返回。
 * 解析请求并保存数据到相关的成员中，以供后续的子类在处理请求时使用
 
 具体的处理方法留给了子类。
+
+#### WSGIRequestHandler
+
+直接来看`WSGIRequestHandler`：
+
+class WSGIRequestHandler(BaseHTTPRequestHandler):
+    def handle(self):
+        self.raw_requestline = self.rfile.readline(65537)
+        ...
+        if not self.parse_request(): 
+            return
+
+        handler = ServerHandler(
+            self.rfile, self.wfile, self.get_stderr(), self.get_environ()
+        )
+        handler.request_handler = self      # backpointer for logging
+        handler.run(self.server.get_app())
+
+这里必须提醒读者，WSGIRequestHandler虽然继承自BaseHTTPRequestHandler，但是它的handle方法生成了一个ServerHandler的实例，实际是调用了ServerHandler的run方法来进行处理。
+
+
