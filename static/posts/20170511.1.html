@@ -1,0 +1,26 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>适用于HTTP的handler - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">适用于HTTP的handler</h3>
+
+        <div class="post-content">
+            <p>在这篇文章中我们讨论了Server的基本架构，但是上面的这个版本只能接收客户端纯粹的socket连接，如果使用浏览器访问该地址，浏览器会报错：</p>
+<blockquote>
+<p>因为服务器意外中断了连接。</p>
+</blockquote>
+<p>如果客户端请求中有：<code>Connection: keep-alive</code>，不应该调用finish。</p>
+<p>即便是修改了上述代码，不再调用finish，浏览器不再报上面的错误，但是会一直是loading的状态。应该是没有正确的返回所需数据，比如content length。需要继续研究HTTPRequestHandler和WSGIRequestHandler。</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+---
+title: '适用于HTTP的handler'
+---
+
+在这篇文章中我们讨论了Server的基本架构，但是上面的这个版本只能接收客户端纯粹的socket连接，如果使用浏览器访问该地址，浏览器会报错：
+
+>
+因为服务器意外中断了连接。
+
+如果客户端请求中有：`Connection: keep-alive`，不应该调用finish。
+
+即便是修改了上述代码，不再调用finish，浏览器不再报上面的错误，但是会一直是loading的状态。应该是没有正确的返回所需数据，比如content length。需要继续研究HTTPRequestHandler和WSGIRequestHandler。

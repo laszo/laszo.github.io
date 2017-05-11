@@ -95,6 +95,95 @@
 </li>
 </ol>
 <p>通过如上的一套体系，再加上我们自己写的WSGI application，就提供了一套完整的web服务端。</p>
+<p>把以上所有总结的要点结合起来，我们不妨自己写一个最简单的Server和Handler，两种对象中的每个方法采用标准库中类似方法的命名，取消了继承体系，只提供最直接的逻辑：</p>
+<pre><code>import socket
+import select
+import errno
+import os
+
+class Hanlder(object):
+    def __init__(self, address, request, application):
+        self.address = address
+        self.request = request
+        self.application = application
+        self.wfile = self.request.makefile('wb', 0)
+        self.rfile = self.request.makefile('rb', -1)
+        self.setup()
+        try:
+            self.handle()
+        finally:
+            self.finish()
+
+    def setup(self):
+        self.env = dict(os.environ.items()).copy()
+        self.result = []
+
+    def handle(self):
+        self.get_request()
+        self.result = self.application(self.env, self.start_response)
+
+    def get_request(self):
+        self.request_data = self.rfile.readline(65537)
+
+    def start_response(self, status, headers):
+        self.status = status
+        self.headers = headers
+        return self.write
+
+    def write(self, data):
+        self.wfile.write(data)
+
+    def finish(self):
+        for i in self.result:
+            self.write(i)
+        self.wfile.flush()
+        self.wfile.close()
+        self.rfile.close()
+
+class Server(object):
+    def __init__(self, host, port, app, handler=Hanlder):
+        self.need_close = False
+        self.app = app
+        self.handler = handler
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.bind((host, port))
+        self.socket.listen(5)
+
+    def fileno(self):
+        return self.socket.fileno()
+
+    def serve_forever(self):
+        try:
+            while not self.need_close:
+                rl, wl, el = _eintr_retry(select.select, [self], [], [])
+                if self in rl:
+                    self.handle_request()
+        finally:
+            self.close_server()
+
+    def handle_request(self):
+        request, address = self.socket.accept()
+        self.handler(address, request, self.app)
+
+    def close_server(self):
+        self.socket.close()
+
+def _eintr_retry(func, *args):
+    while True:
+        try:
+            return func(*args)
+        except (OSError, select.error) as e:
+            if e.args[0] != errno.EINTR:
+                raise
+
+def app(env, start_response):
+    start_response('200 OK', [('Content-type', 'text/plain')])
+    return 'hello, world.'
+
+if __name__ == '__main__':
+    s = Server('', 9000, app)
+    s.serve_forever()
+</code></pre>
         </div>
     </div>
 </body>
