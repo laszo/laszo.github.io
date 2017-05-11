@@ -1,0 +1,28 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>对socket.socket和select.select的进一步研究 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">对socket.socket和select.select的进一步研究</h3>
+
+        <div class="post-content">
+            <p>服务端accept会阻塞，直到客户端执行connect，成功连接后服务端的accept会返回一个pair。</p>
+<p>服务端select会阻塞，在客户端执行connect的时候，服务端的select会返回，此时执行accept会立即返回。</p>
+<p>然后recv会阻塞，在客户端执行send的时候，服务端的recv会返回。</p>
+<p>疑问：</p>
+<blockquote>
+<p>self.data = self.rfile.readline(65537) 不能够接收数据，会一直阻塞，
+而 self.data = self.request.recv(65537) 可以正常接收。</p>
+</blockquote>
+        </div>
+    </div>
+</body>
+</html>
