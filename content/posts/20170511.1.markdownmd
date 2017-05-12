@@ -10,7 +10,7 @@ title: '适用于HTTP的handler'
 
 如果我们不满足于只做一个socket server，想要作为web server，需要了解HTTP协议本身。下面这段代码可以运行最基本的服务：
 
-    #!/usr/bin/python
+    #!python
     import BaseHTTPServer
 
     s = BaseHTTPServer.HTTPServer(('', 8000), BaseHTTPServer.BaseHTTPRequestHandler)
@@ -241,4 +241,44 @@ title: '适用于HTTP的handler'
         if self.request_version != 'HTTP/0.9':
             self.wfile.write("\r\n")
 
-这其实就解释了HTTP协议中服务端发送响应的格式。
+这其实就解释了HTTP协议中服务端发送响应的格式。为了显示接收到的请求和发送的响应，我们在
+
+    self.raw_requestline = self.rfile.readline(65537)
+
+后面加上：
+
+    print self.raw_requestline
+
+在：
+
+     self.wfile.write(data)
+
+前面加上：
+
+    print data
+
+然后运行本文最开始的一段代码，使用浏览器访问`http://127.0.0.1:8000`，可以看到在终端有如下输出：
+
+服务端接收到的请求：
+
+    GET / HTTP/1.1
+
+服务端发送的响应：
+
+    HTTP/1.0 501 Unsupported method ('GET')
+
+    Server: BaseHTTP/0.3 Python/2.7.13
+    Date: Fri, 12 May 2017 11:54:17 GMT
+    Connection: close
+    Content-Type: text/html
+
+    <head>
+    <title>Error response</title>
+    </head>
+    <body>
+    <h1>Error response</h1>
+    <p>Error code 501.
+    <p>Message: Unsupported method ('GET').
+    <p>Error code explanation: 501 = Server does not support this operation.
+    </body>
+

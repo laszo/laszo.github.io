@@ -1,0 +1,78 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>HTTP协议——请求与响应的格式描述 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">HTTP协议——请求与响应的格式描述</h3>
+
+        <div class="post-content">
+            <p>HTTP协议是我们掌握Web服务器和Web框架过程中所需要的最基础的根基知识，下面来简单描述一下请求和相应的格式。</p>
+<h3>请求的格式</h3>
+<p>一，第一行指明请求的<code>种类</code>和<code>路径</code>，是下面这样的格式：</p>
+<div class="codehilite"><pre><span></span>&lt;command&gt; &lt;path&gt; &lt;version&gt;
+</pre></div>
+
+
+<p>或：</p>
+<div class="codehilite"><pre><span></span>&lt;command&gt; &lt;path&gt;
+</pre></div>
+
+
+<p>其中：</p>
+<ul>
+<li>command，即命令类型，有八种类型，除了我们熟悉的GET、POST，还有</li>
+<li>path，即路径，就是URL中服务器地址（包括端口号）之后的部分，例如<code>/</code>、<code>/rfc/rfc2616.txt</code>、
+    <code>/cn/news/2014/06/http-11-updated</code>等。</li>
+<li>version，即使用的HTTP版本，格式为<code>HTTP/1.0</code>、<code>HTTP/1.1</code>等。
+HTTP版本号有0.9、1.0、1.1等，目前最主流的版本是1.1，详细可参看<a href="https://www.w3.org/Protocols/">Specifications, Drafts, Papers and Reports</a>。</li>
+</ul>
+<p>二，首部（headers），一个或多个键值对，比如<code>Connection: close</code>、``等。这一部分是可选的。</p>
+<p>三，数据部分，如果发送的是POST命令，所需要提交的数据就包含在这一部分。
+发送GET或HEAD命令一般不需要包含数据部分。所以这一部分也是可选的。</p>
+<p>注意，首部与数据部分之间应有一个空行，空行的格式是<code>\r\n</code>。</p>
+<h3>响应的格式</h3>
+<p>一，第一行，返回响应的状态与代码，格式为：</p>
+<div class="codehilite"><pre><span></span>&lt;version&gt; &lt;responsecode&gt; &lt;responsestring&gt;
+</pre></div>
+
+
+<p>其中：</p>
+<ul>
+<li>version，即使用的HTTP版本号。</li>
+<li>responsecode，表明响应的状态代码，如<code>200</code>、<code>404</code>等。</li>
+<li>responsestring，表明响应状态的字符串，如<code>OK</code>、<code>Bad Request</code>、<code>'Not Found</code>等。</li>
+</ul>
+<p>状态码的列表可参看<a href="http://www.w3school.com.cn/tags/html_ref_httpmessages.asp">HTTP 状态消息</a>，最权威的定义则来自<a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">Status Code Definitions</a>。</p>
+<p>二，首部，格式类似于请求的格式。</p>
+<p>三，数据部分。最常见的数据格式是HTML格式的字符串。比如：</p>
+<div class="codehilite"><pre><span></span><span class="nt">&lt;head&gt;</span>
+<span class="nt">&lt;title&gt;</span>Error response<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;h1&gt;</span>Error response<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;p&gt;</span>Error code 501.
+<span class="nt">&lt;p&gt;</span>Message: Unsupported method (&#39;GET&#39;).
+<span class="nt">&lt;p&gt;</span>Error code explanation: 501 = Server does not support this operation.
+<span class="nt">&lt;/body&gt;</span>
+</pre></div>
+
+
+<h3>关于首部的进一步说明</h3>
+<p>不管是请求还是响应，它们的首部（header）都可以看做是客户端与服务端之间相互沟通协商的信息，
+HTTP协议本身已经定义了一系列header，作为主流的web服务器必须支持这些header。
+具体的header可参看<a href="http://www.cnblogs.com/huey/p/4489552.html">HTTP - 首部</a>，也可参看<a href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields">List of HTTP header fields</a>，
+最权威的定义还是rfc自身：<a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">Header Field Definitions</a>。</p>
+<p>当然，作为开发者也可以定义自己的header，只要你的客户端和服务端都能够识别其含义即可，</p>
+        </div>
+    </div>
+</body>
+</html>

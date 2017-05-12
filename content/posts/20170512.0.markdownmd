@@ -1,0 +1,76 @@
+---
+title: "HTTP协议——请求与响应的格式描述"
+---
+
+HTTP协议是我们掌握Web服务器和Web框架过程中所需要的最基础的根基知识，下面来简单描述一下请求和相应的格式。
+
+### 请求的格式
+
+一，第一行指明请求的`种类`和`路径`，是下面这样的格式：
+
+    <command> <path> <version>
+
+或：
+
+    <command> <path>
+
+其中：
+
+* command，即命令类型，有八种类型，除了我们熟悉的GET、POST，还有
+* path，即路径，就是URL中服务器地址（包括端口号）之后的部分，例如`/`、`/rfc/rfc2616.txt`、
+    `/cn/news/2014/06/http-11-updated`等。
+* version，即使用的HTTP版本，格式为`HTTP/1.0`、`HTTP/1.1`等。
+HTTP版本号有0.9、1.0、1.1等，目前最主流的版本是1.1，详细可参看[Specifications, Drafts, Papers and Reports]。
+
+二，首部（headers），一个或多个键值对，比如`Connection: close`、``等。这一部分是可选的。
+
+三，数据部分，如果发送的是POST命令，所需要提交的数据就包含在这一部分。
+发送GET或HEAD命令一般不需要包含数据部分。所以这一部分也是可选的。
+
+注意，首部与数据部分之间应有一个空行，空行的格式是`\r\n`。
+
+### 响应的格式
+
+一，第一行，返回响应的状态与代码，格式为：
+
+    <version> <responsecode> <responsestring>
+
+其中：
+
+* version，即使用的HTTP版本号。
+* responsecode，表明响应的状态代码，如`200`、`404`等。
+* responsestring，表明响应状态的字符串，如`OK`、`Bad Request`、`'Not Found`等。
+
+状态码的列表可参看[HTTP 状态消息]，最权威的定义则来自[Status Code Definitions]。
+
+二，首部，格式类似于请求的格式。
+
+三，数据部分。最常见的数据格式是HTML格式的字符串。比如：
+
+    <head>
+    <title>Error response</title>
+    </head>
+    <body>
+    <h1>Error response</h1>
+    <p>Error code 501.
+    <p>Message: Unsupported method ('GET').
+    <p>Error code explanation: 501 = Server does not support this operation.
+    </body>
+    
+### 关于首部的进一步说明
+
+不管是请求还是响应，它们的首部（header）都可以看做是客户端与服务端之间相互沟通协商的信息，
+HTTP协议本身已经定义了一系列header，作为主流的web服务器必须支持这些header。
+具体的header可参看[HTTP - 首部]，也可参看[List of HTTP header fields]，
+最权威的定义还是rfc自身：[Header Field Definitions]。
+
+当然，作为开发者也可以定义自己的header，只要你的客户端和服务端都能够识别其含义即可，
+
+
+[HTTP 状态消息]: http://www.w3school.com.cn/tags/html_ref_httpmessages.asp
+[Status Code Definitions]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+[Specifications, Drafts, Papers and Reports]: https://www.w3.org/Protocols/
+
+[HTTP - 首部]: http://www.cnblogs.com/huey/p/4489552.html
+[List of HTTP header fields]: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+[Header Field Definitions]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
