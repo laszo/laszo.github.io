@@ -13,3 +13,78 @@ title: '对socket.socket和select.select的进一步研究'
 >
 self.data = self.rfile.readline(65537) 不能够接收数据，会一直阻塞，
 而 self.data = self.request.recv(65537) 可以正常接收。
+
+### 疑问二
+
+如下代码可以正常运行，当做一个最简单的HTTP服务器来使用：
+
+    :::python
+    G_content = """
+    HTTP/1.0 200 OK
+
+    <head>
+    <title>Hello, world!</title>
+    </head>
+    <body>
+    Hello, world!
+    </body>
+    """
+
+    import socket
+    def server2(address):
+        s = socket.socket()
+        s.bind(address)
+        s.listen(5)
+        while True:
+            c, a = s.accept()
+            print 'Connected from ', a
+            raw_request = c.recv(65537)
+            print raw_request
+            # c.send(G_response)
+            c.send(G_content)
+            c.close()
+        s.close()
+
+    if __name__== '__main__':
+        address = ('', 9003)
+        server2(address)
+
+但是略做改动，如下代码就会报错：
+
+    :::python
+    G_response = 'HTTP/1.0 200 OK'
+
+    G_content = """
+    <head>
+    <title>Hello, world!</title>
+    </head>
+    <body>
+    Hello, world!
+    </body>
+    """
+
+    import socket
+    def server2(address):
+        s = socket.socket()
+        s.bind(address)
+        s.listen(5)
+        while True:
+            c, a = s.accept()
+            print 'Connected from ', a
+            raw_request = c.recv(65537)
+            print raw_request
+            c.send(G_response)
+            c.send(G_content)
+            c.close()
+        s.close()
+
+    if __name__== '__main__':
+        address = ('', 9003)
+        server2(address)
+
+最稀奇的是：由于本人用的编辑器是 VS Code，如果我在当前代码文件下右键弹出菜单，
+选择`Run Python File in Terminal`，可以正常运行，两段代码效果一样。
+
+但是如果在 VS Code的终端窗口（呼出的快捷键是`Ctrl + '`）下，运行`python test.py`，
+运行的效果就不正常，浏览器会一直处于卡顿的状态。推测也许跟Windows下的socket机制有关。
+

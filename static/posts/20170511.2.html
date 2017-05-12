@@ -23,6 +23,77 @@
 <p>self.data = self.rfile.readline(65537) 不能够接收数据，会一直阻塞，
 而 self.data = self.request.recv(65537) 可以正常接收。</p>
 </blockquote>
+<h3>疑问二</h3>
+<p>如下代码可以正常运行，当做一个最简单的HTTP服务器来使用：</p>
+<div class="codehilite"><pre><span></span><span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">HTTP/1.0 200 OK</span>
+
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">&lt;title&gt;Hello, world!&lt;/title&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">Hello, world!</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="k">def</span> <span class="nf">server2</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
+        <span class="n">raw_request</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
+        <span class="k">print</span> <span class="n">raw_request</span>
+        <span class="c1"># c.send(G_response)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_content</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">9003</span><span class="p">)</span>
+    <span class="n">server2</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+</pre></div>
+
+
+<p>但是略做改动，如下代码就会报错：</p>
+<div class="codehilite"><pre><span></span><span class="n">G_response</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 200 OK&#39;</span>
+
+<span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">&lt;title&gt;Hello, world!&lt;/title&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">Hello, world!</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="k">def</span> <span class="nf">server2</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
+        <span class="n">raw_request</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
+        <span class="k">print</span> <span class="n">raw_request</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_content</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">9003</span><span class="p">)</span>
+    <span class="n">server2</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+</pre></div>
+
+
+<p>最稀奇的是：由于本人用的编辑器是 VS Code，如果我在当前代码文件下右键弹出菜单，
+选择<code>Run Python File in Terminal</code>，可以正常运行，两段代码效果一样。</p>
+<p>但是如果在 VS Code的终端窗口（呼出的快捷键是<code>Ctrl + '</code>）下，运行<code>python test.py</code>，
+运行的效果就不正常，浏览器会一直处于卡顿的状态。推测也许跟Windows下的socket机制有关。</p>
         </div>
     </div>
 </body>
