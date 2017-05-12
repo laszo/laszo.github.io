@@ -2,8 +2,9 @@
 <head>
     <meta charset="utf-8">
     <title>适用于HTTP的handler - Lv Xiaoyu `Site</title>
-    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
 <body>
     <div class="container">
@@ -14,12 +15,249 @@
         <h3 class="blog-post-title">适用于HTTP的handler</h3>
 
         <div class="post-content">
-            <p>在这篇文章中我们讨论了Server的基本架构，但是上面的这个版本只能接收客户端纯粹的socket连接，如果使用浏览器访问该地址，浏览器会报错：</p>
+            <p>在这篇文章中我们讨论了Server的基本架构，最后给出的代码可以接受socket连接，但是作为一个Web Server来说还是不够的。存在如下问题：</p>
+<ol>
+<li>
+<p>如果使用浏览器访问该地址，浏览器会报错：“因为服务器意外中断了连接”，因为客户端请求中有：<code>Connection: keep-alive</code>，不应该调用finish去关闭request。</p>
+</li>
+<li>
+<p>即便是修改了上述代码，不再调用finish，浏览器不再报上面的错误，但是会一直是loading的状态。这应该是浏览器没有接收到想要的东西。</p>
+</li>
+</ol>
+<p>如果我们不满足于只做一个socket server，想要作为web server，需要了解HTTP协议本身。下面这段代码可以运行最基本的服务：</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/python</span>
+<span class="kn">import</span> <span class="nn">BaseHTTPServer</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">BaseHTTPServer</span><span class="o">.</span><span class="n">HTTPServer</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">),</span> <span class="n">BaseHTTPServer</span><span class="o">.</span><span class="n">BaseHTTPRequestHandler</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>运行之后浏览器访问会有如下报错：</p>
 <blockquote>
-<p>因为服务器意外中断了连接。</p>
+<p><h1>Error response</h1>
+<p>Error code 501.
+<p>Message: Unsupported method ('GET').
+<p>Error code explanation: 501 = Server does not support this operation.</p>
 </blockquote>
-<p>如果客户端请求中有：<code>Connection: keep-alive</code>，不应该调用finish。</p>
-<p>即便是修改了上述代码，不再调用finish，浏览器不再报上面的错误，但是会一直是loading的状态。应该是没有正确的返回所需数据，比如content length。需要继续研究HTTPRequestHandler和WSGIRequestHandler。</p>
+<p>但它起码能够浏览器的访问，并返回了浏览器能够正常显示的东西。</p>
+<p>我们今天重点研究<code>BaseHTTPServer</code>模块，具体来说就是<code>BaseHTTPRequestHandler</code>，今天是深入分析，我们先来看看它包含的主要方法：</p>
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">BaseHTTPRequestHandler</span><span class="p">(</span><span class="nx">SocketServer</span><span class="p">.</span><span class="nx">StreamRequestHandler</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">parse_request</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">handle_one_request</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">handle</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">send_error</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">message</span><span class="o">=</span><span class="nx">None</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">send_response</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">message</span><span class="o">=</span><span class="nx">None</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">send_header</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">keyword</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">end_headers</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">log_request</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">code</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="nx">size</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">log_error</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">format</span><span class="p">,</span> <span class="o">*</span><span class="nx">args</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">log_message</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">format</span><span class="p">,</span> <span class="o">*</span><span class="nx">args</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">version_string</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">date_time_string</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">timestamp</span><span class="o">=</span><span class="nx">None</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">log_date_time_string</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">address_string</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="nx">responses</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">100</span><span class="o">:</span> <span class="p">(</span><span class="s1">&#39;Continue&#39;</span><span class="p">,</span> <span class="s1">&#39;Request received, please continue&#39;</span><span class="p">),</span>
+        <span class="p">...</span>
+</pre></div>
+
+
+<p>下面来看handle方法：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handle multiple requests if necessary.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># line 338</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">handle_one_request</span><span class="p">()</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handle_one_request</span><span class="p">()</span>
+</pre></div>
+
+
+<p>调用一次或多次<code>handle_one_request()</code>，主要取决于<code>self.close_connection</code>的值。我们来追踪一下这个值的变化情况：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">parse_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># line 245</span>
+    <span class="o">...</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="o">...</span>
+        <span class="k">if</span> <span class="n">version_number</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">&gt;=</span> <span class="s2">&quot;HTTP/1.1&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># line 271</span>
+            <span class="o">...</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># line 278</span>
+    <span class="o">...</span>
+    <span class="n">conntype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">conntype</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;close&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># line 295</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">conntype</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;keep-alive&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">&gt;=</span> <span class="s2">&quot;HTTP/1.1&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># line 298</span>
+</pre></div>
+
+
+<p><code>close_connection</code>在<code>BaseHTTPServer.py</code>中一共出现了11次，尽在<code>parser_request</code>中就出现了5次。这个值，handler默认置为0，但也参考如下两个条件：</p>
+<ol>
+<li>客户端和服务端的HTTP协议版本号，如果大于等于1.1，则保持连接。</li>
+<li>客户端请求中的<code>Connection</code>的值，如果是<code>keep-alive</code>，则置为0（保持连接）；如果是<code>close</code>，则置为1（不再执行下一次<code>handle_one_request()</code>）。</li>
+</ol>
+<p>再来看<code>handle_one_request</code>中的该值的变化：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">handle_one_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_requestline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rfile</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
+        <span class="o">...</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_requestline</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># line 318</span>
+            <span class="k">return</span>
+        <span class="o">...</span>
+    <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;Request timed out: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># line 333</span>
+        <span class="k">return</span>
+</pre></div>
+
+
+<p><code>handle_one_request</code>中有两次对<code>close_connection</code>赋值：</p>
+<ol>
+<li>如果读取不到客户端请求，置为1.</li>
+<li>如果超时，置为1.</li>
+</ol>
+<p>继续看：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">send_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">if</span> <span class="n">keyword</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;connection&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;close&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># line 405</span>
+        <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;keep-alive&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># line 407</span>
+</pre></div>
+
+
+<p>同样是对<code>connection</code>属性的判断。</p>
+<p>下面来看处理类的主要逻辑<code>handle_one_request()</code>，不算太长就全贴上了：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">handle_one_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_requestline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rfile</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_requestline</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">65536</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">requestline</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">request_version</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_error</span><span class="p">(</span><span class="mi">414</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_requestline</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_request</span><span class="p">():</span>
+            <span class="c1"># An error code has been sent, just exit</span>
+            <span class="k">return</span>
+        <span class="n">mname</span> <span class="o">=</span> <span class="s1">&#39;do_&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mname</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_error</span><span class="p">(</span><span class="mi">501</span><span class="p">,</span> <span class="s2">&quot;Unsupported method (</span><span class="si">%r</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mname</span><span class="p">)</span>
+        <span class="n">method</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span> <span class="c1">#actually send the response if not already done.</span>
+    <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1">#a read or a write timed out.  Discard this connection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;Request timed out: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span>
+</pre></div>
+
+
+<p>主要逻辑：</p>
+<ol>
+<li>获取所有请求，由于HTTP规定请求最大字节数是64K，即65536，所以获取65537足矣。</li>
+<li>检查请求数据如果大于65536，向客户端发送414状态。（该状态的含义就是URI太长）</li>
+<li>检查请求如果为空，则关闭连接并返回。</li>
+<li>解析请求，成功则进行下一步；否则返回。</li>
+<li>根据command构造do_command字符串，比如是GET则构造do_GET，POST则构造do_POST。</li>
+<li>检查是否有do_command的同名方法，没有则调用<code>send_error()</code>，想客户端报错。</li>
+<li>如果有同名方法则调用</li>
+<li>最后向客户端发送请求。</li>
+</ol>
+<p>在第六步，由于<code>BaseHTTPRequestHandler</code>并不包含任何以<code>do_</code>开头的方法，所以如果我们使用这个handler，代码的逻辑总是会跳转到<code>send_error()</code>，向浏览器发送一个提示错误信息的页面。</p>
+<p>如果想要支持GET、POST等方法，只需新写一个类继承<code>BaseHTTPRequestHandler</code>，并提供<code>do_GET()</code>、<code>do_POST()</code>等方法即可，而无需覆写<code>handle()</code>或<code>handle_one_request()</code>。</p>
+<p>话又说回来，即便<code>send_error()</code>只是向客户端的浏览器发送了一个提示错误信息的页面，这个页面毕竟也是一个正常的HTML页面，<code>BaseHTTPRequestHandler</code>也算是正常的向客户端发送了响应。如果我们要跟踪如何向客户端发送相应，就要继续研究<code>send_error()</code>：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">send_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">short</span><span class="p">,</span> <span class="nb">long</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responses</span><span class="p">[</span><span class="n">code</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">short</span><span class="p">,</span> <span class="nb">long</span> <span class="o">=</span> <span class="s1">&#39;???&#39;</span><span class="p">,</span> <span class="s1">&#39;???&#39;</span>
+    <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">short</span>
+    <span class="n">explain</span> <span class="o">=</span> <span class="nb">long</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;code </span><span class="si">%d</span><span class="s2">, message </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_message_format</span> <span class="o">%</span>
+               <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">_quote_html</span><span class="p">(</span><span class="n">message</span><span class="p">),</span> <span class="s1">&#39;explain&#39;</span><span class="p">:</span> <span class="n">explain</span><span class="p">})</span>
+<span class="hll">    <span class="c1">#</span>
+</span>    <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">send_header</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_content_type</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">send_header</span><span class="p">(</span><span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">end_headers</span><span class="p">()</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="s1">&#39;HEAD&#39;</span> <span class="ow">and</span> <span class="n">code</span> <span class="o">&gt;=</span> <span class="mi">200</span> <span class="ow">and</span> <span class="n">code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="mi">304</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+
+
+<p>简单来说逻辑就是：</p>
+<ol>
+<li>构造code、message、content等准备向客户端发送的数据</li>
+<li>self.send_response</li>
+<li>self.send_header</li>
+<li>self.end_headers</li>
+<li>self.wfile.write(content)，发送content</li>
+</ol>
+<p>先是发送response，然后发送header，最后发送content，即实际数据。</p>
+<p>下面一次性来看这几个方法：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">send_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">log_request</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">responses</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responses</span><span class="p">[</span><span class="n">code</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_version</span> <span class="o">!=</span> <span class="s1">&#39;HTTP/0.9&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">send_header</span><span class="p">(</span><span class="s1">&#39;Server&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_string</span><span class="p">())</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">send_header</span><span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_time_string</span><span class="p">())</span>
+
+<span class="k">def</span> <span class="nf">send_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_version</span> <span class="o">!=</span> <span class="s1">&#39;HTTP/0.9&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">keyword</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;connection&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;close&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;keep-alive&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">end_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_version</span> <span class="o">!=</span> <span class="s1">&#39;HTTP/0.9&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>这其实就解释了HTTP协议中服务端发送响应的格式。</p>
         </div>
     </div>
 </body>

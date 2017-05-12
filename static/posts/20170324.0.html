@@ -2,8 +2,9 @@
 <head>
     <meta charset="utf-8">
     <title>Python ORM 框架 Pony 介绍 - Lv Xiaoyu `Site</title>
-    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
 <body>
     <div class="container">
@@ -20,21 +21,27 @@
 在 Python 中这样的库很多， <code>SQLAlchemy</code> 和 <code>Pony</code> 都是其中的佼佼者，
 今天简单介绍 <a href="https://ponyorm.com">Pony ORM</a></p>
 <p>它的安装就是我们最常用的 <code>pip</code>:</p>
-<pre><code>pip install pony
-</code></pre>
+<div class="codehilite"><pre><span></span>pip install pony
+</pre></div>
+
+
 <hr />
 <h4>数据库连接</h4>
-<pre><code>from pony.orm import *
-db = Database()
-db.bind('mysql', host='localhost', user='user', passwd='password', db='dbname')
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pony.orm</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">()</span>
+<span class="n">db</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;mysql&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s1">&#39;dbname&#39;</span><span class="p">)</span>
+</pre></div>
+
+
 <hr />
 <h4>数据模型定义</h4>
 <p>在 Pony 中定义数据模型的字段与其他的 ORM 模型稍微有点不一样，
 包括模型本身在 Pony 里也是称做“实体”（<code>Entity</code>），其定义的语法如下：</p>
-<pre><code>class EntityName(inherits_from)
-    attr_name = attr_kind(attr_type, attr_options)
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">EntityName</span><span class="p">(</span><span class="nx">inherits_from</span><span class="p">)</span>
+    <span class="nx">attr_name</span> <span class="o">=</span> <span class="nx">attr_kind</span><span class="p">(</span><span class="nx">attr_type</span><span class="p">,</span> <span class="nx">attr_options</span><span class="p">)</span>
+</pre></div>
+
+
 <p><code>inherits_from</code> 指定模型要继承的类，一般指定 <code>db.Entity</code> 即可。</p>
 <p><code>attr_name</code> 就是我们要定义的字段名，也就是数据库表里的字段名。
 <code>attr_kind</code> 是字段的种类，有如下几个种类：</p>
@@ -67,20 +74,24 @@ db.bind('mysql', host='localhost', user='user', passwd='password', db='dbname')
 <p><code>attr_options</code> 规定了该字段的一些限制和配置，比如 <code>default</code>、 <code>max</code>等。
 具体的适用情况要看字段的类型而定，详细可参看 <a href="https://docs.ponyorm.com/api_reference.html#attribute-options">Attribute options</a>。</p>
 <p>下面我们来定义一个数据模型：</p>
-<pre><code>from datetime import datetime
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
-class User(db.Entity):
-    name = Required(str)
-    age = Required(int)
-    create_time = Optinal(datetime, default=datetime.now())
-</code></pre>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Entity</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Required</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="n">Required</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">create_time</span> <span class="o">=</span> <span class="n">Optinal</span><span class="p">(</span><span class="n">datetime</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+</pre></div>
+
+
 <p>对一个 ORM 框架的基本要求是增删改查，下面我们来分别看看对应的语法。</p>
 <hr />
 <h4>增加一条数据</h4>
-<pre><code>db.generate_mapping()
-u = User(name='myname', age=18)
+<div class="codehilite"><pre><span></span>db.generate_mapping()
+u = User(name=&#39;myname&#39;, age=18)
 commit()
-</code></pre>
+</pre></div>
+
+
 <p>新建一个对象模型的实例与其他 ORM 框架并无区别，在新建的时候要把必填字段作为参数传递给构造函数。
 但是，模型的保存并不是常见的 <code>u.save()</code>，而是需要调用 <code>commit()</code> 函数，只有调用了 commit 函数，
 才进行了实际的数据库操作。并且，在此之前必须先调用 <code>db.generate_mapping()</code>，
@@ -91,24 +102,34 @@ generate_mapping 还会检查表是否存在，如果不存在则创建表，这
 <h4>查找数据</h4>
 <p>查找数据的语法是 Pony 比较有特点的地方，像是 SQL 语句和函数式编程两者的结合。
 举例来说，假如我们要查找姓名是 <code>myname</code> 的用户：</p>
-<pre><code>query = select(u for u in User if u.name=='myname')
-</code></pre>
+<div class="codehilite"><pre><span></span>query = select(u for u in User if u.name==&#39;myname&#39;)
+</pre></div>
+
+
 <p>这时候得到的 <code>query</code> 变量是一个 <code>pony.orm.core.Query</code> 类的实例。如果想得到响应的模型，
 还需要把它转换成一个 <code>pony.orm.core.QueryResult</code>：</p>
-<pre><code>results = query[:]
-</code></pre>
+<div class="codehilite"><pre><span></span>results = query[:]
+</pre></div>
+
+
 <p>这时候按照访问列表的形式访问 <code>results</code> 即可：</p>
-<pre><code>user = results[0]
+<div class="codehilite"><pre><span></span>user = results[0]
 print user.name
-</code></pre>
+</pre></div>
+
+
 <p>如果只进行简单的属性查询，还可以使用模型的 <code>get</code> 方法：</p>
-<pre><code>user = User.get(name='myname')
-</code></pre>
+<div class="codehilite"><pre><span></span>user = User.get(name=&#39;myname&#39;)
+</pre></div>
+
+
 <p>注意这里传递的插叙参数是 <code>name='myname'</code> 而不是 <code>name=='myname'</code>，只写一个等号即可。
 这时候得到的 <code>user</code> 对象就是 <code>User</code> 模型的实例对象，而不是 <code>Query</code> 类型，
 所以可以直接访问模型的属性：</p>
-<pre><code>print user.name
-</code></pre>
+<div class="codehilite"><pre><span></span>print user.name
+</pre></div>
+
+
 <p>更加复杂的查询语法可以参看 Pony 的文档 <a href="https://docs.ponyorm.com/queries.html">Queries</a> 和 <a href="https://docs.ponyorm.com/api_reference.html#queries-and-functions">Queries and functions</a>。</p>
 <hr />
 <h4>更新数据</h4>
@@ -118,14 +139,16 @@ print user.name
 <li>提交到数据库</li>
 </ol>
 <p>这里的第一步操作与其他框架类似，而第二步仍然是调用 commit 函数：</p>
-<pre><code>user.age += 1
+<div class="codehilite"><pre><span></span>user.age += 1
 commit()
-</code></pre>
+</pre></div>
+
+
 <hr />
 <h4>删除数据</h4>
-<pre><code>user.delete()
+<div class="codehilite"><pre><span></span>user.delete()
 commit()
-</code></pre>
+</pre></div>
         </div>
     </div>
 </body>

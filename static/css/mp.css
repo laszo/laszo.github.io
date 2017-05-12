@@ -1,47 +1,6 @@
-/*body, dl, dt, dd, p, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, select, 
-fieldset, input, button, textarea, blockquote {
-  margin: 0;
-  padding: 0;
-}*/
-body {
-  max-width: 800px;
-}
-html{font-size: 12px;}
-/*iphone 6 */
-@media (min-device-width : 375px) {
-   html{font-size: 20px;}
-}
-/*iphone6 plus */
-@media (min-device-width : 414px) {
-    html{font-size: 24px;}
-}
-@media (min-device-width : 640px) {
-    html{font-size: 12px;}
-}
-h1 {
-  font-size: 2.2rem;
-}
-h2 {
-  font-size: 2.1rem;
-}
-h3 {
-  font-size: 2rem;
-}
-h4 {
-  font-size: 1.8rem;
-}
 .flex{
   padding: 0;
 }
 .flex li{
   display:inline-block;
-}
-.blog-post p {
-  font-size: 1.6rem;
-}
-.post-content p {
-  font-size: 1.6rem;
-}
-.page-content p {
-  font-size: 1.6rem;
 }

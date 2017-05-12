@@ -2,8 +2,9 @@
 <head>
     <meta charset="utf-8">
     <title>Virtual Studio Code 与 virtualenv 协同工作 - Lv Xiaoyu `Site</title>
-    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
 <body>
     <div class="container">
@@ -15,11 +16,15 @@
 
         <div class="post-content">
             <p>默认情况下，VS Code只能识别系统级别的Python库，我们在virtualenv环境下安装的库是不被VS Code识别的，最简单的办法是在<code>settings.json</code>文件中配置：</p>
-<pre><code>"python.pythonPath": "${workspaceRoot}/venv/bin/python"
-</code></pre>
+<div class="codehilite"><pre><span></span>&quot;python.pythonPath&quot;: &quot;<span class="cp">${</span><span class="n">workspaceRoot</span><span class="cp">}</span>/venv/bin/python&quot;
+</pre></div>
+
+
 <p>以后我们在使用virtualenv创建虚拟环境时，一定要把<code>DEST_DIR</code>参数指定为<code>venv</code>，即：</p>
-<pre><code>virtualenv venv
-</code></pre>
+<div class="codehilite"><pre><span></span>virtualenv venv
+</pre></div>
+
+
 <p>如果pylint出现问题，可以参看<a href="https://github.com/DonJayamanne/pythonVSCode/wiki/Troubleshooting-Linting">Troubleshooting Linting</a>。</p>
         </div>
     </div>

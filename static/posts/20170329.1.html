@@ -2,8 +2,9 @@
 <head>
     <meta charset="utf-8">
     <title>Python 里的工厂方法，使用 type 和 __call__ - Lv Xiaoyu `Site</title>
-    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
 <body>
     <div class="container">
@@ -16,60 +17,82 @@
         <div class="post-content">
             <h3>动机</h3>
 <p>SQLAlchemy 的一段示例代码是这样的：</p>
-<pre><code>from sqlalchemy.orm import sessionmaker
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
 
-MySessionMaker = sessionmaker(bind=engine)
-ms_session = MySessionMaker()
-...
-ms_session.commit()
-</code></pre>
+<span class="n">MySessionMaker</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+<span class="n">ms_session</span> <span class="o">=</span> <span class="n">MySessionMaker</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="n">ms_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</pre></div>
+
+
 <p>照着这样的方式去使用 SQLAlchemy 是没问题的，但是如果深究一下，
 为何需要连续调用两次 <code>sessionmaker(bind=engine)</code> 和 <code>MySessionMaker()</code> 呢？
 如果说</p>
-<pre><code>MySessionMaker = sessionmaker(bind=engine)
-</code></pre>
+<div class="codehilite"><pre><span></span>MySessionMaker = sessionmaker(bind=engine)
+</pre></div>
+
+
 <p>是生成了一个新的变量，为什么这个新的变量 <code>MySessionMaker</code> 还能再次被调用： </p>
-<pre><code>ms_session = MySessionMaker()
-</code></pre>
+<div class="codehilite"><pre><span></span>ms_session = MySessionMaker()
+</pre></div>
+
+
 <p>再次调用所生成的这个 <code>ms_session</code> 又是什么类型呢？我看了下 SQLAlchemy 的源代码，
 原来它使用了 <code>type</code> 和 <code>__call__</code> 这两个 Python 语言特性。下面分别介绍。</p>
 <h3>type</h3>
 <p>type 这个内置函数我们都用过，最常见的用法是查看一个实体的类型：</p>
-<pre><code>&gt;&gt;&gt; type('a')
-&lt;type 'str'&gt;
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; type(&#39;a&#39;)
+&lt;type &#39;str&#39;&gt;
 &gt;&gt;&gt; type(type)
-&lt;type 'type'&gt;
-</code></pre>
+&lt;type &#39;type&#39;&gt;
+</pre></div>
+
+
 <p>当有三个参数时，type 用作声明一个类。我们来看一个最简单的类定义：</p>
-<pre><code>class X(object):
-    a = 1
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">X</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+
+
 <p>这声明了一个名为 <code>X</code> 的类。下面来看使用 type 的写法：</p>
-<pre><code>X = type('X', (object,), dict(a=1))
-</code></pre>
+<div class="codehilite"><pre><span></span>X = type(&#39;X&#39;, (object,), dict(a=1))
+</pre></div>
+
+
 <p>上面的两段代码做的是完全相同的事情。然后我们可以像正常的类那样去使用：</p>
-<pre><code>x1 = X()
+<div class="codehilite"><pre><span></span>x1 = X()
 print x.a
-</code></pre>
+</pre></div>
+
+
 <h3><code>__call__</code></h3>
 <p><code>__call__</code> 使得类的实例可以调用像函数那样去调用。以上面的类 <code>X</code> 和实例 <code>x1</code> 为例：</p>
-<pre><code>x1 = X()
+<div class="codehilite"><pre><span></span>x1 = X()
 print x.a
 x1()
-</code></pre>
-<p>这里的 <code>x1()</code> 是个什么鬼？上面代码在运行的时候的确也会报错：</p>
-<pre><code>TypeError: 'X' object is not callable
-</code></pre>
-<p>但是，如果我们修改一下类 X 的定义，添加一个 <code>__call__</code> 函数：</p>
-<pre><code>class X(object):
-    a = 1
+</pre></div>
 
-    def __call__(self):
-        print 'Hi, I am a X.'
-</code></pre>
+
+<p>这里的 <code>x1()</code> 是个什么鬼？上面代码在运行的时候的确也会报错：</p>
+<div class="codehilite"><pre><span></span>TypeError: &#39;X&#39; object is not callable
+</pre></div>
+
+
+<p>但是，如果我们修改一下类 X 的定义，添加一个 <code>__call__</code> 函数：</p>
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">X</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="nx">def</span> <span class="nx">__call__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">print</span> <span class="s1">&#39;Hi, I am a X.&#39;</span>
+</pre></div>
+
+
 <p>这时候再去运行 <code>x1()</code>，就会得到：</p>
-<pre><code>Hi, I am a X.
-</code></pre>
+<div class="codehilite"><pre><span></span>Hi, I am a X.
+</pre></div>
+
+
 <p>也就是说，我们在调用 <code>x1()</code> 的时候，实际上调用了 <code>x1.__call__()</code>。如Python 的文档所说：</p>
 <blockquote>
 <p>Class instances are callable only when the class has a <code>__call__()</code> method; 
@@ -77,30 +100,30 @@ x1()
 </blockquote>
 <h3>完整的定义</h3>
 <p>知道了上面这两点之后，我们可以来看下面一段完整的代码：</p>
-<pre><code>class Pie(object):
-    def __call__(self):
-        print 'Hi, I am a Pie!'
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">Pie</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__call__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">print</span> <span class="s1">&#39;Hi, I am a Pie!&#39;</span>
 
-class Pizza(object):
-    def __call__(self):
-        print 'Hi, I am a Pizza!'
+<span class="kr">class</span> <span class="nx">Pizza</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__call__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">print</span> <span class="s1">&#39;Hi, I am a Pizza!&#39;</span>
 
-class Maker(object):
-    def __init__(self, class_=Pie):
-        self.class_ = type(class_.__name__, (class_,), {})
+<span class="kr">class</span> <span class="nx">Maker</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">class_</span><span class="o">=</span><span class="nx">Pie</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">class_</span> <span class="o">=</span> <span class="nx">type</span><span class="p">(</span><span class="nx">class_</span><span class="p">.</span><span class="nx">__name__</span><span class="p">,</span> <span class="p">(</span><span class="nx">class_</span><span class="p">,),</span> <span class="p">{})</span>
 
-    def __call__(self):
-        return self.class_()
+    <span class="nx">def</span> <span class="nx">__call__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">class_</span><span class="p">()</span>
 
 
-if __name__ == '__main__':
-    pie_maker = Maker(Pie)
-    a_pie = pie_maker()
-    pizza_maker = Maker(Pizza)
-    a_pizza = pizza_maker()
-    a_pie()
-    a_pizza()
-</code></pre>
+<span class="k">if</span> <span class="nx">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="o">:</span>
+    <span class="nx">pie_maker</span> <span class="o">=</span> <span class="nx">Maker</span><span class="p">(</span><span class="nx">Pie</span><span class="p">)</span>
+    <span class="nx">a_pie</span> <span class="o">=</span> <span class="nx">pie_maker</span><span class="p">()</span>
+    <span class="nx">pizza_maker</span> <span class="o">=</span> <span class="nx">Maker</span><span class="p">(</span><span class="nx">Pizza</span><span class="p">)</span>
+    <span class="nx">a_pizza</span> <span class="o">=</span> <span class="nx">pizza_maker</span><span class="p">()</span>
+    <span class="nx">a_pie</span><span class="p">()</span>
+    <span class="nx">a_pizza</span><span class="p">()</span>
+</pre></div>
         </div>
     </div>
 </body>

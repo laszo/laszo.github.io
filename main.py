@@ -37,7 +37,7 @@ def read_config(text):
 def createPost(post):
     text = codecs.open(contentpath + post, 'r', encoding='utf8').read()
     mkdtxt, posttitle = read_config(text)
-    content = markdown.markdown(mkdtxt, extensions=['markdown.extensions.footnotes'])
+    content = markdown.markdown(mkdtxt, extensions=['markdown.extensions.footnotes','markdown.extensions.codehilite'])
     t = codecs.open(postTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(content=content, title=posttitle, blogtitle=blogtitle, baseurl=indexFileName)
 

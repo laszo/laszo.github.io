@@ -2,11 +2,243 @@
 title: '适用于HTTP的handler'
 ---
 
-在这篇文章中我们讨论了Server的基本架构，但是上面的这个版本只能接收客户端纯粹的socket连接，如果使用浏览器访问该地址，浏览器会报错：
+在这篇文章中我们讨论了Server的基本架构，最后给出的代码可以接受socket连接，但是作为一个Web Server来说还是不够的。存在如下问题：
+
+1. 如果使用浏览器访问该地址，浏览器会报错：“因为服务器意外中断了连接”，因为客户端请求中有：`Connection: keep-alive`，不应该调用finish去关闭request。
+
+2. 即便是修改了上述代码，不再调用finish，浏览器不再报上面的错误，但是会一直是loading的状态。这应该是浏览器没有接收到想要的东西。
+
+如果我们不满足于只做一个socket server，想要作为web server，需要了解HTTP协议本身。下面这段代码可以运行最基本的服务：
+
+    #!/usr/bin/python
+    import BaseHTTPServer
+
+    s = BaseHTTPServer.HTTPServer(('', 8000), BaseHTTPServer.BaseHTTPRequestHandler)
+    s.serve_forever()
+
+运行之后浏览器访问会有如下报错：
 
 >
-因为服务器意外中断了连接。
+<h1>Error response</h1>
+<p>Error code 501.
+<p>Message: Unsupported method ('GET').
+<p>Error code explanation: 501 = Server does not support this operation.
 
-如果客户端请求中有：`Connection: keep-alive`，不应该调用finish。
+但它起码能够浏览器的访问，并返回了浏览器能够正常显示的东西。
 
-即便是修改了上述代码，不再调用finish，浏览器不再报上面的错误，但是会一直是loading的状态。应该是没有正确的返回所需数据，比如content length。需要继续研究HTTPRequestHandler和WSGIRequestHandler。
+我们今天重点研究`BaseHTTPServer`模块，具体来说就是`BaseHTTPRequestHandler`，今天是深入分析，我们先来看看它包含的主要方法：
+
+    class BaseHTTPRequestHandler(SocketServer.StreamRequestHandler):
+
+        def parse_request(self):
+
+        def handle_one_request(self):
+
+        def handle(self):
+
+        def send_error(self, code, message=None):
+
+        def send_response(self, code, message=None):
+
+        def send_header(self, keyword, value):
+
+        def end_headers(self):
+
+        def log_request(self, code='-', size='-'):
+
+        def log_error(self, format, *args):
+
+        def log_message(self, format, *args):
+
+        def version_string(self):
+
+        def date_time_string(self, timestamp=None):
+
+        def log_date_time_string(self):
+
+        def address_string(self):
+
+        responses = {
+            100: ('Continue', 'Request received, please continue'),
+            ...
+
+下面来看handle方法：
+
+    :::python
+    def handle(self):
+        """Handle multiple requests if necessary."""
+        self.close_connection = 1 # line 338
+
+        self.handle_one_request()
+        while not self.close_connection:
+            self.handle_one_request()
+
+调用一次或多次`handle_one_request()`，主要取决于`self.close_connection`的值。我们来追踪一下这个值的变化情况：
+
+    :::python
+    def parse_request(self):
+        ...
+        self.close_connection = 1 # line 245
+        ...
+        if len(words) == 3:
+            ...
+            if version_number >= (1, 1) and self.protocol_version >= "HTTP/1.1":
+                self.close_connection = 0 # line 271
+                ...
+        elif len(words) == 2:
+            ...
+            self.close_connection = 1 # line 278
+        ...
+        conntype = self.headers.get('Connection', "")
+        if conntype.lower() == 'close':
+            self.close_connection = 1 # line 295
+        elif (conntype.lower() == 'keep-alive' and self.protocol_version >= "HTTP/1.1"):
+            self.close_connection = 0 # line 298
+
+`close_connection`在`BaseHTTPServer.py`中一共出现了11次，尽在`parser_request`中就出现了5次。这个值，handler默认置为0，但也参考如下两个条件：
+
+1. 客户端和服务端的HTTP协议版本号，如果大于等于1.1，则保持连接。
+2. 客户端请求中的`Connection`的值，如果是`keep-alive`，则置为0（保持连接）；如果是`close`，则置为1（不再执行下一次`handle_one_request()`）。
+
+再来看`handle_one_request`中的该值的变化：
+
+    :::python
+    def handle_one_request(self):
+        try:
+            self.raw_requestline = self.rfile.readline(65537)
+            ...
+            if not self.raw_requestline:
+                self.close_connection = 1 # line 318
+                return
+            ...
+        except socket.timeout, e:
+            self.log_error("Request timed out: %r", e)
+            self.close_connection = 1 # line 333
+            return
+    
+`handle_one_request`中有两次对`close_connection`赋值：
+
+1. 如果读取不到客户端请求，置为1.
+2. 如果超时，置为1.
+
+继续看：
+
+    :::python
+    def send_header(self, keyword, value):
+        ...
+        if keyword.lower() == 'connection':
+            if value.lower() == 'close':
+                self.close_connection = 1 # line 405
+            elif value.lower() == 'keep-alive':
+                self.close_connection = 0 # line 407
+
+同样是对`connection`属性的判断。
+
+下面来看处理类的主要逻辑`handle_one_request()`，不算太长就全贴上了：
+
+    :::python
+    def handle_one_request(self):
+        try:
+            self.raw_requestline = self.rfile.readline(65537)
+            if len(self.raw_requestline) > 65536:
+                self.requestline = ''
+                self.request_version = ''
+                self.command = ''
+                self.send_error(414)
+                return
+            if not self.raw_requestline:
+                self.close_connection = 1
+                return
+            if not self.parse_request():
+                # An error code has been sent, just exit
+                return
+            mname = 'do_' + self.command
+            if not hasattr(self, mname):
+                self.send_error(501, "Unsupported method (%r)" % self.command)
+                return
+            method = getattr(self, mname)
+            method()
+            self.wfile.flush() #actually send the response if not already done.
+        except socket.timeout, e:
+            #a read or a write timed out.  Discard this connection
+            self.log_error("Request timed out: %r", e)
+            self.close_connection = 1
+            return
+
+主要逻辑：
+
+1. 获取所有请求，由于HTTP规定请求最大字节数是64K，即65536，所以获取65537足矣。
+2. 检查请求数据如果大于65536，向客户端发送414状态。（该状态的含义就是URI太长）
+3. 检查请求如果为空，则关闭连接并返回。
+4. 解析请求，成功则进行下一步；否则返回。
+5. 根据command构造do_command字符串，比如是GET则构造do_GET，POST则构造do_POST。
+6. 检查是否有do_command的同名方法，没有则调用`send_error()`，想客户端报错。
+7. 如果有同名方法则调用
+8. 最后向客户端发送请求。
+
+在第六步，由于`BaseHTTPRequestHandler`并不包含任何以`do_`开头的方法，所以如果我们使用这个handler，代码的逻辑总是会跳转到`send_error()`，向浏览器发送一个提示错误信息的页面。
+
+如果想要支持GET、POST等方法，只需新写一个类继承`BaseHTTPRequestHandler`，并提供`do_GET()`、`do_POST()`等方法即可，而无需覆写`handle()`或`handle_one_request()`。
+
+话又说回来，即便`send_error()`只是向客户端的浏览器发送了一个提示错误信息的页面，这个页面毕竟也是一个正常的HTML页面，`BaseHTTPRequestHandler`也算是正常的向客户端发送了响应。如果我们要跟踪如何向客户端发送相应，就要继续研究`send_error()`：
+
+    :::python hl_lines="12"
+    def send_error(self, code, message=None):
+        try:
+            short, long = self.responses[code]
+        except KeyError:
+            short, long = '???', '???'
+        if message is None:
+            message = short
+        explain = long
+        self.log_error("code %d, message %s", code, message)
+        content = (self.error_message_format %
+                   {'code': code, 'message': _quote_html(message), 'explain': explain})
+        #
+        self.send_response(code, message)
+        self.send_header("Content-Type", self.error_content_type)
+        self.send_header('Connection', 'close')
+        self.end_headers()
+        if self.command != 'HEAD' and code >= 200 and code not in (204, 304):
+            self.wfile.write(content)
+
+简单来说逻辑就是：
+
+0. 构造code、message、content等准备向客户端发送的数据
+1. self.send_response
+2. self.send_header
+3. self.end_headers
+4. self.wfile.write(content)，发送content
+
+先是发送response，然后发送header，最后发送content，即实际数据。
+
+下面一次性来看这几个方法：
+
+    :::python
+    def send_response(self, code, message=None):
+        self.log_request(code)
+        if message is None:
+            if code in self.responses:
+                message = self.responses[code][0]
+            else:
+                message = ''
+        if self.request_version != 'HTTP/0.9':
+            self.wfile.write("%s %d %s\r\n" % (self.protocol_version, code, message))
+        self.send_header('Server', self.version_string())
+        self.send_header('Date', self.date_time_string())
+
+    def send_header(self, keyword, value):
+        if self.request_version != 'HTTP/0.9':
+            self.wfile.write("%s: %s\r\n" % (keyword, value))
+
+        if keyword.lower() == 'connection':
+            if value.lower() == 'close':
+                self.close_connection = 1
+            elif value.lower() == 'keep-alive':
+                self.close_connection = 0
+
+    def end_headers(self):
+        if self.request_version != 'HTTP/0.9':
+            self.wfile.write("\r\n")
+
+这其实就解释了HTTP协议中服务端发送响应的格式。
