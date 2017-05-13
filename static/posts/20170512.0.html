@@ -17,6 +17,12 @@
         <div class="post-content">
             <p>HTTP协议是我们掌握Web服务器和Web框架过程中所需要的最基础的根基知识，下面来简单描述一下请求和相应的格式。</p>
 <h3>请求的格式</h3>
+<p>HTTP请求采用如下格式：</p>
+<ol>
+<li>第一行指明请求的种类和路径</li>
+<li>可选的首部</li>
+<li>可选的数据部分</li>
+</ol>
 <p>一，第一行指明请求的<code>种类</code>和<code>路径</code>，是下面这样的格式：</p>
 <div class="codehilite"><pre><span></span>&lt;command&gt; &lt;path&gt; &lt;version&gt;
 </pre></div>
@@ -40,6 +46,12 @@ HTTP版本号有0.9、1.0、1.1等，目前最主流的版本是1.1，详细可�
 发送GET或HEAD命令一般不需要包含数据部分。所以这一部分也是可选的。</p>
 <p>注意，首部与数据部分之间应有一个空行，空行的格式是<code>\r\n</code>。</p>
 <h3>响应的格式</h3>
+<p>HTTP响应采用如下格式：</p>
+<ol>
+<li>第一行标明响应的状态</li>
+<li>可选的首部</li>
+<li>数据部分</li>
+</ol>
 <p>一，第一行，返回响应的状态与代码，格式为：</p>
 <div class="codehilite"><pre><span></span>&lt;version&gt; &lt;responsecode&gt; &lt;responsestring&gt;
 </pre></div>
@@ -52,7 +64,7 @@ HTTP版本号有0.9、1.0、1.1等，目前最主流的版本是1.1，详细可�
 <li>responsestring，表明响应状态的字符串，如<code>OK</code>、<code>Bad Request</code>、<code>'Not Found</code>等。</li>
 </ul>
 <p>状态码的列表可参看<a href="http://www.w3school.com.cn/tags/html_ref_httpmessages.asp">HTTP 状态消息</a>，最权威的定义则来自<a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">Status Code Definitions</a>。</p>
-<p>二，首部，格式类似于请求的格式。</p>
+<p>二，首部，格式类似于请求的格式。这一部分是可选的。</p>
 <p>三，数据部分。最常见的数据格式是HTML格式的字符串。比如：</p>
 <div class="codehilite"><pre><span></span><span class="nt">&lt;head&gt;</span>
 <span class="nt">&lt;title&gt;</span>Error response<span class="nt">&lt;/title&gt;</span>

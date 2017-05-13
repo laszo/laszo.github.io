@@ -1,0 +1,228 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用Python一步一步构建Web Server，第一部分 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">用Python一步一步构建Web Server，第一部分</h3>
+
+        <div class="post-content">
+            <p>我们来研究如何构建Web Server，从最基本的socket开始构建，
+不使用<code>SocketServer</code>、<code>wsgiref</code>等框架。
+最简单的代码：</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="n">MAX_READS</span> <span class="o">=</span> <span class="mi">65537</span>
+<span class="n">G_response</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 200 OK&#39;</span>
+<span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">&lt;title&gt;Hello, world!&lt;/title&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">Hello, world!</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">MAX_READS</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span> <span class="o">+</span> <span class="n">G_content</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span>
+    <span class="n">run_server</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">()</span>
+</pre></div>
+
+
+<p>上述代码中，G_content字符串第一行的空行是必不可少的。因为HTTP协议规定响应的第一行与后面必须有空行分隔。</p>
+<p>上述代码的性能测试：</p>
+<div class="codehilite"><pre><span></span>ab -n 5000 -c 10 http://192.168.48.1:8000/
+</pre></div>
+
+
+<p>结果：</p>
+<div class="codehilite"><pre><span></span>Benchmarking 192.168.48.1 (be patient)
+Completed 500 requests
+Completed 1000 requests
+Completed 1500 requests
+Completed 2000 requests
+Completed 2500 requests
+Completed 3000 requests
+Completed 3500 requests
+Completed 4000 requests
+Completed 4500 requests
+Completed 5000 requests
+Finished 5000 requests
+
+
+Server Software:        
+Server Hostname:        192.168.48.1
+Server Port:            8000
+
+Document Path:          /
+Document Length:        73 bytes
+
+Concurrency Level:      10
+Time taken for tests:   93.947 seconds
+Complete requests:      5000
+Failed requests:        0
+Total transferred:      450000 bytes
+HTML transferred:       365000 bytes
+Requests per second:    53.22 [#/sec] (mean)
+Time per request:       187.894 [ms] (mean)
+Time per request:       18.789 [ms] (mean, across all concurrent requests)
+Transfer rate:          4.68 [Kbytes/sec] received
+
+Connection Times (ms)
+            min  mean[+/-sd] median   max
+Connect:        0  120 1408.9      2   31067
+Processing:     0    4   3.5      3      46
+Waiting:        0    3   3.5      3      46
+Total:          1  124 1409.4      5   31068
+
+Percentage of the requests served within a certain time (ms)
+50%      5
+66%      7
+75%      8
+80%      9
+90%     11
+95%     15
+98%     24
+99%   3006
+100%  31068 (longest request)
+</pre></div>
+
+
+<p>将处理的部分提取出来：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
+        <span class="n">handle</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">MAX_READS</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span> <span class="o">+</span> <span class="n">G_content</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>加入多线程版本：</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">handle</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">c</span><span class="p">,))</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>修改为select版本：</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">select</span>
+
+<span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">rl</span><span class="p">,</span> <span class="n">wl</span><span class="p">,</span> <span class="n">el</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">s</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rl</span><span class="p">:</span>
+            <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">handle</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">c</span><span class="p">,))</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<h3>handle的修改</h3>
+<p>作为一个web服务器，想要真正可用，就不能只满足于发送静态的HTML，而应该根据客户端的请求进行灵活处理，为此我们引入application的概念，我们可以把它看做一个函数，输入请求地址，返回响应数据，为此对handle函数作如下修改：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">application</span>
+
+<span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">MAX_READS</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">parser</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">application</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">words</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+
+<p>parser方法用于解析请求，返回请求地址。handle方法将获得的url传入application，得到结果，并将结果随response状态行一起发送到客户端。</p>
+<p>有了如上这些代码，一个web server的雏形就建立起里了。</p>
+<h3>application的逻辑</h3>
+<p>我们来看看application这部分的逻辑：</p>
+<div class="codehilite"><pre><span></span><span class="c1"># app.py</span>
+
+<span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">&lt;title&gt;Hello, world!&lt;/title&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="si">%s</span><span class="s2">, world!</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">hello1</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">G_content</span> <span class="o">%</span> <span class="s1">&#39;hello1&#39;</span>
+
+<span class="k">def</span> <span class="nf">hello2</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">G_content</span> <span class="o">%</span> <span class="s1">&#39;hello2&#39;</span>
+
+<span class="n">urls</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;/hello1&#39;</span><span class="p">,</span> <span class="n">hello1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;/hello2&#39;</span><span class="p">,</span> <span class="n">hello2</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">reg</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">()</span>
+</pre></div>
+
+
+<p>虽然的确非常之简单，但的确已经是一个动态的网站。</p>
+        </div>
+    </div>
+</body>
+</html>

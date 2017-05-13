@@ -1,0 +1,214 @@
+---
+title: '用Python一步一步构建Web Server，第一部分'
+---
+
+我们来研究如何构建Web Server，从最基本的socket开始构建，
+不使用`SocketServer`、`wsgiref`等框架。
+最简单的代码：
+
+    :::python
+    import socket
+
+    MAX_READS = 65537
+    G_response = 'HTTP/1.0 200 OK'
+    G_content = """
+
+    <head>
+    <title>Hello, world!</title>
+    </head>
+    <body>
+    Hello, world!
+    </body>
+    """
+    def run_server(address):
+        s = socket.socket()
+        s.bind(address)
+        s.listen(5)
+        while True:
+            c, a = s.accept()
+            print 'Connected from ', a
+            c.recv(MAX_READS)
+            c.send(G_response + G_content)
+            c.close()
+        s.close()
+
+    def test():
+        address = ('', 8000)
+        run_server(address)
+
+    if __name__ == '__main__':
+        test()
+
+上述代码中，G_content字符串第一行的空行是必不可少的。因为HTTP协议规定响应的第一行与后面必须有空行分隔。
+
+上述代码的性能测试：
+
+    ab -n 5000 -c 10 http://192.168.48.1:8000/
+
+结果：
+
+    Benchmarking 192.168.48.1 (be patient)
+    Completed 500 requests
+    Completed 1000 requests
+    Completed 1500 requests
+    Completed 2000 requests
+    Completed 2500 requests
+    Completed 3000 requests
+    Completed 3500 requests
+    Completed 4000 requests
+    Completed 4500 requests
+    Completed 5000 requests
+    Finished 5000 requests
+
+
+    Server Software:        
+    Server Hostname:        192.168.48.1
+    Server Port:            8000
+
+    Document Path:          /
+    Document Length:        73 bytes
+
+    Concurrency Level:      10
+    Time taken for tests:   93.947 seconds
+    Complete requests:      5000
+    Failed requests:        0
+    Total transferred:      450000 bytes
+    HTML transferred:       365000 bytes
+    Requests per second:    53.22 [#/sec] (mean)
+    Time per request:       187.894 [ms] (mean)
+    Time per request:       18.789 [ms] (mean, across all concurrent requests)
+    Transfer rate:          4.68 [Kbytes/sec] received
+
+    Connection Times (ms)
+                min  mean[+/-sd] median   max
+    Connect:        0  120 1408.9      2   31067
+    Processing:     0    4   3.5      3      46
+    Waiting:        0    3   3.5      3      46
+    Total:          1  124 1409.4      5   31068
+
+    Percentage of the requests served within a certain time (ms)
+    50%      5
+    66%      7
+    75%      8
+    80%      9
+    90%     11
+    95%     15
+    98%     24
+    99%   3006
+    100%  31068 (longest request)
+
+将处理的部分提取出来：
+
+    :::python
+    def run_server(address):
+        s = socket.socket()
+        s.bind(address)
+        s.listen(5)
+        while True:
+            c, a = s.accept()
+            print 'Connected from ', a
+            handle(c)
+        s.close()
+
+    def handle(request):
+        request.recv(MAX_READS)
+        request.send(G_response + G_content)
+        request.close()
+
+加入多线程版本：
+
+    :::python
+    import threading
+
+    def run_server(address):
+        s = socket.socket()
+        s.bind(address)
+        s.listen(5)
+        while True:
+            c, a = s.accept()
+            print 'Connected from ', a
+            t = threading.Thread(target=handle, args=(c,))
+            t.start()
+        s.close()
+
+修改为select版本：
+
+    :::python
+    import select
+
+    def run_server(address):
+        s = socket.socket()
+        s.bind(address)
+        s.listen(5)
+        while True:
+            rl, wl, el = select.select([s], [], [])
+            for r in rl:
+                c, a = r.accept()
+                print 'Connected from ', a
+                t = threading.Thread(target=handle, args=(c,))
+                t.start()
+        s.close()
+
+### handle的修改
+
+作为一个web服务器，想要真正可用，就不能只满足于发送静态的HTML，而应该根据客户端的请求进行灵活处理，为此我们引入application的概念，我们可以把它看做一个函数，输入请求地址，返回响应数据，为此对handle函数作如下修改：
+
+    :::python
+    from app import application
+
+    def handle(request):
+        raw = request.recv(MAX_READS)
+        url = parser(raw)
+        result = application(url)
+        request.send(G_response + result)
+        request.close()
+
+    def parser(request):
+        lines = request.split('\r\n')
+        first = lines[0]
+        words = first.split()
+        print words
+        if len(words) > 1:
+            return words[1]
+
+parser方法用于解析请求，返回请求地址。handle方法将获得的url传入application，得到结果，并将结果随response状态行一起发送到客户端。
+
+有了如上这些代码，一个web server的雏形就建立起里了。
+
+### application的逻辑
+
+我们来看看application这部分的逻辑：
+
+    :::python
+    # app.py
+
+    G_content = """
+
+    <head>
+    <title>Hello, world!</title>
+    </head>
+    <body>
+    %s, world!
+    </body>
+    """
+
+    def hello1():
+        return G_content % 'hello1'
+
+    def hello2():
+        return G_content % 'hello2'
+
+    urls = [
+        ('/', hello1),
+        ('/hello1', hello1),
+        ('/hello2', hello2),
+    ]
+
+    def app(url):
+        import re
+        reg = re.compile(url)
+        for u, f in urls:
+            if reg.match(u):
+                return f()
+
+虽然的确非常之简单，但的确已经是一个动态的网站。
