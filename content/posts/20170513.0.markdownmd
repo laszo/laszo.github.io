@@ -212,3 +212,7 @@ parser方法用于解析请求，返回请求地址。handle方法将获得的ur
                 return f()
 
 虽然的确非常之简单，但的确已经是一个动态的网站。
+
+完整的代码参看[PyWebServer]。
+
+[PyWebServer]: https://github.com/laszo/PyWebServer
