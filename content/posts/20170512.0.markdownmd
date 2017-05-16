@@ -78,7 +78,7 @@ HTTP协议本身已经定义了一系列header，作为主流的web服务器必�
 具体的header可参看[HTTP - 首部]，也可参看[List of HTTP header fields]，
 最权威的定义还是rfc自身：[Header Field Definitions]。
 
-当然，作为开发者也可以定义自己的header，只要你的客户端和服务端都能够识别其含义即可，
+当然，作为开发者也可以定义自己的header，只要你的客户端和服务端都能够识别其含义即可。最后，对于HTTP协议一个比较简单的中文文章可看：[关于HTTP协议，一篇就够了]。
 
 
 [HTTP 状态消息]: http://www.w3school.com.cn/tags/html_ref_httpmessages.asp
@@ -88,3 +88,7 @@ HTTP协议本身已经定义了一系列header，作为主流的web服务器必�
 [HTTP - 首部]: http://www.cnblogs.com/huey/p/4489552.html
 [List of HTTP header fields]: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
 [Header Field Definitions]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+
+[关于HTTP协议，一篇就够了]: http://www.cnblogs.com/ranyonsue/p/5984001.html
+
+
