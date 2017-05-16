@@ -1,0 +1,216 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用Python从零开始一步一步构建Web Server，第二部分：进一步的架构分离 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">用Python从零开始一步一步构建Web Server，第二部分：进一步的架构分离</h3>
+
+        <div class="post-content">
+            <p><a href="20170513.0.html">第一部分</a>介绍了Web服务器的功能，以及所需的步骤、以及组件架构的分离，也介绍了Web系统的三个主要组成部分：</p>
+<ol>
+<li>服务器</li>
+<li>框架</li>
+<li>应用</li>
+</ol>
+<p>本文是针对初级程序员的介绍，我在这里再啰嗦一下这三个概念的含义和相互关系，以及对具体词汇可能混淆的地方。</p>
+<p>对于客户端来说，这三个部分加在一起才叫做服务器，提供Web服务：</p>
+<blockquote>
+<p>客户端 &lt; ---- &gt; 服务器（服务器+框架+应用）</p>
+</blockquote>
+<p>对于服务器来说，框架和应用是一体的，两者加在一起对它来说才叫做应用：</p>
+<blockquote>
+<p>客户端 &lt; ---- &gt; 服务器 &lt; ---- &gt; 应用（框架+应用）</p>
+</blockquote>
+<p>对于框架来说，它指的应用就是具体的应用，即每个公司自己的程序员所写的那一部分代码：</p>
+<blockquote>
+<p>客户端 &lt; ---- &gt; 服务器 &lt; ---- &gt; 框架 &lt; ---- &gt; 应用</p>
+</blockquote>
+<p>为了便于讨论，提前声明，我们后面在引用这些词汇的时候，指的是这个词汇所代表的最小范围的含义，即第三个图所示的。我们的<a href="https://github.com/laszo/PyWebServer">PyWebServer</a>项目包含上述所有三部分。
+理清了这三个概念以后，我们接着<a href="20170513.0.html">第一部分</a>的文章中的代码，把这三部分代码放置到三个文件中去。</p>
+<h3>应用部分代码</h3>
+<p>先来看应用部分的代码：</p>
+<div class="codehilite"><pre><span></span><span class="c1"># demo_app.py</span>
+<span class="kn">from</span> <span class="nn">base_server</span> <span class="kn">import</span> <span class="n">run_server</span><span class="p">,</span> <span class="n">application</span>
+
+<span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">&lt;title&gt;Hi&lt;/title&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">Hi, </span><span class="si">%s</span><span class="s2">.</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">G_hello</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">&lt;title&gt;Hello&lt;/title&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">Hello, world.</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">G_content</span> <span class="o">%</span> <span class="n">name</span>
+
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">G_hello</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^/$&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^/hello\?user=(?P&lt;name&gt;\D+)&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">application</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8009</span><span class="p">),</span> <span class="n">urlpatterns</span><span class="p">)</span>
+    <span class="n">run_server</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">()</span>
+</pre></div>
+
+
+<p>用Python写过网站的朋友应该非常熟悉，这里的代码从直观上来看与一个最简单的<code>Tornado</code>、<code>Flask</code>项目没有太大区别。写一个应用网站，只需要定义好需要的函数，规划好要匹配的URL模式即可<sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>。</p>
+<p>这也是<a href="https://github.com/laszo/PyWebServer">PyWebServer</a>项目目的之一：构建<code>“另一个”</code>Python框架。这个框架的base_server模块包含如下两种对象：</p>
+<ul>
+<li>application是一个类，生成它的实例需要传入address和urlpatterns两个对象。前者是一个socket地址对象，后者是一个列表，每个元素都是一个pair，包含一条url模式和处理函数的对应关系。</li>
+<li>run_server是一个函数，用于启动服务器，需传入application的实例作为参数。</li>
+</ul>
+<h3>服务器代码</h3>
+<p>再来看服务端的代码：</p>
+<div class="codehilite"><pre><span></span><span class="c1"># base_server.py</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">select</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">pw_framework</span> <span class="kn">import</span> <span class="n">application</span>
+
+<span class="n">MAX_READS</span> <span class="o">=</span> <span class="mi">65537</span>
+<span class="n">G_response</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 200 OK&#39;</span>
+<span class="n">G_404response</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;HTTP/1.0 404 Not Found</span>
+
+
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">&lt;title&gt;Not Found&lt;/title&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">&lt;h1&gt; 404 Not Found.&lt;/h1&gt;</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">rl</span><span class="p">,</span> <span class="n">wl</span><span class="p">,</span> <span class="n">el</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">s</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rl</span><span class="p">:</span>
+            <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">handle</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="p">))</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">MAX_READS</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">parser</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_404response</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">words</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+
+<p>主要的逻辑在<a href="20170513.0.html">第一部分</a>已经介绍过，不同的地方是从<code>pw_framework</code>模块引入了<code>application</code>类，它包含一个<code>process</code>方法。</p>
+<p><code>run_server</code>函数除了启动监听之外，在接收到请求之后，把<code>application</code>实例传递给<code>handle</code>方法。</p>
+<p><code>handle</code>方法在解析完请求之后，再把请求参数传递给<code>application</code>实例的<code>process</code>方法，获取处理结果并发送给客户端。如果处理结果为空则向客户端返回404响应。</p>
+<h3>框架部分代码</h3>
+<div class="codehilite"><pre><span></span><span class="c1"># pw_framework.py</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">class</span> <span class="nc">application</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">urlps</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">urlspatterns</span> <span class="o">=</span> <span class="n">urlps</span>
+
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">urlspatterns</span><span class="p">:</span>
+            <span class="n">ok</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">f</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+<span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">groupdict</span><span class="p">():</span>
+        <span class="k">return</span> <span class="bp">True</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">():</span>
+        <span class="k">return</span> <span class="bp">True</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+</pre></div>
+
+
+<p>在这里定义上面说的<code>application</code>类。它的主要功能是根据URL来找到具体的处理函数，向处理函数传递参数（如果有），并调用处理函数，获取并返回处理函数的返回结果。</p>
+<p>这里的<code>match</code>函数使用了<code>re</code>标准库，主要的功能，除了判断给定的url与预定模式是否匹配之外，还会获取客户端发来的url中的参数。比如，如果客户端请求：</p>
+<div class="codehilite"><pre><span></span>http://127.0.0.1/hello?user=jack
+</pre></div>
+
+
+<p>它能够判断这个url与<code>(r'^/hello\?user=(?P&lt;name&gt;\D+)', hello)</code>是匹配的，还能够获取数据</p>
+<div class="codehilite"><pre><span></span>{&#39;name&#39;: &#39;jack&#39;}
+</pre></div>
+
+
+<h3>总结</h3>
+<p>实现了架构的分离之后，三个部分可以独立发展。</p>
+<ol>
+<li>
+<p>可以针对服务器的代码进行独立的优化，使它能够更快的响应、处理更多的并发请求、更好的利用系统资源。而不会影响到应用端的逻辑。</p>
+</li>
+<li>
+<p>可以对框架的功能做更多扩展，使它具备一个<code>“真正的”</code>框架所具备的功能，比如支持模板系统、持久层、Cookie、静态文件、Session、缓存等等。而不会影响到服务端对框架的调用。</p>
+</li>
+<li>
+<p>可以针对不同的业务需求，开发不同的网站，把关注点放在业务逻辑上，而不用考虑服务器如何承载应用。</p>
+</li>
+</ol>
+<p>从这篇文章以后，后面关于Web服务端或<a href="https://github.com/laszo/PyWebServer">PyWebServer</a>项目的文章就不必每篇文章都同时包含这三个部分了，只会针对某一部分做特定的研究。</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:note1">
+<p>这里的URL模式使用了正则表达式，不了解的读者需要自己去看一下相关文章，中文的文章我认为看了这篇<a href="http://www.cnblogs.com/huxi/archive/2010/07/04/1771073.html">Python正则表达式指南</a>足以了解大概。介绍一下上面代码用到的<code>base_server</code>中的两个对象：&#160;<a class="footnote-backref" href="#fnref:note1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </div>
+</body>
+</html>

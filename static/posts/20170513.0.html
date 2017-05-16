@@ -200,7 +200,7 @@
 <ol>
 <li>服务器，用于监听客户端请求，把请求发送到应用端处理。常见的服务器有<code>Apache</code>、<code>Nginx</code>、<code>Caddy</code>等。对应于本文的<code>run_server</code>函数。</li>
 <li>应用端，根据请求进行处理，返回响应。随着Web系统的发展，人们发现，应用端中有一部分代码频繁变化，另一部分则相对稳定，于是人们把这两部分代码分为如下两项：<ol>
-<li>框架，相对稳定的部分，不同的网站也能通用这部分代码。对应于本文的<code>application</code>函数。</li>
+<li>框架，相对稳定的部分，不同的网站也能通用这部分代码。常见的框架有<code>Django</code>、<code>Tornado</code>、<code>Flask</code>等，对应于本文的<code>application</code>函数。</li>
 <li>应用，这部分代码根据不同网站的业务逻辑而完全不同。作为一个后端程序员，主要的工作就是写这一部分代码。对应于本文中的<code>hello1</code>和<code>hello2</code>等函数。</li>
 </ol>
 </li>

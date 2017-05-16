@@ -1,0 +1,209 @@
+---
+title: '用Python从零开始一步一步构建Web Server，第二部分：进一步的架构分离'
+---
+
+[第一部分]介绍了Web服务器的功能，以及所需的步骤、以及组件架构的分离，也介绍了Web系统的三个主要组成部分：
+
+1. 服务器
+2. 框架
+3. 应用
+
+本文是针对初级程序员的介绍，我在这里再啰嗦一下这三个概念的含义和相互关系，以及对具体词汇可能混淆的地方。
+
+对于客户端来说，这三个部分加在一起才叫做服务器，提供Web服务：
+
+>
+客户端 < ---- > 服务器（服务器+框架+应用）
+
+对于服务器来说，框架和应用是一体的，两者加在一起对它来说才叫做应用：
+
+>
+客户端 < ---- > 服务器 < ---- > 应用（框架+应用）
+
+对于框架来说，它指的应用就是具体的应用，即每个公司自己的程序员所写的那一部分代码：
+
+>
+客户端 < ---- > 服务器 < ---- > 框架 < ---- > 应用
+
+为了便于讨论，提前声明，我们后面在引用这些词汇的时候，指的是这个词汇所代表的最小范围的含义，即第三个图所示的。我们的[PyWebServer]项目包含上述所有三部分。
+理清了这三个概念以后，我们接着[第一部分]的文章中的代码，把这三部分代码放置到三个文件中去。
+
+### 应用部分代码
+
+先来看应用部分的代码：
+
+    :::python
+    # demo_app.py
+    from base_server import run_server, application
+
+    G_content = """
+
+    <head>
+    <title>Hi</title>
+    </head>
+    <body>
+    Hi, %s.
+    </body>
+    """
+
+    G_hello = """
+
+    <head>
+    <title>Hello</title>
+    </head>
+    <body>
+    Hello, world.
+    </body>
+    """
+
+    def hello(name):
+        return G_content % name
+
+    def index():
+        return G_hello
+
+    urlpatterns = [
+        (r'^/$', index),
+        (r'^/hello\?user=(?P<name>\D+)', hello),
+    ]
+
+    def test():
+        app = application(('', 8009), urlpatterns)
+        run_server(app)
+
+    if __name__ == '__main__':
+        test()
+
+用Python写过网站的朋友应该非常熟悉，这里的代码从直观上来看与一个最简单的`Tornado`、`Flask`项目没有太大区别。写一个应用网站，只需要定义好需要的函数，规划好要匹配的URL模式即可[^note1]。
+
+这也是[PyWebServer]项目目的之一：构建`“另一个”`Python框架。这个框架的base_server模块包含如下两种对象：
+
+* application是一个类，生成它的实例需要传入address和urlpatterns两个对象。前者是一个socket地址对象，后者是一个列表，每个元素都是一个pair，包含一条url模式和处理函数的对应关系。
+* run_server是一个函数，用于启动服务器，需传入application的实例作为参数。
+
+### 服务器代码
+
+再来看服务端的代码：
+
+
+    :::python
+    # base_server.py
+    import socket
+    import select
+    import threading
+    from pw_framework import application
+
+    MAX_READS = 65537
+    G_response = 'HTTP/1.0 200 OK'
+    G_404response = """HTTP/1.0 404 Not Found
+
+
+    <head>
+    <title>Not Found</title>
+    </head>
+    <body>
+    <h1> 404 Not Found.</h1>
+    </body>
+    """
+
+    def run_server(app):
+        s = socket.socket()
+        s.bind(app.address)
+        s.listen(5)
+        while True:
+            rl, wl, el = select.select([s], [], [])
+            for r in rl:
+                c, a = r.accept()
+                print 'Connected from ', a
+                t = threading.Thread(target=handle, args=(c, app, ))
+                t.start()
+        s.close()
+
+    def handle(request, app):
+        raw = request.recv(MAX_READS)
+        url = parser(raw)
+        result = app.handle(url)
+        if result:
+            request.send(G_response + result)
+        else:
+            request.send(G_404response)
+        request.close()
+
+    def parser(request):
+        lines = request.split('\r\n')
+        first = lines[0]
+        words = first.split()
+        print words
+        if len(words) > 1:
+            return words[1]
+
+主要的逻辑在[第一部分]已经介绍过，不同的地方是从`pw_framework`模块引入了`application`类，它包含一个`process`方法。
+
+`run_server`函数除了启动监听之外，在接收到请求之后，把`application`实例传递给`handle`方法。
+
+`handle`方法在解析完请求之后，再把请求参数传递给`application`实例的`process`方法，获取处理结果并发送给客户端。如果处理结果为空则向客户端返回404响应。
+
+### 框架部分代码
+
+    :::python
+    # pw_framework.py
+
+    import re
+
+    class application(object):
+        def __init__(self, address, urlps):
+            self.address = address
+            self.urlspatterns = urlps
+
+        def process(self, url):
+            for u, f in self.urlspatterns:
+                ok, m = match(u, url)
+                if ok:
+                    if not m:
+                        return f()
+                    else:
+                        return f(m)
+                else:
+                    continue
+
+    def match(pattern, string):
+        reg = re.compile(pattern)
+        m = reg.match(string)
+        if not m:
+            return False, None
+        if m.groupdict():
+            return True, dict(m.groupdict())
+        elif m.group():
+            return True, m.group()
+
+在这里定义上面说的`application`类。它的主要功能是根据URL来找到具体的处理函数，向处理函数传递参数（如果有），并调用处理函数，获取并返回处理函数的返回结果。
+
+这里的`match`函数使用了`re`标准库，主要的功能，除了判断给定的url与预定模式是否匹配之外，还会获取客户端发来的url中的参数。比如，如果客户端请求：
+
+    http://127.0.0.1/hello?user=jack
+
+它能够判断这个url与`(r'^/hello\?user=(?P<name>\D+)', hello)`是匹配的，还能够获取数据
+
+    {'name': 'jack'}
+
+### 总结
+
+实现了架构的分离之后，三个部分可以独立发展。
+
+1. 可以针对服务器的代码进行独立的优化，使它能够更快的响应、处理更多的并发请求、更好的利用系统资源。而不会影响到应用端的逻辑。
+
+2. 可以对框架的功能做更多扩展，使它具备一个`“真正的”`框架所具备的功能，比如支持模板系统、持久层、Cookie、静态文件、Session、缓存等等。而不会影响到服务端对框架的调用。
+
+3. 可以针对不同的业务需求，开发不同的网站，把关注点放在业务逻辑上，而不用考虑服务器如何承载应用。
+
+从这篇文章以后，后面关于Web服务端或[PyWebServer]项目的文章就不必每篇文章都同时包含这三个部分了，只会针对某一部分做特定的研究。
+
+
+[^note1]: 
+这里的URL模式使用了正则表达式，不了解的读者需要自己去看一下相关文章，中文的文章我认为看了这篇[Python正则表达式指南]足以了解大概。介绍一下上面代码用到的`base_server`中的两个对象：
+
+
+[第一部分]: 20170513.0.html
+[PyWebServer]: https://github.com/laszo/PyWebServer
+[Python正则表达式指南]: http://www.cnblogs.com/huxi/archive/2010/07/04/1771073.html
+
