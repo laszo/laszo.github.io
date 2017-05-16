@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>用Python一步一步构建Web Server，第一部分 - Lv Xiaoyu `Site</title>
+    <title>用Python从零开始一步一步构建Web Server，第一部分：基础的功能实现和逻辑分离 - Lv Xiaoyu `Site</title>
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
@@ -12,10 +12,11 @@
             <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
         </div>
 
-        <h3 class="blog-post-title">用Python一步一步构建Web Server，第一部分</h3>
+        <h3 class="blog-post-title">用Python从零开始一步一步构建Web Server，第一部分：基础的功能实现和逻辑分离</h3>
 
         <div class="post-content">
-            <p>我们来研究如何构建Web Server，从最基本的socket开始构建，
+            <h3>最简代码</h3>
+<p>我们来研究如何构建Web Server，从最基本的socket开始构建，
 不使用<code>SocketServer</code>、<code>wsgiref</code>等框架。
 最简单的代码：</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">socket</span>
@@ -52,66 +53,17 @@
 </pre></div>
 
 
-<p>上述代码中，G_content字符串第一行的空行是必不可少的。因为HTTP协议规定响应的第一行与后面必须有空行分隔。</p>
-<p>上述代码的性能测试：</p>
-<div class="codehilite"><pre><span></span>ab -n 5000 -c 10 http://192.168.48.1:8000/
-</pre></div>
-
-
-<p>结果：</p>
-<div class="codehilite"><pre><span></span>Benchmarking 192.168.48.1 (be patient)
-Completed 500 requests
-Completed 1000 requests
-Completed 1500 requests
-Completed 2000 requests
-Completed 2500 requests
-Completed 3000 requests
-Completed 3500 requests
-Completed 4000 requests
-Completed 4500 requests
-Completed 5000 requests
-Finished 5000 requests
-
-
-Server Software:        
-Server Hostname:        192.168.48.1
-Server Port:            8000
-
-Document Path:          /
-Document Length:        73 bytes
-
-Concurrency Level:      10
-Time taken for tests:   93.947 seconds
-Complete requests:      5000
-Failed requests:        0
-Total transferred:      450000 bytes
-HTML transferred:       365000 bytes
-Requests per second:    53.22 [#/sec] (mean)
-Time per request:       187.894 [ms] (mean)
-Time per request:       18.789 [ms] (mean, across all concurrent requests)
-Transfer rate:          4.68 [Kbytes/sec] received
-
-Connection Times (ms)
-            min  mean[+/-sd] median   max
-Connect:        0  120 1408.9      2   31067
-Processing:     0    4   3.5      3      46
-Waiting:        0    3   3.5      3      46
-Total:          1  124 1409.4      5   31068
-
-Percentage of the requests served within a certain time (ms)
-50%      5
-66%      7
-75%      8
-80%      9
-90%     11
-95%     15
-98%     24
-99%   3006
-100%  31068 (longest request)
-</pre></div>
-
-
-<p>将处理的部分提取出来：</p>
+<p>Web服务器，区别于socket服务器的地方是它能够发送HTTP响应，HTTP响应的必要条件是包含响应的首行，即上面的<code>G_response</code>变量的内容。构建一个能能够让浏览器正常访问的Web服务器，上述代码已经是最简单的逻辑。<code>G_content</code>字符串第一行的空行是必不可少的。因为HTTP协议规定响应的第一行与后面必须有空行分隔。</p>
+<h3>逻辑分离</h3>
+<p>复杂的系统没有把所有逻辑写在一个函数里的，我们这里把Web服务器的任务逻辑分为如下几个部分：</p>
+<ol>
+<li>初始化服务器</li>
+<li>监听请求</li>
+<li>获取请求数据</li>
+<li>处理请求</li>
+<li>返回响应</li>
+</ol>
+<p>我们这里把前三步保留在<code>run_server</code>里，后两步提取出来作为<code>handle</code>函数：</p>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
     <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
@@ -129,7 +81,9 @@ Percentage of the requests served within a certain time (ms)
 </pre></div>
 
 
-<p>加入多线程版本：</p>
+<h3>并发与多路复用</h3>
+<p>作为一个Web服务器，不能仅仅只支持单个客户端请求，而要支持多个客户端的同时请求，这是最基本的要求。但是本文的重点在于理清服务器的实现逻辑，为后续的开发打下基础，暂且仅对服务器作如下最简单的处理。</p>
+<p>加入多线程：</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">threading</span>
 
 <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
@@ -145,7 +99,7 @@ Percentage of the requests served within a certain time (ms)
 </pre></div>
 
 
-<p>修改为select版本：</p>
+<p>使用select：</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">select</span>
 
 <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
@@ -164,17 +118,17 @@ Percentage of the requests served within a certain time (ms)
 
 
 <h3>handle的修改</h3>
-<p>作为一个web服务器，想要真正可用，就不能只满足于发送静态的HTML，而应该根据客户端的请求进行灵活处理，为此我们引入application的概念，我们可以把它看做一个函数，输入请求地址，返回响应数据，为此对handle函数作如下修改：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">application</span>
-
-<span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">MAX_READS</span><span class="p">)</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">parser</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">application</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+<p>作为一个web服务器，想要真正可用，就不能只满足于发送静态的HTML，而应该根据客户端的请求进行灵活处理。来看之前handle函数的代码：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">MAX_READS</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span> <span class="o">+</span> <span class="n">G_content</span><span class="p">)</span>
     <span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
 
-<span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+
+<p>可以说，这时候Web服务器只能进行机械应答，不管客户端发送什么请求，统统机械的返回一个包含<code>hello, world</code>的网页，这显然是不够的。</p>
+<p>要进行灵活的处理， 就需要解析客户端请求的具体内容参数，根据内容参数进行不同的处理。简单起见，我们先获取URL中的参数，这对于GET请求来说已经足够，当然对于POST请求来说，请求的参数包含在data部分，后续再添加。看下面的<code>parser</code>函数：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">first</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">words</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -184,10 +138,39 @@ Percentage of the requests served within a certain time (ms)
 </pre></div>
 
 
-<p>parser方法用于解析请求，返回请求地址。handle方法将获得的url传入application，得到结果，并将结果随response状态行一起发送到客户端。</p>
-<p>有了如上这些代码，一个web server的雏形就建立起里了。</p>
-<h3>application的逻辑</h3>
-<p>我们来看看application这部分的逻辑：</p>
+<p>parser方法用于解析请求，返回请求地址。</p>
+<p>还需要对handle函数作如下修改：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">application</span>
+
+<span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">MAX_READS</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">parser</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">application</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>handle方法接收客户端的原始请求以后，调用parser获取请求中的url。将获得的url传入application，得到结果<code>result</code>变量，并将结果随response状态行一起发送到客户端。</p>
+<h3>application的概念</h3>
+<p>这里的application，我们可以把它看做一个函数，输入请求地址，返回响应数据。来看看它的代码：</p>
+<div class="codehilite"><pre><span></span><span class="c1"># app.py</span>
+
+<span class="n">urls</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;/hello1&#39;</span><span class="p">,</span> <span class="n">hello1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;/hello2&#39;</span><span class="p">,</span> <span class="n">hello2</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">()</span>
+</pre></div>
+
+
+<p>application根据接收到的url，调用对应的处理函数。这里需要预先定义一个url与处理函数的对应关系，保存在<code>urls</code>变量中。下面来看具体的处理函数：</p>
 <div class="codehilite"><pre><span></span><span class="c1"># app.py</span>
 
 <span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -205,24 +188,32 @@ Percentage of the requests served within a certain time (ms)
 
 <span class="k">def</span> <span class="nf">hello2</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">G_content</span> <span class="o">%</span> <span class="s1">&#39;hello2&#39;</span>
-
-<span class="n">urls</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello1</span><span class="p">),</span>
-    <span class="p">(</span><span class="s1">&#39;/hello1&#39;</span><span class="p">,</span> <span class="n">hello1</span><span class="p">),</span>
-    <span class="p">(</span><span class="s1">&#39;/hello2&#39;</span><span class="p">,</span> <span class="n">hello2</span><span class="p">),</span>
-<span class="p">]</span>
-
-<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">re</span>
-    <span class="n">reg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">reg</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">f</span><span class="p">()</span>
 </pre></div>
 
 
-<p>虽然的确非常之简单，但的确已经是一个动态的网站。</p>
-<p>完整的代码参看<a href="https://github.com/laszo/PyWebServer">PyWebServer</a>。</p>
+<p>虽然仍然非常之简单，但上述代码结合在一起，已经能够根据客户端的不同请求返回不同的内容。要构建任何类型的网站，实现任何功能，只需要增加对应的处理函数，并增加相应的url到<code>urls</code>列表中，包含了无限的可能性，这已经可以称为一个动态的网站。</p>
+<h3>总结</h3>
+<p>现实中的任何网站所涉及的系统都不可能像本文中的代码这么简单。但是现实中的生产系统、与本文所构建的小小系统有如下几点相似之处：</p>
+<p>一，在基本核心功能上是一样的。接收客户端浏览器的HTTP请求，动态返回HTTP响应，Web程序员据此可以构建出他想要的网站。</p>
+<p>二，在核心逻辑上是一致的。打个比方，如果要用简单的一段话向别人介绍Web系统的原理，介绍生产系统、或是介绍本文的小小系统，完全可以使用同一段话。</p>
+<p>三，在架构设计上是一致的。软件的组件化、模块化是复杂系统的基本要求。现实中的系统，分为如下几部分：</p>
+<ol>
+<li>服务器，用于监听客户端请求，把请求发送到应用端处理。常见的服务器有<code>Apache</code>、<code>Nginx</code>、<code>Caddy</code>等。对应于本文的<code>run_server</code>函数。</li>
+<li>应用端，根据请求进行处理，返回响应。随着Web系统的发展，人们发现，应用端中有一部分代码频繁变化，另一部分则相对稳定，于是人们把这两部分代码分为如下两项：<ol>
+<li>框架，相对稳定的部分，不同的网站也能通用这部分代码。对应于本文的<code>application</code>函数。</li>
+<li>应用，这部分代码根据不同网站的业务逻辑而完全不同。作为一个后端程序员，主要的工作就是写这一部分代码。对应于本文中的<code>hello1</code>和<code>hello2</code>等函数。</li>
+</ol>
+</li>
+</ol>
+<h4>不足之处</h4>
+<p>本文所有的代码都是不足的，与其说是不足之处，不如说是待办事项：</p>
+<ol>
+<li>只能获取客户端请求中的URL部分，不能获取POST的参数</li>
+<li>只能把URL整体作为一个参数来处理，不能获取URL中的具体参数，并传递到处理函数中</li>
+<li>对于可能会出现异常的地方，没有进行异常处理</li>
+<li>只进行了最简单的并发处理，对于性能没有进行考虑，更不用说是优化了。</li>
+</ol>
+<p>关于这些后续工作，敬请关注我的Github项目 <a href="https://github.com/laszo/PyWebServer">PyWebServer</a>，这个项目的目标是构建一套生产级别的Web服务栈。</p>
         </div>
     </div>
 </body>
