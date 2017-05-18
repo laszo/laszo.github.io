@@ -122,7 +122,7 @@ title: '用Python从零开始一步一步构建Web Server，第二部分：进�
     def handle(request, app):
         raw = request.recv(MAX_READS)
         url = parser(raw)
-        result = app.handle(url)
+        result = app.process(url)
         if result:
             request.send(G_response + result)
         else:

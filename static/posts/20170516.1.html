@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Python网站的部署 - Lv Xiaoyu `Site</title>
+    <title>Nginx的基本配置 - Lv Xiaoyu `Site</title>
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
@@ -12,21 +12,189 @@
             <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
         </div>
 
-        <h3 class="blog-post-title">Python网站的部署</h3>
+        <h3 class="blog-post-title">Nginx的基本配置</h3>
 
         <div class="post-content">
-            <p>本文解决如下问题：</p>
+            <h4>Nginx程序的控制</h4>
+<p>启动nginx程序只需执行可执行文件、或根据宿主操作系统的特点配置自启动服务。nginx启动以后至少包含两种进程：</p>
+<ul>
+<li>
+<p>一个主进程（master process），主进程用于读取配置文件、以及管理工作进程。</p>
+</li>
+<li>
+<p>一个或多个工作进程（worker processes），用于处理客户端请求。</p>
+</li>
+</ul>
+<p>对于已经启动的nginx进程来说，可采用如下方式发送命令：</p>
+<div class="codehilite"><pre><span></span>nginx -s signal
+</pre></div>
+
+
+<p>其中<code>signal</code>有如下几种：</p>
+<ul>
+<li>stop — “快速”关闭，不必等待处理完当前客户端请求，直接关闭nginx进程。</li>
+<li>quit — “优雅的”关闭，等待处理完当前的客户端请求之后再关闭nginx。</li>
+<li>reload — 重新读取配置文件，在修改完配置文件之后，使用这条命令使配置生效。</li>
+<li>reopen — 重新打开日志文件</li>
+</ul>
+<h4>nginx的配置文件</h4>
+<p>配置文件中最基本的元素称为“指令”（directives），包含如下两种：</p>
+<ul>
+<li>
+<p>简单指令，格式为指令名称+空格+指令的参数，以分号<code>“;”</code>结尾。</p>
+</li>
+<li>
+<p>块指令（block directives），由许多简单指令组成，由花括号<code>{</code>和<code>}</code>包裹起来，块指令内也可以包含其他的块指令。</p>
+</li>
+</ul>
+<p>比如：</p>
+<div class="codehilite"><pre><span></span>worker_processes  1;
+
+http {
+    server {
+        location / {
+            root /data/www;
+        }
+    }
+}
+</pre></div>
+
+
+<p>在上面的代码里，<code>worker_processes</code>和<code>root</code>是简单指令，<code>http</code>、<code>server</code>、<code>location</code>是块指令。一个块指令也可以称为<code>context</code>，可以认为这是一个指令的“环境”。</p>
+<p>如果一条指令不在任何一个context之内，那么就把它看做是包含在 <code>main context</code>（主环境）之中。比如上面代码里的<code>worker_processes</code>和<code>http</code>，就在<code>main context</code>之中。一般来说，大部分指令只有在特定的<code>context</code>之内才有意义。</p>
+<h4>配置一个简单的静态网站</h4>
+<p>安装完之后，nginx一般已经提供了一个默认的配置文件，满足一个静态网站运行的简单配置。这里我们把关注点放在<code>server</code>指令上，省略了其他细节性指令的一个配置文件如下：</p>
+<div class="codehilite"><pre><span></span><span class="k">http</span> <span class="p">{</span>
+    <span class="kn">server</span> <span class="p">{</span>
+        <span class="kn">listen</span> <span class="mi">8081</span><span class="p">;</span>
+        <span class="kn">root</span> <span class="s">/Users/laszo/data/8081</span><span class="p">;</span>
+        <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="kn">server</span> <span class="p">{</span>
+        <span class="kn">listen</span> <span class="mi">8080</span><span class="p">;</span>
+        <span class="kn">server_name</span>  <span class="s">localhost</span><span class="p">;</span>
+        <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+            <span class="kn">root</span>   <span class="s">html</span><span class="p">;</span>
+            <span class="kn">index</span>  <span class="s">index.html</span> <span class="s">index.htm</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kn">location</span> <span class="s">/images/</span> <span class="p">{</span>
+            <span class="kn">root</span>   <span class="s">/Users/laszo/data</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><code>http</code>指令需放在<code>main context</code>中，在<code>http</code> context内可以有一个或多个<code>server</code>指令，代表一个特定的服务器，也就是说nginx可以在一台主机上承载多个server。server之间由如下两条指令区分：</p>
+<ul>
+<li><code>listen</code>，指定服务器监听的端口号、或IP地址+端口号，listen指令后面可以附加<code>default_server</code>参数，声明这是默认的服务器，如果没有附加这个参数，则视第一个server为默认服务器。</li>
+<li><code>server_name</code>，指定服务器的名字，可以是域名，也可以是一个普通的字符串。</li>
+</ul>
+<h4>如何选择server</h4>
+<p>我们知道一台主机可以有多个IP地址和多个域名，比如一台主机同时有<code>192.168.1.1</code>和<code>192.168.1.2</code>两个IP，以及<code>example.org</code>、<code>example.net</code>、<code>example.com</code>等多个域名，那么下面这样的配置：</p>
+<div class="codehilite"><pre><span></span><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span>      <span class="n">192.168.1.1</span><span class="p">:</span><span class="mi">80</span><span class="p">;</span>
+    <span class="kn">server_name</span> <span class="s">example.org</span> <span class="s">www.example.org</span><span class="p">;</span>
+    <span class="kn">...</span>
+<span class="err">}</span>
+
+<span class="s">server</span> <span class="p">{</span>
+    <span class="kn">listen</span>      <span class="n">192.168.1.1</span><span class="p">:</span><span class="mi">80</span> <span class="s">default_server</span><span class="p">;</span>
+    <span class="kn">server_name</span> <span class="s">example.net</span> <span class="s">www.example.net</span><span class="p">;</span>
+    <span class="kn">...</span>
+<span class="err">}</span>
+
+<span class="s">server</span> <span class="p">{</span>
+    <span class="kn">listen</span>      <span class="n">192.168.1.2</span><span class="p">:</span><span class="mi">80</span> <span class="s">default_server</span><span class="p">;</span>
+    <span class="kn">server_name</span> <span class="s">example.com</span> <span class="s">www.example.com</span><span class="p">;</span>
+    <span class="kn">...</span>
+<span class="err">}</span>
+</pre></div>
+
+
+<p>nginx在接收到客户端请求时，会检查请求的首部中的<code>HOST</code>字段，看能够匹配到哪个server，例如：</p>
+<ul>
+<li>访问<code>http://example.org</code>或<code>http://www.example.org</code>会匹配到第一个server</li>
+<li>访问<code>http://example.net</code>或<code>http://www.example.net</code>会匹配到第二个server</li>
+<li>访问<code>http://example.com</code>或<code>http://www.example.com</code>会匹配到第三个server</li>
+<li>访问<code>http://192.168.1.2</code>会匹配到第三个server，因为只有这个server匹配了IP地址</li>
+<li>访问<code>http://192.168.1.1</code>会匹配到第二个server，因为虽然第一个和第二个server都匹配了地址，但第二个server的listen指令有<code>default_server</code>参数。</li>
+</ul>
+<h4>访问静态文件</h4>
+<p>解决了多个server的选择问题以后，我们把关注点放在单独的一个server上。nginx对于静态内容的支持主要看如下两个指令：</p>
+<ul>
+<li>
+<p>location，用于请求路径的匹配。</p>
+<p>在收到客户端请求以后，nginx会提取请求路径，即URL中主机名之后的部分。比如<code>http://example.org/static/css/main.css</code>，请求路径为<code>/static/css/main.css</code>。</p>
+<p>然后nginx会查找server下的location指令的参数，优先匹配长度最长的参数。</p>
+</li>
+<li>
+<p>root，用于指定根目录。</p>
+<p>nginx在定位到了特定的location之后，根据location包含的root指令的参数，作为这个location查找文件的根目录。</p>
+</li>
+</ul>
+<p>ngxin在查找需要的文件时，会将root目录与路径请求拼接起来，形成完整的文件路径。</p>
+<p>比如：</p>
+<div class="codehilite"><pre><span></span><span class="k">location</span> <span class="s">/</span> <span class="p">{</span>
+    <span class="kn">root</span>   <span class="s">/data/www/</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">location</span> <span class="s">/images/</span> <span class="p">{</span>
+    <span class="kn">root</span>   <span class="s">/data</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">location</span> <span class="s">/static/</span> <span class="p">{</span>
+    <span class="kn">root</span>   <span class="s">/data</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>在上面的配置中：</p>
+<ul>
+<li><code>/index.html</code>路径会返回<code>/data/www/index.html</code>文件。</li>
+<li><code>/images/h1.jpg</code>路径会返回<code>/data/images/h1.jpg</code>文件。</li>
+<li><code>/static/css/main.css</code>路径会返回<code>/data/static/css/main.css</code>文件。</li>
+<li><code>/static/js/main.js</code>路径会返回<code>/data/static/js/main.js</code>文件。</li>
+</ul>
+<h4>nginx用作代理服务器</h4>
+<p>nginx还可以用作代理服务器，当收到客户端请求时，nginx把该请求转发到指定的服务器，从后者获取响应，再把响应转发到客户端。只需使用<code>proxy_pass</code>指令：</p>
+<div class="codehilite"><pre><span></span><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+        <span class="kn">proxy_pass</span> <span class="s">http://localhost:8080</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kn">location</span> <span class="s">/images/</span> <span class="p">{</span>
+        <span class="kn">root</span> <span class="s">/data</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>在上面的例子中，所有以<code>/images/</code>为开头的请求路径仍然会向<code>/data</code>目录下查找文件；其余路径的请求则统统转发到<code>http://localhost:8080</code>上去。</p>
+<h4>转发到uwsgi服务器</h4>
+<p>nginx还支持将请求转发到uwsgi服务器，只需如下配置：</p>
+<div class="codehilite"><pre><span></span><span class="nt">location</span> <span class="o">/</span> <span class="p">{</span>
+    <span class="err">include</span> <span class="err">uwsgi_params</span><span class="p">;</span>
+    <span class="err">uwsgi_pass</span> <span class="err">127.0.0.1:3031</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>就可以将server的所有请求转发到本机的3031端口，关于uwsgi服务器可见其他文章的介绍。</p>
+<p><sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup></p>
+<div class="footnote">
+<hr />
 <ol>
-<li>
-<p>pw_framwork如何部署到生产系统中，以及其他主流框架如何部署到不同的系统中，主要是几种不同的服务器。</p>
-</li>
-<li>
-<p>有没有可能主流框架部署到<code>PyWebServer</code>上来？</p>
-</li>
-<li>
-<p>PyWebServer如何作为系统服务自启动，以及读取配置文件和应用配置。</p>
+<li id="fn:note1">
+<p>本文解决如下问题：
+1. pw_framwork如何部署到生产系统中，以及其他主流框架如何部署到不同的系统中，主要是几种不同的服务器。
+2. 有没有可能主流框架部署到<code>PyWebServer</code>上来？
+3. PyWebServer如何作为系统服务自启动，以及读取配置文件和应用配置。&#160;<a class="footnote-backref" href="#fnref:note1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
+</div>
         </div>
     </div>
 </body>

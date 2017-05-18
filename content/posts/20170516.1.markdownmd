@@ -1,12 +1,184 @@
 ---
-title: 'Python网站的部署'
+title: 'Nginx的基本配置'
 ---
 
+#### Nginx程序的控制
+
+启动nginx程序只需执行可执行文件、或根据宿主操作系统的特点配置自启动服务。nginx启动以后至少包含两种进程：
+
+* 一个主进程（master process），主进程用于读取配置文件、以及管理工作进程。
+
+* 一个或多个工作进程（worker processes），用于处理客户端请求。
+
+对于已经启动的nginx进程来说，可采用如下方式发送命令：
+
+    nginx -s signal
+
+其中`signal`有如下几种：
+
+* stop — “快速”关闭，不必等待处理完当前客户端请求，直接关闭nginx进程。
+* quit — “优雅的”关闭，等待处理完当前的客户端请求之后再关闭nginx。
+* reload — 重新读取配置文件，在修改完配置文件之后，使用这条命令使配置生效。
+* reopen — 重新打开日志文件
+
+#### nginx的配置文件
+
+配置文件中最基本的元素称为“指令”（directives），包含如下两种：
+
+* 简单指令，格式为指令名称+空格+指令的参数，以分号`“;”`结尾。
+
+* 块指令（block directives），由许多简单指令组成，由花括号`{`和`}`包裹起来，块指令内也可以包含其他的块指令。
+
+比如：
+
+    worker_processes  1;
+
+    http {
+        server {
+            location / {
+                root /data/www;
+            }
+        }
+    }
+
+在上面的代码里，`worker_processes`和`root`是简单指令，`http`、`server`、`location`是块指令。一个块指令也可以称为`context`，可以认为这是一个指令的“环境”。
+
+如果一条指令不在任何一个context之内，那么就把它看做是包含在 `main context`（主环境）之中。比如上面代码里的`worker_processes`和`http`，就在`main context`之中。一般来说，大部分指令只有在特定的`context`之内才有意义。
+
+#### 配置一个简单的静态网站
+
+安装完之后，nginx一般已经提供了一个默认的配置文件，满足一个静态网站运行的简单配置。这里我们把关注点放在`server`指令上，省略了其他细节性指令的一个配置文件如下：
+
+    :::nginx
+    http {
+        server {
+            listen 8081;
+            root /Users/laszo/data/8081;
+            location / {
+            }
+        }
+        server {
+            listen 8080;
+            server_name  localhost;
+            location / {
+                root   html;
+                index  index.html index.htm;
+            }
+
+            location /images/ {
+                root   /Users/laszo/data;
+            }
+        }
+    }
+
+`http`指令需放在`main context`中，在`http` context内可以有一个或多个`server`指令，代表一个特定的服务器，也就是说nginx可以在一台主机上承载多个server。server之间由如下两条指令区分：
+
+* `listen`，指定服务器监听的端口号、或IP地址+端口号，listen指令后面可以附加`default_server`参数，声明这是默认的服务器，如果没有附加这个参数，则视第一个server为默认服务器。
+* `server_name`，指定服务器的名字，可以是域名，也可以是一个普通的字符串。
+
+#### 如何选择server
+
+我们知道一台主机可以有多个IP地址和多个域名，比如一台主机同时有`192.168.1.1`和`192.168.1.2`两个IP，以及`example.org`、`example.net`、`example.com`等多个域名，那么下面这样的配置：
+
+    :::nginx
+    server {
+        listen      192.168.1.1:80;
+        server_name example.org www.example.org;
+        ...
+    }
+
+    server {
+        listen      192.168.1.1:80 default_server;
+        server_name example.net www.example.net;
+        ...
+    }
+
+    server {
+        listen      192.168.1.2:80 default_server;
+        server_name example.com www.example.com;
+        ...
+    }
+
+nginx在接收到客户端请求时，会检查请求的首部中的`HOST`字段，看能够匹配到哪个server，例如：
+
+* 访问`http://example.org`或`http://www.example.org`会匹配到第一个server
+* 访问`http://example.net`或`http://www.example.net`会匹配到第二个server
+* 访问`http://example.com`或`http://www.example.com`会匹配到第三个server
+* 访问`http://192.168.1.2`会匹配到第三个server，因为只有这个server匹配了IP地址
+* 访问`http://192.168.1.1`会匹配到第二个server，因为虽然第一个和第二个server都匹配了地址，但第二个server的listen指令有`default_server`参数。
+
+#### 访问静态文件
+
+解决了多个server的选择问题以后，我们把关注点放在单独的一个server上。nginx对于静态内容的支持主要看如下两个指令：
+
+* location，用于请求路径的匹配。
+
+    在收到客户端请求以后，nginx会提取请求路径，即URL中主机名之后的部分。比如`http://example.org/static/css/main.css`，请求路径为`/static/css/main.css`。
+
+    然后nginx会查找server下的location指令的参数，优先匹配长度最长的参数。
+
+* root，用于指定根目录。
+    
+    nginx在定位到了特定的location之后，根据location包含的root指令的参数，作为这个location查找文件的根目录。
+
+ngxin在查找需要的文件时，会将root目录与路径请求拼接起来，形成完整的文件路径。
+
+比如：
+
+    :::nginx
+    location / {
+        root   /data/www/;
+    }
+
+    location /images/ {
+        root   /data;
+    }
+
+    location /static/ {
+        root   /data;
+    }
+
+在上面的配置中：
+
+* `/index.html`路径会返回`/data/www/index.html`文件。
+* `/images/h1.jpg`路径会返回`/data/images/h1.jpg`文件。
+* `/static/css/main.css`路径会返回`/data/static/css/main.css`文件。
+* `/static/js/main.js`路径会返回`/data/static/js/main.js`文件。
+
+#### nginx用作代理服务器
+
+nginx还可以用作代理服务器，当收到客户端请求时，nginx把该请求转发到指定的服务器，从后者获取响应，再把响应转发到客户端。只需使用`proxy_pass`指令：
+
+    :::nginx
+    server {
+        location / {
+            proxy_pass http://localhost:8080;
+        }
+
+        location /images/ {
+            root /data;
+        }
+    }
+
+ 在上面的例子中，所有以`/images/`为开头的请求路径仍然会向`/data`目录下查找文件；其余路径的请求则统统转发到`http://localhost:8080`上去。
+
+#### 转发到uwsgi服务器
+
+nginx还支持将请求转发到uwsgi服务器，只需如下配置：
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass 127.0.0.1:3031;
+    }
+
+就可以将server的所有请求转发到本机的3031端口，关于uwsgi服务器可见其他文章的介绍。
+
+
+[^note1]
+
+[^note1]:
 本文解决如下问题：
-
 1. pw_framwork如何部署到生产系统中，以及其他主流框架如何部署到不同的系统中，主要是几种不同的服务器。
-
 2. 有没有可能主流框架部署到`PyWebServer`上来？
-
 3. PyWebServer如何作为系统服务自启动，以及读取配置文件和应用配置。
 

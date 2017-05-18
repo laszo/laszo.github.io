@@ -124,7 +124,7 @@
 <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
     <span class="n">raw</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">MAX_READS</span><span class="p">)</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">parser</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
         <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
