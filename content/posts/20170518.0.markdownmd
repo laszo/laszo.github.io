@@ -1,0 +1,11 @@
+---
+title: '用Python从零开始一步一步构建Web Server，第三部分：支持WSGI'
+---
+
+[PEP 333 -- Python Web Server Gateway Interface v1.0]
+
+[PEP 3333 -- Python Web Server Gateway Interface v1.0.1]
+
+[PEP 333 -- Python Web Server Gateway Interface v1.0]: https://www.python.org/dev/peps/pep-0333/
+
+[PEP 3333 -- Python Web Server Gateway Interface v1.0.1]: https://www.python.org/dev/peps/pep-3333/
