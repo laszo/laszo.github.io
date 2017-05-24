@@ -106,8 +106,8 @@ Python的运行时会在with语句结束之后销毁该对象：
         print foo.readlines()
 
 为了使用`MyWithFile`对象，在with语句中使用了`as`关键字。
-注意，as关键字后面的`foo`变量引用的并非`MyWithFile`对象实例本身，
-而是对象的`__enter__`方法所返回的对象。
+*注意，as关键字后面的`foo`变量引用的并非`MyWithFile`对象实例本身，
+而是对象的`__enter__`方法所返回的对象。*
 
 读者可能会觉得，每次为了使用context manager都要添加这么一个包装类，有点太麻烦了，
 还不如干脆还按照原始写法去写。

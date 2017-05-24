@@ -119,8 +119,8 @@ out the with statement
 
 
 <p>为了使用<code>MyWithFile</code>对象，在with语句中使用了<code>as</code>关键字。
-注意，as关键字后面的<code>foo</code>变量引用的并非<code>MyWithFile</code>对象实例本身，
-而是对象的<code>__enter__</code>方法所返回的对象。</p>
+<em>注意，as关键字后面的<code>foo</code>变量引用的并非<code>MyWithFile</code>对象实例本身，
+而是对象的<code>__enter__</code>方法所返回的对象。</em></p>
 <p>读者可能会觉得，每次为了使用context manager都要添加这么一个包装类，有点太麻烦了，
 还不如干脆还按照原始写法去写。</p>
 <h4>context manager的工厂方法</h4>
