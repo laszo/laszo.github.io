@@ -1,0 +1,157 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Python的with关键字 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+        </div>
+
+        <h3 class="blog-post-title">Python的with关键字</h3>
+
+        <div class="post-content">
+            <p>要了解<code>with</code>关键字，可以先看如下代码：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MyClassWithWith</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;__enter__&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">etype</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;__exit__&#39;</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">MyClassWithWith</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">m</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s1">&#39;hello, world!&#39;</span>
+</pre></div>
+
+
+<p>上面代码的运行结果：</p>
+<div class="codehilite"><pre><span></span>__enter__
+hello, world!
+__exit__
+</pre></div>
+
+
+<p><a href="https://www.python.org/dev/peps/pep-0343/">PEP 343</a>引入了一个新的关键字<code>with</code>，with语句的写法如下：</p>
+<div class="codehilite"><pre><span></span>with context_manager:
+    do_something
+</pre></div>
+
+
+<p>with后面跟的对象称为<code>context manager</code>（上下文管理器），with语句的运行机制为：</p>
+<ol>
+<li>调用context manager的<code>__enter__</code>方法</li>
+<li>运行with语句内包含的语句，即上面的<code>do_something</code></li>
+<li>调用context manager的<code>__exit__</code>方法</li>
+</ol>
+<p>也就是说，context manager对象必须包含<code>__enter__</code>方法和<code>__exit__</code>方法。</p>
+<p>另外，如果context manager对象不是在with语句之前就已经初始化，而是紧跟在with关键字之后进行初始化，
+Python的运行时会在with语句结束之后销毁该对象：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MyClassWithWith</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;__init__&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;__enter__&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">etype</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;__exit__&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;__del__&#39;</span>
+
+<span class="k">print</span> <span class="s1">&#39;before the with statement&#39;</span>
+<span class="k">with</span> <span class="n">MyClassWithWith</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s1">&#39;hello, world!&#39;</span>
+<span class="k">print</span> <span class="s1">&#39;out the with statement&#39;</span>
+</pre></div>
+
+
+<p>为了清楚地看见每个方法的运行顺序，我们在with语句之前和之后都添加了print语句，上面代码的运行结果是：</p>
+<div class="codehilite"><pre><span></span>before the with statement
+__init__
+__enter__
+hello, world!
+__exit__
+__del__
+out the with statement
+</pre></div>
+
+
+<p>可见，在<code>out the with statement</code>之前，调用<code>__exit__</code>之后，Python运行时又调用了<code>__del__</code>销毁了
+<code>MyClassWithWith()</code>所生成的对象。</p>
+<p>这样的机制给我们提供了很多便利。我们经常会遇到这样的编程模式：</p>
+<ol>
+<li>初始化一些对象，或一些资源</li>
+<li>用这个对象做点什么</li>
+<li>销毁这些对象、或释放这些资源；处理第二步中产生的异常。</li>
+</ol>
+<p>当然，对于普通的变量，Python的垃圾回收机制（garbage collector）已经自动替我们做了对象销毁的工作，
+但仍然有很多资源和对象是需要我们手动处理的。而对于异常则百分百需要我们自己处理了。</p>
+<p>比如最简单的情况：打开一个文件，读取一些内容，然后关闭文件：</p>
+<div class="codehilite"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>可以用下面这样的context manager来包装：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MyWithFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>然后这样来使用：</p>
+<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="n">MyWithFile</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">foo</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">foo</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+</pre></div>
+
+
+<p>为了使用<code>MyWithFile</code>对象，在with语句中使用了<code>as</code>关键字。
+注意，as关键字后面的<code>foo</code>变量引用的并非<code>MyWithFile</code>对象实例本身，
+而是对象的<code>__enter__</code>方法所返回的对象。</p>
+<p>读者可能会觉得，每次为了使用context manager都要添加这么一个包装类，有点太麻烦了，
+还不如干脆还按照原始写法去写。</p>
+<h4>context manager的工厂方法</h4>
+<p>幸运的是，Python标准库<code>contextlib</code>提供了包装器方法<code>contextmanager</code>，已经为我们提供了这么一个包装类的框架。contextlib的典型用法如下：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">wopen</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">fn</span>
+    <span class="n">fn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">wopen</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+</pre></div>
+
+
+<p>在上面的代码里，变量<code>f</code>引用的对象即为<code>yield fn</code>语句中的<code>fn</code>，即打开的文件对象。在with语句执行完毕之后，
+控制流程会回到<code>wopen</code>方法中，执行<code>fn.close()</code>。对于<code>wopen</code>方法的调用者来说，无需例会这些步骤，
+只使用file对象即可。</p>
+<p>我们可以把<code>wopen</code>方法看做是context manager的工厂方法，专门用于生成context manager。
+这样的工厂方法必须是一个<code>generator</code>，也就是说必须使用<code>yield</code>来抛出相关的对象<sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>。</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:note1">
+<p>关于<code>generator</code>和<code>yield</code>关键字，参见前面的文章&#160;<a class="footnote-backref" href="#fnref:note1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </div>
+</body>
+</html>
