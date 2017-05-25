@@ -1,0 +1,30 @@
+---
+title: '精通Python的过程 Process of Python mastery [from Stack Overflow]'
+---
+
+精通Python的过程，从Stack Overflow上面看到的问答[^note1]，偏重于函数式编程。
+
+1. Discover list comprehensions. （列表推导）
+1. Discover generators（生成器）
+1. Incorporate map, reduce, filter, iter, range, xrange often into your code（内置函数）
+1. Discover Decorators（装饰器）
+1. Write recursive functions, a lot（写大量的递归函数）
+1. Discover itertools and functools（标准库）
+1. Read [Real World Haskell] （一门函数式语言）
+1. Rewrite all your old Python code with tons of higher order functions, recursion, 
+    and whatnot.
+    把你所有的旧代码都用上面提到的这些高层函数重写一遍。
+1. Annoy your cubicle mates every time they present you with a Python class. 
+    Claim it could be "better" implemented as a dictionary plus some functions. 
+    Embrace functional programming.
+    如果你的伙伴给你看他写的Python类，告诉他可以有更好的实现方法：用一个字典加一些函数。拥抱函数式编程。
+1. Rediscover the Strategy pattern and then all those things from imperative code 
+    you tried so hard to forget after Haskell.
+    重新研究策略模式及其他设计模式。
+1. Find a balance.
+
+[Python progression path - From apprentice to guru - Stack Overflow]: https://stackoverflow.com/questions/2573135/python-progression-path-from-apprentice-to-guru
+[Real World Haskell]: http://book.realworldhaskell.org/read/
+
+
+[^note1]: [Python progression path - From apprentice to guru - Stack Overflow]
