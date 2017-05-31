@@ -15,7 +15,51 @@
         <h3 class="blog-post-title">用Python从零开始一步一步构建Web Server，第三部分：支持WSGI</h3>
 
         <div class="post-content">
-            <p><a href="https://www.python.org/dev/peps/pep-0333/">PEP 333 -- Python Web Server Gateway Interface v1.0</a></p>
+            <p>参看<a href="https://www.python.org/dev/peps/pep-3333/">PEP 3333</a>文档：</p>
+<blockquote>
+<p>The start_response callable is used to begin the HTTP response, and it must return a write(body_data) callable</p>
+</blockquote>
+<p><code>start_response</code>必须返回一个write方法。</p>
+<blockquote>
+<p>However, the start_response callable must not actually transmit the response headers. Instead, it must store them for the server or gateway to transmit only after the first iteration of the application return value that yields a non-empty bytestring, or upon the application's first invocation of the write() callable. In other words, response headers must not be sent until there is actual body data available, or until the application's returned iterable is exhausted. (The only possible exception to this rule is if the response headers explicitly include a Content-Length of zero.)</p>
+</blockquote>
+<p>但是<code>start_response</code>方法内部不能直接返回数据，而应该先把传给它的数据存储起来，等到body一起传输。</p>
+<p>所以说，不应该这样写：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">start_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;HTTP&#39;</span><span class="p">):</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 &#39;</span> <span class="o">+</span> <span class="n">status</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">status</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>而应该这样写：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">start_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write</span>
+
+<span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+
+
+<p>另外定义一个方法：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">write_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;HTTP&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>在合适的时机调用<code>write_headers</code>方法。</p>
+<p><a href="https://www.python.org/dev/peps/pep-0333/">PEP 333 -- Python Web Server Gateway Interface v1.0</a></p>
 <p><a href="https://www.python.org/dev/peps/pep-3333/">PEP 3333 -- Python Web Server Gateway Interface v1.0.1</a></p>
         </div>
     </div>
