@@ -1,0 +1,142 @@
+---
+title: 'Python的with关键字'
+---
+
+要了解`with`关键字，可以先看如下代码：
+
+    :::python
+    class MyClassWithWith(object):
+        def __enter__(self):
+            print '__enter__'
+
+        def __exit__(self, etype, val, tb):
+            print '__exit__'
+
+    m = MyClassWithWith()
+    with m:
+        print 'hello, world!'
+
+上面代码的运行结果：
+
+    __enter__
+    hello, world!
+    __exit__
+
+[PEP 343]引入了一个新的关键字`with`，with语句的写法如下：
+
+    with context_manager:
+        do_something
+
+with后面跟的对象称为`context manager`（上下文管理器），with语句的运行机制为：
+
+1. 调用context manager的`__enter__`方法
+2. 运行with语句内包含的语句，即上面的`do_something`
+3. 调用context manager的`__exit__`方法
+
+也就是说，context manager对象必须包含`__enter__`方法和`__exit__`方法。
+
+另外，如果context manager对象不是在with语句之前就已经初始化，而是紧跟在with关键字之后进行初始化，
+Python的运行时会在with语句结束之后销毁该对象：
+
+    :::python
+    class MyClassWithWith(object):
+        def __init__(self):
+            print '__init__'
+
+        def __enter__(self):
+            print '__enter__'
+
+        def __exit__(self, etype, val, tb):
+            print '__exit__'
+
+        def __del__(self):
+            print '__del__'
+
+    print 'before the with statement'
+    with MyClassWithWith():
+        print 'hello, world!'
+    print 'out the with statement'
+
+为了清楚地看见每个方法的运行顺序，我们在with语句之前和之后都添加了print语句，上面代码的运行结果是：
+
+    before the with statement
+    __init__
+    __enter__
+    hello, world!
+    __exit__
+    __del__
+    out the with statement
+
+可见，在`out the with statement`之前，调用`__exit__`之后，Python运行时又调用了`__del__`销毁了
+`MyClassWithWith()`所生成的对象。
+
+这样的机制给我们提供了很多便利。我们经常会遇到这样的编程模式：
+
+1. 初始化一些对象，或一些资源
+2. 用这个对象做点什么
+3. 销毁这些对象、或释放这些资源；处理第二步中产生的异常。
+
+当然，对于普通的变量，Python的垃圾回收机制（garbage collector）已经自动替我们做了对象销毁的工作，
+但仍然有很多资源和对象是需要我们手动处理的。而对于异常则百分百需要我们自己处理了。
+
+比如最简单的情况：打开一个文件，读取一些内容，然后关闭文件：
+
+    :::python
+    f = file('foo')
+    print f.readlines()
+    f.close()
+
+可以用下面这样的context manager来包装：
+
+    :::python
+    class MyWithFile(object):
+        def __init__(self, f):
+            self._file = file(f)
+
+        def __enter__(self):
+            return self._file
+
+        def __exit__(self, type, value, traceback):
+            self._file.close()
+
+然后这样来使用：
+
+    :::python
+    with MyWithFile('foo') as foo:
+        print foo.readlines()
+
+为了使用`MyWithFile`对象，在with语句中使用了`as`关键字。
+*注意，as关键字后面的`foo`变量引用的并非`MyWithFile`对象实例本身，
+而是对象的`__enter__`方法所返回的对象。*
+
+读者可能会觉得，每次为了使用context manager都要添加这么一个包装类，有点太麻烦了，
+还不如干脆还按照原始写法去写。
+
+#### context manager的工厂方法
+
+
+幸运的是，Python标准库`contextlib`提供了包装器方法`contextmanager`，已经为我们提供了这么一个包装类的框架。contextlib的典型用法如下：
+
+    :::python
+    from contextlib import contextmanager
+
+    @contextmanager
+    def wopen(f):
+        fn = file(f)
+        yield fn
+        fn.close()
+
+    with wopen('foo') as f:
+        print f.readlines()
+
+在上面的代码里，变量`f`引用的对象即为`yield fn`语句中的`fn`，即打开的文件对象。在with语句执行完毕之后，
+控制流程会回到`wopen`方法中，执行`fn.close()`。对于`wopen`方法的调用者来说，无需例会这些步骤，
+只使用file对象即可。
+
+我们可以把`wopen`方法看做是context manager的工厂方法，专门用于生成context manager。
+这样的工厂方法必须是一个`generator`，也就是说必须使用`yield`来抛出相关的对象[^note1]。
+
+
+[PEP 343]: https://www.python.org/dev/peps/pep-0343/
+
+[^note1]: 关于`generator`和`yield`关键字，参见前面的文章

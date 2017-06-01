@@ -1,0 +1,12 @@
+---
+title: '打包和分发你自己的Python包'
+---
+
+问题，数据文件打包以后，别人安装了你的包。以后别人用你的包时，（代码里）如何找到数据文件。
+
+https://stackoverflow.com/questions/20298729/pip-installing-data-files-to-the-wrong-place
+
+https://stackoverflow.com/questions/7934162/making-a-python-package-for-pip-with-some-data-files
+
+
+

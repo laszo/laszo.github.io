@@ -2,6 +2,55 @@
 title: '用Python从零开始一步一步构建Web Server，第三部分：支持WSGI'
 ---
 
+参看[PEP 3333]文档：
+
+>
+The start_response callable is used to begin the HTTP response, and it must return a write(body_data) callable
+
+`start_response`必须返回一个write方法。
+
+>
+However, the start_response callable must not actually transmit the response headers. Instead, it must store them for the server or gateway to transmit only after the first iteration of the application return value that yields a non-empty bytestring, or upon the application's first invocation of the write() callable. In other words, response headers must not be sent until there is actual body data available, or until the application's returned iterable is exhausted. (The only possible exception to this rule is if the response headers explicitly include a Content-Length of zero.)
+
+但是`start_response`方法内部不能直接返回数据，而应该先把传给它的数据存储起来，等到body一起传输。
+
+所以说，不应该这样写：
+
+    :::python
+    def start_response(self, status, headers):
+        if not status.startswith('HTTP'):
+            status = 'HTTP/1.0 ' + status
+        self.wfile.write(status + '\r\n')
+        for keyword, value in headers:
+            self.wfile.write("%s: %s\r\n" % (keyword, value))
+        self.wfile.write('\r\n')
+
+而应该这样写：
+
+    :::python
+    def start_response(self, status, headers):
+        self.status = status
+        for h in headers:
+            self.headers.append(h)
+        return self._write
+
+    def _write(self, data):
+        self.wfile.write(data)
+
+另外定义一个方法：
+
+    :::python
+    def write_headers(self):
+        if not self.status.startswith('HTTP'):
+            self.status = 'HTTP/1.0 ' + self.status
+        self._write(self.status + '\r\n')
+        for keyword, value in self.headers:
+            self._write("%s: %s\r\n" % (keyword, value))
+        self._write('\r\n')
+
+在合适的时机调用`write_headers`方法。
+
+
 [PEP 333 -- Python Web Server Gateway Interface v1.0]
 
 [PEP 3333 -- Python Web Server Gateway Interface v1.0.1]
@@ -9,3 +58,5 @@ title: '用Python从零开始一步一步构建Web Server，第三部分：支�
 [PEP 333 -- Python Web Server Gateway Interface v1.0]: https://www.python.org/dev/peps/pep-0333/
 
 [PEP 3333 -- Python Web Server Gateway Interface v1.0.1]: https://www.python.org/dev/peps/pep-3333/
+
+[PEP 3333]: https://www.python.org/dev/peps/pep-3333/

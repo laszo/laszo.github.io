@@ -1,5 +1,5 @@
 ---
-title: '进程、线程、阻塞、非阻塞、异步、同步、并发(concurrency)、并行(parallelism)、协程(coroutine)等概念的理解'
+title: 'Python异步编程相关概念'
 ---
 
 reverse-generator
