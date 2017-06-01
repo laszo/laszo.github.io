@@ -15,38 +15,62 @@
         <h3 class="blog-post-title">WSGI初探</h3>
 
         <div class="post-content">
-            <p>最简单的WSGI Application代码，没有用到FrameWork，</p>
-<div class="codehilite"><pre><span></span># test.py
-def app(env, start_response):
-    start_response(&#39;200 OK&#39;, [(&#39;Content-type&#39;, &#39;text/plain&#39;)])
-    return [&#39;hello, world&#39;]
+            <p>WSGI是一个协议，用于Web服务器和Python Web应用程序之间的通讯。Web服务可以看作这样的架构：</p>
+<blockquote>
+<p>客户端 &lt; ---- &gt; 服务器 &lt; ---- &gt; Web应用</p>
+</blockquote>
+<p>服务器在这里起到了中介或代理的作用，它接受客户端的请求，并转发给Web应用来处理。
+Web应用接收到请求以后，进行实际的处理，并将响应返回给服务器，由服务器返回给客户端。</p>
+<p>对于Web系统来说，客户端一般就是浏览器，客户端与服务器之间使用HTTP协议通讯。
+在Python的Web开发中，服务器与Python Web应用之间交互的协议就是WSGI。它由PEP333提出，
+并在PEP3333中做了补充。</p>
+<p>在WSGI协议中有三个角色：</p>
+<ol>
+<li>服务器（server）</li>
+<li>应用（application）</li>
+<li>中间件（middleware）</li>
+</ol>
+<p>服务器与应用这两个角色的概念上面已经说过了，中间件我们暂时还用不到，后面会专门写一篇文章来分析。</p>
+<h4>应用</h4>
+<p>下面来看一个最简单的WSGI的应用的代码：</p>
+<div class="codehilite"><pre><span></span><span class="c1"># test.py</span>
+<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;hello, world&#39;</span><span class="p">]</span>
 </pre></div>
 
 
-<p>使用<code>gunicorn</code>可以运行：</p>
+<p>WSGI规定应用必须是一个可调用的对象（callable object），接受两个参数，即上面的<code>env</code>和<code>start_response</code>。</p>
+<ul>
+<li>env对象包含应用运行的环境信息，包括客户端发送的请求信息等，env对象包含的参数可见<a href="20170510.2.html">WSGI协议中的environ变量</a></li>
+<li>start_response也是一个可调用的对象，应用返回HTTP响应的状态（status）和首部（headers）。</li>
+<li>可调用的对象（app）的返回值即为HTTP响应的data部分。</li>
+</ul>
+<p>上面的代码虽然简单，但已符合WSGI标准，使用任何支持WSGI的服务器都可以承载。比如使用<code>gunicorn</code>可以运行：</p>
 <div class="codehilite"><pre><span></span>gunicorn test:app
 </pre></div>
 
 
-<p>可以看到运行的输出：</p>
-<div class="codehilite"><pre><span></span>[2017-05-08 11:41:58 +0800] [1133] [INFO] Starting gunicorn 19.7.0
-[2017-05-08 11:41:58 +0800] [1133] [INFO] Listening at: http://127.0.0.1:8000 (1133)
-[2017-05-08 11:41:58 +0800] [1133] [INFO] Using worker: sync
-[2017-05-08 11:41:58 +0800] [1136] [INFO] Booting worker with pid: 1136
-</pre></div>
-
-
-<p>或者使用Python标准库自带的wsgiref库：</p>
+<p>或者使用Python标准库自带的wsgiref库提供的make_server：</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
-
-<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
-    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;Hello, world!&#39;</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">make_server</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
     <span class="n">s</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
 </pre></div>
+
+
+<p>这时候使用浏览器打开本机地址<code>http://127.0.0.1:8000</code>就可以看到我们的应用返回的<code>hello, world</code>。</p>
+<h4>服务端</h4>
+<p>WSGI服务端的逻辑要复杂一些，结合应用端的代码、以及HTTP协议来考虑，它肯定需要有如下功能：</p>
+<ul>
+<li>监听和接收客户端HTTP请求</li>
+<li>提供<code>env</code>变量</li>
+<li>提供<code>start_response</code>函数</li>
+<li>调用应用</li>
+<li>返回HTTP响应</li>
+</ul>
+<p>具体如何使用Python代码来实现这些功能，代码略微要复杂一些，这篇文章就不讲了，参见<a href="20170518.0.html">用Python从零开始一步一步构建Web Server，第三部分：支持WSGI</a>。</p>
         </div>
     </div>
 </body>

@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>对WSGI environ的分析 - Lv Xiaoyu `Site</title>
+    <title>WSGI协议中的environ变量 - Lv Xiaoyu `Site</title>
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
@@ -12,45 +12,74 @@
             <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
         </div>
 
-        <h3 class="blog-post-title">对WSGI environ的分析</h3>
+        <h3 class="blog-post-title">WSGI协议中的environ变量</h3>
 
         <div class="post-content">
-            <p>来看wsgiref库的BaseHandler：</p>
-<div class="codehilite"><pre><span></span>def run(self, application):
-    try:
-        self.setup_environ()
-    ...
-
-def setup_environ(self):
-    &quot;&quot;&quot;Set up the environment for one request&quot;&quot;&quot;
-
-    env = self.environ = self.os_environ.copy()
-    self.add_cgi_vars()
-
-    env[&#39;wsgi.input&#39;]        = self.get_stdin()
-    env[&#39;wsgi.errors&#39;]       = self.get_stderr()
-    env[&#39;wsgi.version&#39;]      = self.wsgi_version
-    env[&#39;wsgi.run_once&#39;]     = self.wsgi_run_once
-    env[&#39;wsgi.url_scheme&#39;]   = self.get_scheme()
-    env[&#39;wsgi.multithread&#39;]  = self.wsgi_multithread
-    env[&#39;wsgi.multiprocess&#39;] = self.wsgi_multiprocess
-
-    if self.wsgi_file_wrapper is not None:
-        env[&#39;wsgi.file_wrapper&#39;] = self.wsgi_file_wrapper
-
-    if self.origin_server and self.server_software:
-        env.setdefault(&#39;SERVER_SOFTWARE&#39;,self.server_software)
+            <p>在WSGI中，服务端传递给应用的第一个参数<code>environ</code>是一个字典，根据协议规定它必须包含如下值：</p>
+<ul>
+<li>
+<p>REQUEST_METHOD，HTTP协议请求的方法，如"GET" 或 "POST"</p>
+</li>
+<li>
+<p>SCRIPT_NAME URL的起始部分</p>
+</li>
+<li>
+<p>PATH_INFO 客户端请求的路径，如果请求的是根目录，则可以提供空字符串，不必提供斜杠<code>/</code></p>
+</li>
+<li>
+<p>QUERY_STRING 客户端请求字符串，也就是URL中问号<code>?</code>后面的部分，可以为空。</p>
+</li>
+<li>
+<p>CONTENT_TYPE 客户端请求的文档类型，可以为空。</p>
+</li>
+<li>
+<p>CONTENT_LENGTH 客户端请求的文档类型，可以为空。</p>
+</li>
+<li>
+<p>SERVER_NAME 服务器名称</p>
+</li>
+<li>
+<p>SERVER_PORT 服务器端口</p>
+</li>
+<li>
+<p>SERVER_PROTOCOL 客户端请求使用的协议，比如"HTTP/1.0" 或 "HTTP/1.1"</p>
+</li>
+<li>
+<p>HTTP_ Variables 其他任何以<code>HTTP_</code>开头的变量。</p>
+</li>
+</ul>
+<p>上面这些变量是为了兼容CGI协议而规定，WSGI协议自身还进一步规定了<code>environ</code>中必须包含如下变量的值：</p>
+<ul>
+<li>
+<p>wsgi.version 支持的WSGI协议版本，格式为tuple变量。对于PEP333来说是(1, 0)，对于PEP3333来说是(1, 1)</p>
+</li>
+<li>
+<p>wsgi.url_scheme url的模式，即"http" 或 "https"</p>
+</li>
+<li>
+<p>wsgi.input 这是一个input stream，应用可以从这里读取HTTP请求的body</p>
+</li>
+<li>
+<p>wsgi.errors 这是一个output stream，应用可以向这里输出错误信息</p>
+</li>
+<li>
+<p>wsgi.multithread 这是一个布尔值，指明应用是否可以被同进程中的另外一个线程调用（invoke）</p>
+</li>
+<li>
+<p>wsgi.multiprocess 这是一个布尔值，指明应用是否可以被另外一个进程调用</p>
+</li>
+<li>
+<p>wsgi.run_once 这是一个布尔值，指明应用是否期望只在进程中被调用一次</p>
+</li>
+</ul>
+<p>另外，environ中还可以包含操作系统的变量，这可以用如下的Python代码来实现：</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">environ</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </pre></div>
 
 
-<p>注意，在每次调用run函数的时候都会调用一次setup_environ，进行环境变量设置，首先：</p>
-<div class="codehilite"><pre><span></span>env = self.environ = self.os_environ.copy()
-</pre></div>
-
-
-<p>这句代码保证了environ被重新赋值，上一次处理请求所使用的environ不会被复用到下一次请求处理。而os_environ则来自操作系统的环境变量：</p>
-<div class="codehilite"><pre><span></span>os_environ = dict(os.environ.items())
-</pre></div>
+<p>除此之外，服务端也可以根据自己的需要添加其他变量到environ字典中，以传递给应用一些信息，
+当然变量的名字不能与上述规定的变量重复。</p>
         </div>
     </div>
 </body>

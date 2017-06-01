@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>WSGI的Server端分析 - Lv Xiaoyu `Site</title>
+    <title>追踪Python标准库wsgiref的实现逻辑 - Lv Xiaoyu `Site</title>
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
@@ -12,7 +12,7 @@
             <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
         </div>
 
-        <h3 class="blog-post-title">WSGI的Server端分析</h3>
+        <h3 class="blog-post-title">追踪Python标准库wsgiref的实现逻辑</h3>
 
         <div class="post-content">
             <p>我们都知道写一个WSGI的application是非常简单的：</p>
@@ -30,42 +30,37 @@
 
 
 <p>make_server的代码：</p>
-<div class="codehilite"><pre><span></span>def make_server(
-    host, port, app, server_class=WSGIServer, handler_class=WSGIRequestHandler
-):
-    server = server_class((host, port), handler_class)
-    server.set_app(app)
-    return server
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">make_server</span><span class="p">(</span>
+    <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">server_class</span><span class="o">=</span><span class="n">WSGIServer</span><span class="p">,</span> <span class="n">handler_class</span><span class="o">=</span><span class="n">WSGIRequestHandler</span>
+<span class="p">):</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">server_class</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">handler_class</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">set_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">server</span>
 </pre></div>
 
 
 <p>核心是<code>WSGIServer</code>和<code>WSGIRequestHandler</code>两个类。先从Server来看：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">WSGIServer</span><span class="p">(</span><span class="nx">HTTPServer</span><span class="p">)</span><span class="o">:</span>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">WSGIServer</span><span class="p">(</span><span class="n">HTTPServer</span><span class="p">):</span>
+    <span class="n">application</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="s2">&quot;&quot;&quot;BaseHTTPServer that implements the Python WSGI protocol&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">server_bind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">HTTPServer</span><span class="o">.</span><span class="n">server_bind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_environ</span><span class="p">()</span>
 
-    <span class="nx">application</span> <span class="o">=</span> <span class="nx">None</span>
+    <span class="k">def</span> <span class="nf">setup_environ</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_environ</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">env</span><span class="p">[</span><span class="s1">&#39;SERVER_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_name</span>
+        <span class="n">env</span><span class="p">[</span><span class="s1">&#39;GATEWAY_INTERFACE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;CGI/1.1&#39;</span>
+        <span class="n">env</span><span class="p">[</span><span class="s1">&#39;SERVER_PORT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_port</span><span class="p">)</span>
+        <span class="n">env</span><span class="p">[</span><span class="s1">&#39;REMOTE_HOST&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="n">env</span><span class="p">[</span><span class="s1">&#39;CONTENT_LENGTH&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="n">env</span><span class="p">[</span><span class="s1">&#39;SCRIPT_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="nx">def</span> <span class="nx">server_bind</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="s2">&quot;&quot;&quot;Override server_bind to store the server name.&quot;&quot;&quot;</span>
-        <span class="nx">HTTPServer</span><span class="p">.</span><span class="nx">server_bind</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">setup_environ</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">application</span>
 
-    <span class="nx">def</span> <span class="nx">setup_environ</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="err">#</span> <span class="nx">Set</span> <span class="nx">up</span> <span class="nx">base</span> <span class="nx">environment</span>
-        <span class="nx">env</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">base_environ</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="nx">env</span><span class="p">[</span><span class="s1">&#39;SERVER_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">server_name</span>
-        <span class="nx">env</span><span class="p">[</span><span class="s1">&#39;GATEWAY_INTERFACE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;CGI/1.1&#39;</span>
-        <span class="nx">env</span><span class="p">[</span><span class="s1">&#39;SERVER_PORT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">str</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">server_port</span><span class="p">)</span>
-        <span class="nx">env</span><span class="p">[</span><span class="s1">&#39;REMOTE_HOST&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
-        <span class="nx">env</span><span class="p">[</span><span class="s1">&#39;CONTENT_LENGTH&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
-        <span class="nx">env</span><span class="p">[</span><span class="s1">&#39;SCRIPT_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-
-    <span class="nx">def</span> <span class="nx">get_app</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">application</span>
-
-    <span class="nx">def</span> <span class="nx">set_app</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">application</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">application</span> <span class="o">=</span> <span class="nx">application</span>
+    <span class="k">def</span> <span class="nf">set_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">application</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">application</span> <span class="o">=</span> <span class="n">application</span>
 </pre></div>
 
 
@@ -76,32 +71,28 @@
 <li>setup_environ，设置env变量的一些基本字段，保存在自己的base_environ成员中</li>
 </ul>
 <p>追踪到<code>HTTPServer</code>:</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">HTTPServer</span><span class="p">(</span><span class="nx">SocketServer</span><span class="p">.</span><span class="nx">TCPServer</span><span class="p">)</span><span class="o">:</span>
-
-    <span class="nx">allow_reuse_address</span> <span class="o">=</span> <span class="mi">1</span>    <span class="err">#</span> <span class="nx">Seems</span> <span class="nx">to</span> <span class="nx">make</span> <span class="nx">sense</span> <span class="k">in</span> <span class="nx">testing</span> <span class="nx">environment</span>
-
-    <span class="nx">def</span> <span class="nx">server_bind</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="s2">&quot;&quot;&quot;Override server_bind to store the server name.&quot;&quot;&quot;</span>
-        <span class="nx">SocketServer</span><span class="p">.</span><span class="nx">TCPServer</span><span class="p">.</span><span class="nx">server_bind</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span>
-        <span class="nx">host</span><span class="p">,</span> <span class="nx">port</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">getsockname</span><span class="p">()[</span><span class="o">:</span><span class="mi">2</span><span class="p">]</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">server_name</span> <span class="o">=</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">getfqdn</span><span class="p">(</span><span class="nx">host</span><span class="p">)</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">server_port</span> <span class="o">=</span> <span class="nx">port</span>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">HTTPServer</span><span class="p">(</span><span class="n">SocketServer</span><span class="o">.</span><span class="n">TCPServer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">server_bind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">SocketServer</span><span class="o">.</span><span class="n">TCPServer</span><span class="o">.</span><span class="n">server_bind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_name</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">getfqdn</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_port</span> <span class="o">=</span> <span class="n">port</span>
 </pre></div>
 
 
 <p>继承自<code>SocketServer.TCPServer</code>，只添加了一个方法<code>server_bind</code>。这方法先是调用其父类的同名方法<code>TCPServer.server_bind</code>，然后设置了自身的server_name和server_port成员。</p>
 <p>到这里可以发现，从<code>WSGIServer</code>到<code>BaseHttpServer</code>，并不包含什么处理流程，要研究的东西还在后面。来看TCPServer，由于它的代码太多，我们一部分一部分来研究：</p>
-<p>class TCPServer(BaseServer):</p>
-<div class="codehilite"><pre><span></span>def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
-    BaseServer.__init__(self, server_address, RequestHandlerClass)
-    self.socket = socket.socket(self.address_family, self.socket_type)
-    if bind_and_activate:
-        try:
-            self.server_bind()
-            self.server_activate()
-        except:
-            self.server_close()
-            raise
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">TCPServer</span><span class="p">(</span><span class="n">BaseServer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">RequestHandlerClass</span><span class="p">,</span> <span class="n">bind_and_activate</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">BaseServer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">RequestHandlerClass</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address_family</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bind_and_activate</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server_bind</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server_activate</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server_close</span><span class="p">()</span>
+                <span class="k">raise</span>
 </pre></div>
 
 
@@ -112,47 +103,47 @@
 <li>如果bind_and_activate为True（默认为True），调用server_bind和server_activate，看名字就知道，分别是绑定和激活服务器</li>
 </ul>
 <p>来看server_bind：</p>
-<div class="codehilite"><pre><span></span>def server_bind(self):
-    if self.allow_reuse_address:
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    self.socket.bind(self.server_address)
-    self.server_address = self.socket.getsockname()
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">server_bind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_reuse_address</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()</span>
 </pre></div>
 
 
 <p>核心逻辑是执行socket.bind，这是使用socket必要的第一步。其次是把地址存储在自身的server_address成员上。</p>
 <p>来看server_activate：</p>
-<div class="codehilite"><pre><span></span>def server_activate(self):
-    self.socket.listen(self.request_queue_size)
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">server_activate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request_queue_size</span><span class="p">)</span>
 </pre></div>
 
 
 <p>单纯执行socket.listen。看到这里我们可以发现，TCPServer的构造方法，除了调用父类的构造方法之外，主要就是完成了对socket的初始化和监听，相当于：</p>
-<div class="codehilite"><pre><span></span>self.socket = socket.socket()
-self.socket.bind(address)
-self.socket.listen(self.request_queue_size)
+<div class="codehilite"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request_queue_size</span><span class="p">)</span>
 </pre></div>
 
 
 <p>这几个方法看完，我们一次性的看TCPServer的其他方法：</p>
-<div class="codehilite"><pre><span></span>def server_close(self):
-    self.socket.close()
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">server_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-def fileno(self):
-    return self.socket.fileno()
+<span class="k">def</span> <span class="nf">fileno</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
 
-def get_request(self):
-    return self.socket.accept()
+<span class="k">def</span> <span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
 
-def shutdown_request(self, request):
-    try:
-        request.shutdown(socket.SHUT_WR)
-    except socket.error:
-        pass
-    self.close_request(request)
+<span class="k">def</span> <span class="nf">shutdown_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_WR</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">close_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
 
-def close_request(self, request):
-    request.close()
+<span class="k">def</span> <span class="nf">close_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 
 
@@ -170,12 +161,12 @@ def close_request(self, request):
 <li>存储部分对象</li>
 </ul>
 <p>至于我们最关心的服务端的处理流程，看来还要进一步再往下看<code>BaseServer</code>，仍然分为几个部分来看：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">BaseServer</span>:
-    <span class="kt">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">server_address</span><span class="p">,</span> <span class="nx">RequestHandlerClass</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">server_address</span> <span class="o">=</span> <span class="nx">server_address</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">RequestHandlerClass</span> <span class="o">=</span> <span class="nx">RequestHandlerClass</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">__is_shut_down</span> <span class="o">=</span> <span class="nx">threading</span><span class="p">.</span><span class="nx">Event</span><span class="p">()</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">__shutdown_request</span> <span class="o">=</span> <span class="nx">False</span>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">BaseServer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">RequestHandlerClass</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span> <span class="o">=</span> <span class="n">server_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RequestHandlerClass</span> <span class="o">=</span> <span class="n">RequestHandlerClass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_shut_down</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__shutdown_request</span> <span class="o">=</span> <span class="bp">False</span>
 </pre></div>
 
 
@@ -193,30 +184,30 @@ def close_request(self, request):
 
 
 <p>Server调用了<code>serve_forever</code>方法，这个是Server的核心逻辑。但在此之前我们先要看一下SocketServer模块中定义的一个函数<code>_eintr_retry</code>的代码：</p>
-<div class="codehilite"><pre><span></span>def _eintr_retry(func, *args):
-    &quot;&quot;&quot;restart a system call interrupted by EINTR&quot;&quot;&quot;
-    while True:
-        try:
-            return func(*args)
-        except (OSError, select.error) as e:
-            if e.args[0] != errno.EINTR:
-                raise
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">_eintr_retry</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;restart a system call interrupted by EINTR&quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="n">select</span><span class="o">.</span><span class="n">error</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">errno</span><span class="o">.</span><span class="n">EINTR</span><span class="p">:</span>
+                <span class="k">raise</span>
 </pre></div>
 
 
 <p>这个函数的逻辑是运行指定的<code>func</code>，如果func能够成功运行则直接返回func的返回值，如果有异常就捕获异常，如果捕获的异常是<code>errno.EINTR</code>就抛出异常。如果捕获的异常不是<code>errno.EINTR</code>，就会进行下一次循环。</p>
 <p>总的来说<code>_eintr_retry</code>的逻辑就是反复尝试执行func一直到执行成功、遇到<code>errno.EINTR</code>为止，这个异常代表系统中断（<code>Interrupted system call</code>）。</p>
 <p>下面来看<code>serve_forever</code>的代码：</p>
-<div class="codehilite"><pre><span></span>def serve_forever(self, poll_interval=0.5):
-    self.__is_shut_down.clear()
-    try:
-        while not self.__shutdown_request:
-            r, w, e = _eintr_retry(select.select, [self], [], [], poll_interval)
-            if self in r:
-                self._handle_request_noblock()
-    finally:
-        self.__shutdown_request = False
-        self.__is_shut_down.set()
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">serve_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">__is_shut_down</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__shutdown_request</span><span class="p">:</span>
+            <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">_eintr_retry</span><span class="p">(</span><span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">poll_interval</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_handle_request_noblock</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__shutdown_request</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_shut_down</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 </pre></div>
 
 
@@ -227,24 +218,24 @@ def close_request(self, request):
 </blockquote>
 <p>方法先是执行<code>self.__is_shut_down.clear()</code>，从前面BaseServer的构造方法中我们知道<code>__is_shut_down</code>是一个<code>threading.Event</code>，使用这个成员的代码我们后面才会看到。</p>
 <p>然后的逻辑在就是一直监听客户端请求，并处理请求。监听请求使用的是<code>select.select</code>，这个我们在前面的文章里已经介绍过。处理请求使用<code>_handle_request_noblock</code>方法，下面来看这个方法的代码：</p>
-<div class="codehilite"><pre><span></span>def _handle_request_noblock(self):
-    try:
-        request, client_address = self.get_request()
-    except socket.error:
-        return
-    if self.verify_request(request, client_address):
-        try:
-            self.process_request(request, client_address)
-        except:
-            self.handle_error(request, client_address)
-            self.shutdown_request(request)
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">_handle_request_noblock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verify_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
 </pre></div>
 
 
 <p>去除捕获和异常处理的部分，我们可以认为代码的逻辑如下：</p>
-<div class="codehilite"><pre><span></span>request, client_address = self.get_request()
-if self.verify_request(request, client_address):
-    self.process_request(request, client_address)
+<div class="codehilite"><pre><span></span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">()</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verify_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">process_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">)</span>
 </pre></div>
 
 
@@ -256,25 +247,25 @@ if self.verify_request(request, client_address):
 </ol>
 <p>在BaseServer中并无get_request这个方法，我们在前面已经看过TCPServer类中的这个方法，就是单纯的返回<code>socket.accept()</code>的返回值。</p>
 <p>BaseServer中的verify_request方法非常简单，单纯返回True：</p>
-<div class="codehilite"><pre><span></span>def verify_request(self, request, client_address):
-    return True
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">verify_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">True</span>
 </pre></div>
 
 
 <p>这个方法显然留给子类去覆写的。</p>
 <p>下面来看process_request方法和相关的几个方法的代码：</p>
-<div class="codehilite"><pre><span></span>def process_request(self, request, client_address):
-    self.finish_request(request, client_address)
-    self.shutdown_request(request)
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">finish_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
 
-def finish_request(self, request, client_address):
-    self.RequestHandlerClass(request, client_address, self)
+<span class="k">def</span> <span class="nf">finish_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">RequestHandlerClass</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
-def shutdown_request(self, request):
-    self.close_request(request)
+<span class="k">def</span> <span class="nf">shutdown_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">close_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
 
-def close_request(self, request):
-    pass
+<span class="k">def</span> <span class="nf">close_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="k">pass</span>
 </pre></div>
 
 
@@ -284,8 +275,8 @@ def close_request(self, request):
 <li>关闭请求 -&gt; shutdown_request -&gt; close_request</li>
 </ol>
 <p>close_request显然也是留给子类去实现的，在TCPServer中我们已经见过了它的覆写：</p>
-<div class="codehilite"><pre><span></span>def close_request(self, request):
-    request.close()
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">close_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 
 

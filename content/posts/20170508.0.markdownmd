@@ -2,33 +2,67 @@
 title: 'WSGI初探'
 ---
 
-最简单的WSGI Application代码，没有用到FrameWork，
+WSGI是一个协议，用于Web服务器和Python Web应用程序之间的通讯。Web服务可以看作这样的架构：
 
+>
+客户端 < ---- > 服务器 < ---- > Web应用
+
+服务器在这里起到了中介或代理的作用，它接受客户端的请求，并转发给Web应用来处理。
+Web应用接收到请求以后，进行实际的处理，并将响应返回给服务器，由服务器返回给客户端。
+
+对于Web系统来说，客户端一般就是浏览器，客户端与服务器之间使用HTTP协议通讯。
+在Python的Web开发中，服务器与Python Web应用之间交互的协议就是WSGI。它由PEP333提出，
+并在PEP3333中做了补充。
+
+在WSGI协议中有三个角色：
+
+1. 服务器（server）
+2. 应用（application）
+3. 中间件（middleware）
+
+服务器与应用这两个角色的概念上面已经说过了，中间件我们暂时还用不到，后面会专门写一篇文章来分析。
+
+#### 应用
+
+下面来看一个最简单的WSGI的应用的代码：
+
+    :::python
     # test.py
     def app(env, start_response):
         start_response('200 OK', [('Content-type', 'text/plain')])
         return ['hello, world']
 
-使用`gunicorn`可以运行：
+WSGI规定应用必须是一个可调用的对象（callable object），接受两个参数，即上面的`env`和`start_response`。
+
+* env对象包含应用运行的环境信息，包括客户端发送的请求信息等，env对象包含的参数可见[WSGI协议中的environ变量]
+* start_response也是一个可调用的对象，应用返回HTTP响应的状态（status）和首部（headers）。
+* 可调用的对象（app）的返回值即为HTTP响应的data部分。
+
+上面的代码虽然简单，但已符合WSGI标准，使用任何支持WSGI的服务器都可以承载。比如使用`gunicorn`可以运行：
 
     gunicorn test:app
 
-可以看到运行的输出：
-
-    [2017-05-08 11:41:58 +0800] [1133] [INFO] Starting gunicorn 19.7.0
-    [2017-05-08 11:41:58 +0800] [1133] [INFO] Listening at: http://127.0.0.1:8000 (1133)
-    [2017-05-08 11:41:58 +0800] [1133] [INFO] Using worker: sync
-    [2017-05-08 11:41:58 +0800] [1136] [INFO] Booting worker with pid: 1136
-
-或者使用Python标准库自带的wsgiref库：
+或者使用Python标准库自带的wsgiref库提供的make_server：
 
     from wsgiref.simple_server import make_server
-
-    def app(env, start_response):
-        start_response('200 OK', [('Content-type', 'text/plain')])
-        return ['Hello, world!']
 
     if __name__ == '__main__':
         s = make_server('', 8000, app)
         s.serve_forever()
 
+这时候使用浏览器打开本机地址`http://127.0.0.1:8000`就可以看到我们的应用返回的`hello, world`。
+
+#### 服务端
+
+WSGI服务端的逻辑要复杂一些，结合应用端的代码、以及HTTP协议来考虑，它肯定需要有如下功能：
+
+* 监听和接收客户端HTTP请求
+* 提供`env`变量
+* 提供`start_response`函数
+* 调用应用
+* 返回HTTP响应
+
+具体如何使用Python代码来实现这些功能，代码略微要复杂一些，这篇文章就不讲了，参见[用Python从零开始一步一步构建Web Server，第三部分：支持WSGI]。
+
+[WSGI协议中的environ变量]: 20170510.2.html
+[用Python从零开始一步一步构建Web Server，第三部分：支持WSGI]: 20170518.0.html

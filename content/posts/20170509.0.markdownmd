@@ -1,5 +1,5 @@
 ---
-title: 'WSGI的Server端分析'
+title: '追踪Python标准库wsgiref的实现逻辑'
 ---
 
 我们都知道写一个WSGI的application是非常简单的：
@@ -10,12 +10,14 @@ title: 'WSGI的Server端分析'
 
 这篇文章已经探讨了WSGI的application这一部分的特点，现在我们来关心服务器如何承载application，我们从python标准库wsgiref来研究这个过程。虽然wsgiref作为生产环境的服务器是不够的，但是用来研究基本的原理已足够。如下代码就可以运行起server：
 
+    :::python
     from wsgiref.simple_server import make_server
     s = make_server('', 8000, myapp.app)
     s.serve_forever()
 
 make_server的代码：
 
+    :::python
     def make_server(
         host, port, app, server_class=WSGIServer, handler_class=WSGIRequestHandler
     ):
@@ -25,19 +27,15 @@ make_server的代码：
 
 核心是`WSGIServer`和`WSGIRequestHandler`两个类。先从Server来看：
 
+    :::python
     class WSGIServer(HTTPServer):
-
-        """BaseHTTPServer that implements the Python WSGI protocol"""
-
         application = None
 
         def server_bind(self):
-            """Override server_bind to store the server name."""
             HTTPServer.server_bind(self)
             self.setup_environ()
 
         def setup_environ(self):
-            # Set up base environment
             env = self.base_environ = {}
             env['SERVER_NAME'] = self.server_name
             env['GATEWAY_INTERFACE'] = 'CGI/1.1'
@@ -60,12 +58,9 @@ make_server的代码：
 
 追踪到`HTTPServer`:
 
+    :::python
     class HTTPServer(SocketServer.TCPServer):
-
-        allow_reuse_address = 1    # Seems to make sense in testing environment
-
         def server_bind(self):
-            """Override server_bind to store the server name."""
             SocketServer.TCPServer.server_bind(self)
             host, port = self.socket.getsockname()[:2]
             self.server_name = socket.getfqdn(host)
@@ -75,18 +70,19 @@ make_server的代码：
 
 到这里可以发现，从`WSGIServer`到`BaseHttpServer`，并不包含什么处理流程，要研究的东西还在后面。来看TCPServer，由于它的代码太多，我们一部分一部分来研究：
 
-class TCPServer(BaseServer):
 
-    def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
-        BaseServer.__init__(self, server_address, RequestHandlerClass)
-        self.socket = socket.socket(self.address_family, self.socket_type)
-        if bind_and_activate:
-            try:
-                self.server_bind()
-                self.server_activate()
-            except:
-                self.server_close()
-                raise
+    :::python
+    class TCPServer(BaseServer):
+        def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
+            BaseServer.__init__(self, server_address, RequestHandlerClass)
+            self.socket = socket.socket(self.address_family, self.socket_type)
+            if bind_and_activate:
+                try:
+                    self.server_bind()
+                    self.server_activate()
+                except:
+                    self.server_close()
+                    raise
 
 TCPServer继承自BaseServer，它的构造方法做了如下几件事：
 
@@ -96,6 +92,7 @@ TCPServer继承自BaseServer，它的构造方法做了如下几件事：
 
 来看server_bind：
 
+    :::python
     def server_bind(self):
         if self.allow_reuse_address:
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -106,17 +103,20 @@ TCPServer继承自BaseServer，它的构造方法做了如下几件事：
 
 来看server_activate：
 
+    :::python
     def server_activate(self):
         self.socket.listen(self.request_queue_size)
 
 单纯执行socket.listen。看到这里我们可以发现，TCPServer的构造方法，除了调用父类的构造方法之外，主要就是完成了对socket的初始化和监听，相当于：
 
+    :::python
     self.socket = socket.socket()
     self.socket.bind(address)
     self.socket.listen(self.request_queue_size)
 
 这几个方法看完，我们一次性的看TCPServer的其他方法：
 
+    :::python
     def server_close(self):
         self.socket.close()
 
@@ -151,6 +151,7 @@ TCPServer继承自BaseServer，它的构造方法做了如下几件事：
 
 至于我们最关心的服务端的处理流程，看来还要进一步再往下看`BaseServer`，仍然分为几个部分来看：
 
+    :::python
     class BaseServer:
         def __init__(self, server_address, RequestHandlerClass):
             self.server_address = server_address
@@ -166,12 +167,14 @@ BaseServer终于没有再继承其他类了，它的构造方法做了如下几�
 
 到这里，似乎没有了追踪的线索。我们可以回溯到最初的代码：
 
+    :::python
     from wsgiref.simple_server import make_server
     s = make_server('', 8000, myapp.app)
     s.serve_forever()
 
 Server调用了`serve_forever`方法，这个是Server的核心逻辑。但在此之前我们先要看一下SocketServer模块中定义的一个函数`_eintr_retry`的代码：
 
+    :::python
     def _eintr_retry(func, *args):
         """restart a system call interrupted by EINTR"""
         while True:
@@ -187,6 +190,7 @@ Server调用了`serve_forever`方法，这个是Server的核心逻辑。但在�
 
 下面来看`serve_forever`的代码：
 
+    :::python
     def serve_forever(self, poll_interval=0.5):
         self.__is_shut_down.clear()
         try:
@@ -209,6 +213,7 @@ Handle one request at a time until shutdown.
 
 然后的逻辑在就是一直监听客户端请求，并处理请求。监听请求使用的是`select.select`，这个我们在前面的文章里已经介绍过。处理请求使用`_handle_request_noblock`方法，下面来看这个方法的代码：
 
+    :::python
     def _handle_request_noblock(self):
         try:
             request, client_address = self.get_request()
@@ -223,6 +228,7 @@ Handle one request at a time until shutdown.
 
 去除捕获和异常处理的部分，我们可以认为代码的逻辑如下：
 
+    :::python
     request, client_address = self.get_request()
     if self.verify_request(request, client_address):
         self.process_request(request, client_address)
@@ -237,6 +243,7 @@ Handle one request at a time until shutdown.
 
 BaseServer中的verify_request方法非常简单，单纯返回True：
 
+    :::python
     def verify_request(self, request, client_address):
         return True
 
@@ -244,6 +251,7 @@ BaseServer中的verify_request方法非常简单，单纯返回True：
 
 下面来看process_request方法和相关的几个方法的代码：
 
+    :::python
     def process_request(self, request, client_address):
         self.finish_request(request, client_address)
         self.shutdown_request(request)
@@ -264,6 +272,7 @@ BaseServer中的verify_request方法非常简单，单纯返回True：
 
  close_request显然也是留给子类去实现的，在TCPServer中我们已经见过了它的覆写：
 
+    :::python
     def close_request(self, request):
         request.close()
 

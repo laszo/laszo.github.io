@@ -1,40 +1,50 @@
 ---
-title: '对WSGI environ的分析'
+title: 'WSGI协议中的environ变量'
 ---
 
-来看wsgiref库的BaseHandler：
+在WSGI中，服务端传递给应用的第一个参数`environ`是一个字典，根据协议规定它必须包含如下值：
 
-    def run(self, application):
-        try:
-            self.setup_environ()
-        ...
+* REQUEST_METHOD，HTTP协议请求的方法，如"GET" 或 "POST"
 
-    def setup_environ(self):
-        """Set up the environment for one request"""
+* SCRIPT_NAME URL的起始部分
 
-        env = self.environ = self.os_environ.copy()
-        self.add_cgi_vars()
+* PATH_INFO 客户端请求的路径，如果请求的是根目录，则可以提供空字符串，不必提供斜杠`/`
 
-        env['wsgi.input']        = self.get_stdin()
-        env['wsgi.errors']       = self.get_stderr()
-        env['wsgi.version']      = self.wsgi_version
-        env['wsgi.run_once']     = self.wsgi_run_once
-        env['wsgi.url_scheme']   = self.get_scheme()
-        env['wsgi.multithread']  = self.wsgi_multithread
-        env['wsgi.multiprocess'] = self.wsgi_multiprocess
+* QUERY_STRING 客户端请求字符串，也就是URL中问号`?`后面的部分，可以为空。
 
-        if self.wsgi_file_wrapper is not None:
-            env['wsgi.file_wrapper'] = self.wsgi_file_wrapper
+* CONTENT_TYPE 客户端请求的文档类型，可以为空。
 
-        if self.origin_server and self.server_software:
-            env.setdefault('SERVER_SOFTWARE',self.server_software)
+* CONTENT_LENGTH 客户端请求的文档类型，可以为空。
 
-注意，在每次调用run函数的时候都会调用一次setup_environ，进行环境变量设置，首先：
+* SERVER_NAME 服务器名称
 
-    env = self.environ = self.os_environ.copy()
+* SERVER_PORT 服务器端口
 
-这句代码保证了environ被重新赋值，上一次处理请求所使用的environ不会被复用到下一次请求处理。而os_environ则来自操作系统的环境变量：
+* SERVER_PROTOCOL 客户端请求使用的协议，比如"HTTP/1.0" 或 "HTTP/1.1"
 
-    os_environ = dict(os.environ.items())
+* HTTP_ Variables 其他任何以`HTTP_`开头的变量。
 
+上面这些变量是为了兼容CGI协议而规定，WSGI协议自身还进一步规定了`environ`中必须包含如下变量的值：
 
+* wsgi.version 支持的WSGI协议版本，格式为tuple变量。对于PEP333来说是(1, 0)，对于PEP3333来说是(1, 1)
+
+* wsgi.url_scheme url的模式，即"http" 或 "https"
+
+* wsgi.input 这是一个input stream，应用可以从这里读取HTTP请求的body
+
+* wsgi.errors 这是一个output stream，应用可以向这里输出错误信息
+
+* wsgi.multithread 这是一个布尔值，指明应用是否可以被同进程中的另外一个线程调用（invoke）
+
+* wsgi.multiprocess 这是一个布尔值，指明应用是否可以被另外一个进程调用
+
+* wsgi.run_once 这是一个布尔值，指明应用是否期望只在进程中被调用一次
+
+另外，environ中还可以包含操作系统的变量，这可以用如下的Python代码来实现：
+
+    :::python
+    import os
+    environ = dict(os.environ.items()).copy()
+
+除此之外，服务端也可以根据自己的需要添加其他变量到environ字典中，以传递给应用一些信息，
+当然变量的名字不能与上述规定的变量重复。
