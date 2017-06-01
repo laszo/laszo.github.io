@@ -2,30 +2,113 @@
 title: '用Python从零开始一步一步构建Web Server，第三部分：支持WSGI'
 ---
 
-参看[PEP 3333]文档：
+接着[上一篇]，今天我们来改造服务端，使它能够支持WSGI应用。在[WSGI初探]中，我们提到过，
+WSGI的服务端应当具备以下功能：
 
->
-The start_response callable is used to begin the HTTP response, and it must return a write(body_data) callable
+* 监听和接收客户端HTTP请求
+* 提供`env`变量
+* 提供`start_response`函数
+* 调用应用
+* 返回HTTP响应
 
-`start_response`必须返回一个write方法。
-
->
-However, the start_response callable must not actually transmit the response headers. Instead, it must store them for the server or gateway to transmit only after the first iteration of the application return value that yields a non-empty bytestring, or upon the application's first invocation of the write() callable. In other words, response headers must not be sent until there is actual body data available, or until the application's returned iterable is exhausted. (The only possible exception to this rule is if the response headers explicitly include a Content-Length of zero.)
-
-但是`start_response`方法内部不能直接返回数据，而应该先把传给它的数据存储起来，等到body一起传输。
-
-所以说，不应该这样写：
+在我们从零构建Web Server的[第二部分]，我们构建的服务器已经具备了监听接收HTTP请求、
+返回HTTP响应的功能，现在只需要实现其余的功能即可。
+先来看以前的run_server和handle函数：
 
     :::python
-    def start_response(self, status, headers):
-        if not status.startswith('HTTP'):
-            status = 'HTTP/1.0 ' + status
-        self.wfile.write(status + '\r\n')
-        for keyword, value in headers:
-            self.wfile.write("%s: %s\r\n" % (keyword, value))
-        self.wfile.write('\r\n')
+    def run_server(app):
+        s = socket.socket()
+        s.bind(app.address)
+        s.listen(5)
+        while True:
+            rl, wl, el = select.select([s], [], [])
+            for r in rl:
+                c, a = r.accept()
+                handle(c, app)
+        s.close()
 
-而应该这样写：
+    def handle(request, app):
+        raw = request.recv(MAX_READS)
+        url = parser(raw)
+        result = app.process(url)
+        if result:
+            request.send(G_response + result)
+        else:
+            request.send(G_404response)
+        request.close()
+
+可以看到，再上一个版本中，服务器接收客户端请求使用`request.recv`，发送响应使用`request.send`。
+这样的方式在一次性发送所有数据时是可以的，但如果服务器的逻辑较为复杂，后者为了把数据先写入缓存，
+我们可以使用socket对象的makefile方法来创建一个文件对象，用操作这个文件对象的方式与客户端交互。
+并且，为了保存这些对象，我们新建一个类，把原来的服务器逻辑run_server方法放在这个类中：
+
+    :::python
+    class BaseServer(object):
+        def __init__(self, address, wsgi_app):
+            self.socket = socket.socket()
+            self.address = address
+            self.wsgi_app = wsgi_app
+            self.raw_request = None
+            self.wfile = None
+            self.status = None
+            self.headers = list()
+
+        def run_server(self):
+            self.socket.bind(self.address)
+            self.socket.listen(5)
+            while True:
+                rl, wl, el = select.select([self.socket], [], [])
+                for r in rl:
+                    c, a = r.accept()
+                    self.handle(c, self.wsgi_app)
+            
+定义了`BaseServer`，它的构造方法接收两个参数，分别是服务器地址和WSGI应用，
+这里的WSGI应用即是[WSGI初探]中定义的应用。BaseServer的构造函数同时还声明了几个成员变量供后续使用。
+
+run_server函数与之前的版本差别不大，主要的区别就是把socket对象从局部变量变成了类的成员。
+
+### handle方法
+
+再来看改造的handle方法：
+
+    :::python
+    def handle(self, request, app):
+        self.raw_request = request.recv(65537)
+        self.wfile = request.makefile('wb', -1)
+        environ = self.config_wsgi_environ()
+        self.headers = list()
+        result = app(environ, self.start_response)
+        self.write_headers()
+        self.send_response(result)
+        request.close()
+
+handle方法是这里WSGI服务端的核心逻辑，上面提到的WSGI服务端和几项功能：
+
+* 提供`env`变量
+* 提供`start_response`函数
+* 调用应用
+
+在handle方法里都得到了体现，下面分别说明。
+
+* `self.raw_request`，用于保存客户端发来的请求。
+
+* `self.wfile`，在上面提到的过，我们使用socket的makefile方法创建文件对象，用于客户端通讯。
+注意makefile方法的参数是`'wb'`，即用于写入。当我们执行：`self.wfile.write(data)`时，
+执行的实际上是：`request.send(data)`。
+
+* `environ`变量是一个字典，我们使用`self.config_wsgi_environ()`来创建，
+我们在以前的文章[WSGI协议中的environ变量]已经对相关的参数进行了介绍，这里不再赘述。
+
+* `start_response`是一个`callable`，在WSGI协议中规定：该方法接收两个参数，
+    分别代表HTTP的状态(status)和首部(headers)；并返回一个write方法。
+
+* `result = app(environ, self.start_response)`，服务端调用WSGI应用，保存返回值作为HTPP响应的body
+
+* `self.write_headers()`，服务端向客户端返回HTTP响应的状态和首部
+
+* `self.send_response(result)`，服务端向客户端返回HTTP响应的body
+
+了解了以上逻辑以后，再来看`start_response`方法：
 
     :::python
     def start_response(self, status, headers):
@@ -37,7 +120,25 @@ However, the start_response callable must not actually transmit the response hea
     def _write(self, data):
         self.wfile.write(data)
 
-另外定义一个方法：
+这里的`_write`方法对wfile进行了简单包装，实际上相当于`socket.send`方法。
+这里的start_response保存了WSGI应用传递的status和headers，并且返回`_write`方法。
+这样的设计是直接规定在[PEP 3333]文档中的：
+
+>
+However, the start_response callable must not actually transmit the response headers. Instead, it must store them for the server or gateway to transmit only after the first iteration of the application return value that yields a non-empty bytestring, or upon the application's first invocation of the write() callable. 
+
+粗略的翻译就是说，`start_response`方法内部不能直接返回数据，而应该先把传给它的数据存储起来，等到body数据转备好之后一起传输。
+
+所以说，应该像上面那样写，而不应该像下面这样写：
+
+    :::python
+    def start_response(self, status, headers):
+        self.wfile.write(status + '\r\n')
+        for keyword, value in headers:
+            self.wfile.write("%s: %s\r\n" % (keyword, value))
+        self.wfile.write('\r\n')
+
+了解了上面这些逻辑之后，再来看剩余的两个函数`write_headers`和`send_response`：
 
     :::python
     def write_headers(self):
@@ -48,15 +149,113 @@ However, the start_response callable must not actually transmit the response hea
             self._write("%s: %s\r\n" % (keyword, value))
         self._write('\r\n')
 
-在合适的时机调用`write_headers`方法。
+    def send_response(self, result):
+        for res in result:
+            self._write(res)
+        self.wfile.flush()
+        self.wfile.close()
 
+到这里，一个WSGI服务端就基本构建完毕了[^note1]。可以用如下的方式来承载WSGI应用：
 
-[PEP 333 -- Python Web Server Gateway Interface v1.0]
+    :::python
+    from pwserver.server import BaseServer
 
-[PEP 3333 -- Python Web Server Gateway Interface v1.0.1]
+    def app(env, start_response):
+        print 'run in the test app'
+        start_response('200 OK', [('Content-type', 'text/plain')])
+        return ['hello, py world!']
+
+    def test():
+        s = BaseServer(('127.0.0.1', 8000), app)
+        s.run_server()
+
+    if __name__ == '__main__':
+        test()
+
+只需要新建一个`BaseServer`对象，传入服务器地址和WSGI应用，然后运行对象的`run_server()`方法即可。
+
+需要指出的是，我们的代码不仅仅能够承载上面这样最简单的WSGI应用，对于主流的Python Web框架，
+也是可以承载的，比如flask：
+
+    :::python
+    from flask import Flask
+    from pwserver.server import BaseServer
+
+    app = Flask(__name__)
+
+    @app.route('/')
+    def hello_world():
+        return 'Hello, flask World!'
+
+    def flask():
+        s = BaseServer(('127.0.0.1', 8000), app)
+        s.run_server()
+
+    if __name__ == '__main__':
+        flask()
+
+或者tornado：
+
+    :::python
+    import tornado.web
+    import tornado.wsgi
+    import tornado.wsgi
+    from pwserver.server import BaseServer
+
+    class MainHandler(tornado.web.RequestHandler):
+        def get(self):
+            self.write("Hello, tornado world")
+
+    def make_app():
+        return tornado.web.Application([
+            (r"/", MainHandler),
+        ])
+
+    def with_pw_server():
+        wsgi_app = tornado.wsgi.WSGIAdapter(make_app())
+        server = BaseServer(('', 8000), wsgi_app)
+        server.run_server()
+
+    if __name__ == "__main__":
+        with_pw_server()
+
+或者django：
+
+    from pwserver.server import BaseServer
+    from test_django_app import wsgi
+
+    def test():
+        s = BaseServer(('127.0.0.1', 8091), wsgi.application)
+        s.run_server()
+
+    if __name__ == '__main__':
+        test()
+
+这里的`test_django_app`是使用
+
+    django-admin startproject test_django_app
+
+命令创建的项目。
+
+甚至，我们也可以把它像gunicorn那样进行命令行界面的包装，使之能够在终端界面就启动服务承载WSGI应用，
+留待后续完成。
+
 
 [PEP 333 -- Python Web Server Gateway Interface v1.0]: https://www.python.org/dev/peps/pep-0333/
 
 [PEP 3333 -- Python Web Server Gateway Interface v1.0.1]: https://www.python.org/dev/peps/pep-3333/
 
 [PEP 3333]: https://www.python.org/dev/peps/pep-3333/
+
+[上一篇]: 20170516.0.html
+
+[第二部分]: 20170516.0.html
+
+[WSGI初探]: 20170508.0.html
+
+[WSGI协议中的environ变量]: 20170510.2.html
+
+[server.py]: https://github.com/laszo/PyWebServer/blob/cc58f7c59c0caa87fd884869008a73fe0bec207e/pwserver/server.py
+
+[^note1]:为了简单起见，本文中的代码省略了部分错误处理的逻辑，完整的代码可参看[server.py]。
+

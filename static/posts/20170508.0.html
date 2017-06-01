@@ -22,8 +22,8 @@
 <p>服务器在这里起到了中介或代理的作用，它接受客户端的请求，并转发给Web应用来处理。
 Web应用接收到请求以后，进行实际的处理，并将响应返回给服务器，由服务器返回给客户端。</p>
 <p>对于Web系统来说，客户端一般就是浏览器，客户端与服务器之间使用HTTP协议通讯。
-在Python的Web开发中，服务器与Python Web应用之间交互的协议就是WSGI。它由PEP333提出，
-并在PEP3333中做了补充。</p>
+在Python的Web开发中，服务器与Python Web应用之间交互的协议就是WSGI。它由PEP333提出<sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>，
+并在PEP3333中做了补充<sup id="fnref:note2"><a class="footnote-ref" href="#fn:note2" rel="footnote">2</a></sup>。</p>
 <p>在WSGI协议中有三个角色：</p>
 <ol>
 <li>服务器（server）</li>
@@ -71,6 +71,17 @@ Web应用接收到请求以后，进行实际的处理，并将响应返回给�
 <li>返回HTTP响应</li>
 </ul>
 <p>具体如何使用Python代码来实现这些功能，代码略微要复杂一些，这篇文章就不讲了，参见<a href="20170518.0.html">用Python从零开始一步一步构建Web Server，第三部分：支持WSGI</a>。</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:note1">
+<p><a href="https://www.python.org/dev/peps/pep-0333/">PEP 333 -- Python Web Server Gateway Interface v1.0</a>&#160;<a class="footnote-backref" href="#fnref:note1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:note2">
+<p><a href="https://www.python.org/dev/peps/pep-3333/">PEP 3333 -- Python Web Server Gateway Interface v1.0.1</a>&#160;<a class="footnote-backref" href="#fnref:note2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
         </div>
     </div>
 </body>

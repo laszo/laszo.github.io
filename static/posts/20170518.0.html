@@ -15,27 +15,118 @@
         <h3 class="blog-post-title">用Python从零开始一步一步构建Web Server，第三部分：支持WSGI</h3>
 
         <div class="post-content">
-            <p>参看<a href="https://www.python.org/dev/peps/pep-3333/">PEP 3333</a>文档：</p>
-<blockquote>
-<p>The start_response callable is used to begin the HTTP response, and it must return a write(body_data) callable</p>
-</blockquote>
-<p><code>start_response</code>必须返回一个write方法。</p>
-<blockquote>
-<p>However, the start_response callable must not actually transmit the response headers. Instead, it must store them for the server or gateway to transmit only after the first iteration of the application return value that yields a non-empty bytestring, or upon the application's first invocation of the write() callable. In other words, response headers must not be sent until there is actual body data available, or until the application's returned iterable is exhausted. (The only possible exception to this rule is if the response headers explicitly include a Content-Length of zero.)</p>
-</blockquote>
-<p>但是<code>start_response</code>方法内部不能直接返回数据，而应该先把传给它的数据存储起来，等到body一起传输。</p>
-<p>所以说，不应该这样写：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">start_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;HTTP&#39;</span><span class="p">):</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 &#39;</span> <span class="o">+</span> <span class="n">status</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">status</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <p>接着<a href="20170516.0.html">上一篇</a>，今天我们来改造服务端，使它能够支持WSGI应用。在<a href="20170508.0.html">WSGI初探</a>中，我们提到过，
+WSGI的服务端应当具备以下功能：</p>
+<ul>
+<li>监听和接收客户端HTTP请求</li>
+<li>提供<code>env</code>变量</li>
+<li>提供<code>start_response</code>函数</li>
+<li>调用应用</li>
+<li>返回HTTP响应</li>
+</ul>
+<p>在我们从零构建Web Server的<a href="20170516.0.html">第二部分</a>，我们构建的服务器已经具备了监听接收HTTP请求、
+返回HTTP响应的功能，现在只需要实现其余的功能即可。
+先来看以前的run_server和handle函数：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">rl</span><span class="p">,</span> <span class="n">wl</span><span class="p">,</span> <span class="n">el</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">s</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rl</span><span class="p">:</span>
+            <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="n">handle</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">MAX_READS</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">parser</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_404response</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 
 
-<p>而应该这样写：</p>
+<p>可以看到，再上一个版本中，服务器接收客户端请求使用<code>request.recv</code>，发送响应使用<code>request.send</code>。
+这样的方式在一次性发送所有数据时是可以的，但如果服务器的逻辑较为复杂，后者为了把数据先写入缓存，
+我们可以使用socket对象的makefile方法来创建一个文件对象，用操作这个文件对象的方式与客户端交互。
+并且，为了保存这些对象，我们新建一个类，把原来的服务器逻辑run_server方法放在这个类中：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">BaseServer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">wsgi_app</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">wsgi_app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_request</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">rl</span><span class="p">,</span> <span class="n">wl</span><span class="p">,</span> <span class="n">el</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rl</span><span class="p">:</span>
+                <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">)</span>
+</pre></div>
+
+
+<p>定义了<code>BaseServer</code>，它的构造方法接收两个参数，分别是服务器地址和WSGI应用，
+这里的WSGI应用即是<a href="20170508.0.html">WSGI初探</a>中定义的应用。BaseServer的构造函数同时还声明了几个成员变量供后续使用。</p>
+<p>run_server函数与之前的版本差别不大，主要的区别就是把socket对象从局部变量变成了类的成员。</p>
+<h3>handle方法</h3>
+<p>再来看改造的handle方法：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">raw_request</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s1">&#39;wb&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">environ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_wsgi_environ</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_response</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">write_headers</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>handle方法是这里WSGI服务端的核心逻辑，上面提到的WSGI服务端和几项功能：</p>
+<ul>
+<li>提供<code>env</code>变量</li>
+<li>提供<code>start_response</code>函数</li>
+<li>调用应用</li>
+</ul>
+<p>在handle方法里都得到了体现，下面分别说明。</p>
+<ul>
+<li>
+<p><code>self.raw_request</code>，用于保存客户端发来的请求。</p>
+</li>
+<li>
+<p><code>self.wfile</code>，在上面提到的过，我们使用socket的makefile方法创建文件对象，用于客户端通讯。
+注意makefile方法的参数是<code>'wb'</code>，即用于写入。当我们执行：<code>self.wfile.write(data)</code>时，
+执行的实际上是：<code>request.send(data)</code>。</p>
+</li>
+<li>
+<p><code>environ</code>变量是一个字典，我们使用<code>self.config_wsgi_environ()</code>来创建，
+我们在以前的文章<a href="20170510.2.html">WSGI协议中的environ变量</a>已经对相关的参数进行了介绍，这里不再赘述。</p>
+</li>
+<li>
+<p><code>start_response</code>是一个<code>callable</code>，在WSGI协议中规定：该方法接收两个参数，
+    分别代表HTTP的状态(status)和首部(headers)；并返回一个write方法。</p>
+</li>
+<li>
+<p><code>result = app(environ, self.start_response)</code>，服务端调用WSGI应用，保存返回值作为HTPP响应的body</p>
+</li>
+<li>
+<p><code>self.write_headers()</code>，服务端向客户端返回HTTP响应的状态和首部</p>
+</li>
+<li>
+<p><code>self.send_response(result)</code>，服务端向客户端返回HTTP响应的body</p>
+</li>
+</ul>
+<p>了解了以上逻辑以后，再来看<code>start_response</code>方法：</p>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">start_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
     <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
@@ -47,7 +138,23 @@
 </pre></div>
 
 
-<p>另外定义一个方法：</p>
+<p>这里的<code>_write</code>方法对wfile进行了简单包装，实际上相当于<code>socket.send</code>方法。
+这里的start_response保存了WSGI应用传递的status和headers，并且返回<code>_write</code>方法。
+这样的设计是直接规定在<a href="https://www.python.org/dev/peps/pep-3333/">PEP 3333</a>文档中的：</p>
+<blockquote>
+<p>However, the start_response callable must not actually transmit the response headers. Instead, it must store them for the server or gateway to transmit only after the first iteration of the application return value that yields a non-empty bytestring, or upon the application's first invocation of the write() callable. </p>
+</blockquote>
+<p>粗略的翻译就是说，<code>start_response</code>方法内部不能直接返回数据，而应该先把传给它的数据存储起来，等到body数据转备好之后一起传输。</p>
+<p>所以说，应该像上面那样写，而不应该像下面这样写：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">start_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">status</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>了解了上面这些逻辑之后，再来看剩余的两个函数<code>write_headers</code>和<code>send_response</code>：</p>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">write_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;HTTP&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span>
@@ -55,12 +162,107 @@
     <span class="k">for</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">send_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 
 
-<p>在合适的时机调用<code>write_headers</code>方法。</p>
-<p><a href="https://www.python.org/dev/peps/pep-0333/">PEP 333 -- Python Web Server Gateway Interface v1.0</a></p>
-<p><a href="https://www.python.org/dev/peps/pep-3333/">PEP 3333 -- Python Web Server Gateway Interface v1.0.1</a></p>
+<p>到这里，一个WSGI服务端就基本构建完毕了<sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>。可以用如下的方式来承载WSGI应用：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pwserver.server</span> <span class="kn">import</span> <span class="n">BaseServer</span>
+
+<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s1">&#39;run in the test app&#39;</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;hello, py world!&#39;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">BaseServer</span><span class="p">((</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">),</span> <span class="n">app</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">()</span>
+</pre></div>
+
+
+<p>只需要新建一个<code>BaseServer</code>对象，传入服务器地址和WSGI应用，然后运行对象的<code>run_server()</code>方法即可。</p>
+<p>需要指出的是，我们的代码不仅仅能够承载上面这样最简单的WSGI应用，对于主流的Python Web框架，
+也是可以承载的，比如flask：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">pwserver.server</span> <span class="kn">import</span> <span class="n">BaseServer</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello, flask World!&#39;</span>
+
+<span class="k">def</span> <span class="nf">flask</span><span class="p">():</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">BaseServer</span><span class="p">((</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">),</span> <span class="n">app</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">flask</span><span class="p">()</span>
+</pre></div>
+
+
+<p>或者tornado：</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">tornado.web</span>
+<span class="kn">import</span> <span class="nn">tornado.wsgi</span>
+<span class="kn">import</span> <span class="nn">tornado.wsgi</span>
+<span class="kn">from</span> <span class="nn">pwserver.server</span> <span class="kn">import</span> <span class="n">BaseServer</span>
+
+<span class="k">class</span> <span class="nc">MainHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Hello, tornado world&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">make_app</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">MainHandler</span><span class="p">),</span>
+    <span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">with_pw_server</span><span class="p">():</span>
+    <span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIAdapter</span><span class="p">(</span><span class="n">make_app</span><span class="p">())</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">BaseServer</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">),</span> <span class="n">wsgi_app</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">with_pw_server</span><span class="p">()</span>
+</pre></div>
+
+
+<p>或者django：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pwserver.server</span> <span class="kn">import</span> <span class="n">BaseServer</span>
+<span class="kn">from</span> <span class="nn">test_django_app</span> <span class="kn">import</span> <span class="n">wsgi</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">BaseServer</span><span class="p">((</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">8091</span><span class="p">),</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">application</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">()</span>
+</pre></div>
+
+
+<p>这里的<code>test_django_app</code>是使用</p>
+<div class="codehilite"><pre><span></span>django-admin startproject test_django_app
+</pre></div>
+
+
+<p>命令创建的项目。</p>
+<p>甚至，我们也可以把它像gunicorn那样进行命令行界面的包装，使之能够在终端界面就启动服务承载WSGI应用，
+留待后续完成。</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:note1">
+<p>为了简单起见，本文中的代码省略了部分错误处理的逻辑，完整的代码可参看<a href="https://github.com/laszo/PyWebServer/blob/cc58f7c59c0caa87fd884869008a73fe0bec207e/pwserver/server.py">server.py</a>。&#160;<a class="footnote-backref" href="#fnref:note1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
         </div>
     </div>
 </body>

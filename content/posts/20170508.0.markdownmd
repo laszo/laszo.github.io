@@ -11,8 +11,8 @@ WSGI是一个协议，用于Web服务器和Python Web应用程序之间的通讯
 Web应用接收到请求以后，进行实际的处理，并将响应返回给服务器，由服务器返回给客户端。
 
 对于Web系统来说，客户端一般就是浏览器，客户端与服务器之间使用HTTP协议通讯。
-在Python的Web开发中，服务器与Python Web应用之间交互的协议就是WSGI。它由PEP333提出，
-并在PEP3333中做了补充。
+在Python的Web开发中，服务器与Python Web应用之间交互的协议就是WSGI。它由PEP333提出[^note1]，
+并在PEP3333中做了补充[^note2]。
 
 在WSGI协议中有三个角色：
 
@@ -66,3 +66,9 @@ WSGI服务端的逻辑要复杂一些，结合应用端的代码、以及HTTP协
 
 [WSGI协议中的environ变量]: 20170510.2.html
 [用Python从零开始一步一步构建Web Server，第三部分：支持WSGI]: 20170518.0.html
+[PEP 333 -- Python Web Server Gateway Interface v1.0]: https://www.python.org/dev/peps/pep-0333/
+[PEP 3333 -- Python Web Server Gateway Interface v1.0.1]: https://www.python.org/dev/peps/pep-3333/
+
+[^note1]: [PEP 333 -- Python Web Server Gateway Interface v1.0]
+[^note2]: [PEP 3333 -- Python Web Server Gateway Interface v1.0.1]
+
