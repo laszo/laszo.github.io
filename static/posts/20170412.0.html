@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Django Template 系统及其与Jinja2 的几点区别 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">Django Template 系统及其与Jinja2 的几点区别</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Django Template 系统及其与Jinja2 的几点区别</h3>
 
-        <div class="post-content">
-            <p>动态网站与静态网站的本质区别就是HTML代码的生成过程。静态网站预先编辑好HTML文件放在服务器上，
+            <div class="post-content">
+                <p>动态网站与静态网站的本质区别就是HTML代码的生成过程。静态网站预先编辑好HTML文件放在服务器上，
 客户端浏览器发出请求时，Web服务器读取HTML文件的内容，以HTTP协议规定的格式返回给客户端。
 动态网站在收到客户端的请求时，会根据请求的内容进行某种计算和数据库的查询，把查询和计算得到的数据
 拼装成HTML代码，以HTTP协议规定的格式返回给客户端。在Django里，
@@ -171,7 +176,17 @@ templates的路径应该是：<code>~/myproject/myapp/tempaltes/</code>。</p>
 </li>
 </ol>
 </div>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

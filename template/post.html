@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>{{ title }} - {{ blogtitle }}</title>
@@ -6,17 +7,50 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../{{ baseurl }}"><h1>{{ blogtitle }}</h1></a>
+            <a href="../../{{ baseurl }}">
+                <h1>{{ blogtitle }}</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">{{ title }}</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">{{ title }}</h3>
 
-        <div class="post-content">
-            {{ content }}
+            <div class="post-content">
+                {{ content }}
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    {% for href, title in anchors: %}
+                    <li class="">
+                        <a href="#{{href}}">{{title}}</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    {% endfor %}
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

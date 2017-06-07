@@ -1,0 +1,237 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>用Python从零开始一步一步构建Web Server，第四部分：静态文件服务器 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">用Python从零开始一步一步构建Web Server，第四部分：静态文件服务器</h3>
+
+            <div class="post-content">
+                <p><a href="https://github.com/laszo/PyWebServer">PyWebServer</a>项目的目的是构建一个生产级别的Web服务器，今天来拓展它的静态文件功能。</p>
+<h4 id='readconfig'>读取配置文件</h4>
+
+<p>作为一个服务器，一般会有很多可配置的选项，保存在配置文件中。为了方便起见、以及避免重复设计，
+我们直接采用与nginx的配置文件类似的语法和指令集。当然，在开发初期，我们不可能支持nginx的所有指令，暂时只支持它的最核心的指令。对nginx不熟悉的可参看<a href="20170516.1.html">Nginx的基本配置</a>。</p>
+<p>首先我们需要开发一个模块来读取配置文件、在内存中保留配置项。</p>
+<h4 id='server_refactor'>Server代码的重新组织</h4>
+
+<p>在本系列的前三部分，我们的服务器类名为<code>BaseServer</code>，主要功能是作为WSGI服务器。现在我们把它的代码拆成两部分：</p>
+<ul>
+<li>通用的服务器：监听请求、接收请求、处理请求。其中处理请求这一功能留给子类实现。</li>
+<li>WSGI服务器：继承自通用服务器，通过调用WSGIHandler实现处理请求功能。</li>
+</ul>
+<p>BaseServer的逻辑与之前类似，不同之处是<code>handle_request</code>留给之类去实现。</p>
+<p>我们把WSGI服务的功能放在子类WSGIServer中：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">WSGIServer</span><span class="p">(</span><span class="n">BaseServer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">wsgiapp</span><span class="p">):</span>
+        <span class="n">BaseServer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wsgiapp</span> <span class="o">=</span> <span class="n">wsgiapp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handlercls</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">WSGIHandler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activate_server</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="n">hdler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlercls</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsgiapp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_environ</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">hdler</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
+</pre></div>
+
+
+<p>WSGIServer的构造函数接收address和wsgiapp，并激活服务器，handle_request方法直接调用WSGIHandler实例的handle方法。</p>
+<h4 id='configserver'>ConfigServer</h4>
+
+<p>既然我们把WSGI的服务器类命名为<code>WSGIServer</code>，不妨把根据配置文件运行的服务器类命名为<code>ConfigServer</code>，它的每个实例代表ngxin配置文件中的一个<code>server</code> context。来看其中一项：</p>
+<div class="codehilite"><pre><span></span>server {
+    listen       8080;
+    server_name  localhost;
+
+    location / {
+        root   html;
+        index  index.html index.htm;
+    }
+}
+</pre></div>
+
+
+<p>来看ConfigServer的代码：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">ConfigServer</span><span class="p">(</span><span class="n">BaseServer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="n">BaseServer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handlercls</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">ConfigFileHandler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parser</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">subd</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activate_server</span><span class="p">()</span>
+</pre></div>
+
+
+<p>它的构造函数接收一个config参数，类型为上文所说的<code>block</code>对象。它的handlercls采用 ConfigFileHandler。</p>
+<p><code>self.patterns</code>是该类最重要的一个字段，代表<code>location</code>的集合，它在<code>self.read_config</code>方法中生成：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">read_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="n">listens</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;listen&#39;</span><span class="p">)]</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">listens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;server_name&#39;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">loc</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">loc</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;= | ~ | ~* | ^~&#39;</span><span class="p">:</span>
+                <span class="n">patt</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">patt</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">patt</span><span class="p">,</span> <span class="n">loc</span><span class="p">))</span>
+</pre></div>
+
+
+<p>在上面的方法中，根据不同情况，<code>loc.args[0]</code>或<code>loc.args[1]</code>代表了location指令所指定的路径，这个路径也是在接受到客户端请求时，请求路径与之匹配的依据。self.patterns保存了(patt, loc)的pair对。</p>
+<p>再看ConfigServer实现的handle_request方法：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="n">hdler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlercls</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_environ</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    <span class="n">hdler</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
+</pre></div>
+
+
+<p>直接生成handlercls也就是ConfigFileHandler的实例的handle方法，注意它传递了上面讨论的<code>self.patterns</code>，然后调用handle方法处理。下面该看ConfigFileHandler的代码了，再次之前，我们还需要对Handler的代码进行重新组织。</p>
+<h4>Handler的重新组织</h4>
+<p>类似的，之前的Handler拆分为如下两部分：</p>
+<p>一、通用的处理类，包含如下功能：</p>
+<ol>
+<li>获取请求</li>
+<li>解析请求</li>
+<li>把与客户端的socket连接包装成文件对象</li>
+<li>提供通用的向客户端发送数据的方法，如发送状态行、发送首部等</li>
+</ol>
+<p>二、WSGI处理类:</p>
+<ol>
+<li>提供<code>start_response</code></li>
+<li>提供<code>environ</code></li>
+<li>实现处理请求的方法：调用WSGI application，并把结果发送给客户端</li>
+</ol>
+<p>具体的代码就不粘贴在这里了，可参看这个版本的<a href="https://github.com/laszo/PyWebServer/blob/e62072469b8d8440fd856aa7471281e27457e19f/pwserver/handler.py">handler.py</a>。我们的重点在于下面的<code>ConfigFileHandler</code>。</p>
+<h4>ConfigFileHandler</h4>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">ConfigFileHandler</span><span class="p">(</span><span class="n">BaseHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
+        <span class="n">BaseHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_type</span> <span class="o">=</span> <span class="n">rtype</span><span class="o">.</span><span class="n">STATIC_FILE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span> <span class="o">=</span> <span class="n">patterns</span>
+
+    <span class="k">def</span> <span class="nf">handle_requst</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uri</span><span class="p">()</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_location</span><span class="p">()</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_root</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">location</span> <span class="ow">and</span> <span class="n">uri</span> <span class="ow">and</span> <span class="n">root</span><span class="p">:</span>
+            <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_file</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_response</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_request</span><span class="p">()</span>
+</pre></div>
+
+
+<p>ConfigFileHandler保存了ConfigServer传递给它的patterns，handle_requst方法
+主要的任务是：</p>
+<ol>
+<li>根据请求路径找到匹配的location</li>
+<li>找到此项location对应的文件系统目录</li>
+<li>拼接根目录的路径和请求路径，找到找到客户端请求的文件在服务器的文件系统中的对应位置</li>
+<li>把找到的文件的内容返回给客户端</li>
+</ol>
+<p>下面说一说self.find_location()方法：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">find_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">mostmatch</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">pat</span><span class="p">,</span> <span class="n">loc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">pat</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pat</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">mostmatch</span><span class="p">:</span>
+                <span class="n">mostmatch</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pat</span><span class="p">)</span>
+                <span class="n">location</span> <span class="o">=</span> <span class="n">loc</span>
+    <span class="k">return</span> <span class="n">location</span>
+</pre></div>
+
+
+<p>根据nginx的文档<a href="http://nginx.org/en/docs/beginners_guide.html#static">Serving Static Content</a>节，对于请求路径的匹配，nginx会倾向于找到能够匹配最大长度的location，我们的代码采用类似的策略，这是一个简单的顺序查找算法。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                    <li class="">
+                        <a href="#readconfig">读取配置文件</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#server_refactor">Server代码的重新组织</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#configserver">ConfigServer</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>

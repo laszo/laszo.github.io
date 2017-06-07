@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Python中的Web和WSGI的各组件总结 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">Python中的Web和WSGI的各组件总结</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Python中的Web和WSGI的各组件总结</h3>
 
-        <div class="post-content">
-            <p>通过[WSGI的Server端分析]和[RequestHandler分析]这两篇文章，我们基本了解了Python Web服务中涉及到的各个组件。现在从最基本的开始，我们总结出来其中的要点：</p>
+            <div class="post-content">
+                <p>通过[WSGI的Server端分析]和[RequestHandler分析]这两篇文章，我们基本了解了Python Web服务中涉及到的各个组件。现在从最基本的开始，我们总结出来其中的要点：</p>
 <ol>
 <li>
 <p>Web的基本模式，客户端 &lt; —— &gt; 服务端模型。服务端持续运行，监听请求。客户端向服务端发送请求，服务端处理请求，向服务端发送响应。</p>
@@ -185,7 +190,17 @@
     <span class="n">s</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
     <span class="n">s</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
 </pre></div>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

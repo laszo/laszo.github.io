@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>对socket.socket和select.select的进一步研究 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">对socket.socket和select.select的进一步研究</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">对socket.socket和select.select的进一步研究</h3>
 
-        <div class="post-content">
-            <p>服务端accept会阻塞，直到客户端执行connect，成功连接后服务端的accept会返回一个pair。</p>
+            <div class="post-content">
+                <p>服务端accept会阻塞，直到客户端执行connect，成功连接后服务端的accept会返回一个pair。</p>
 <p>服务端select会阻塞，在客户端执行connect的时候，服务端的select会返回，此时执行accept会立即返回。</p>
 <p>然后recv会阻塞，在客户端执行send的时候，服务端的recv会返回。</p>
 <p>疑问：</p>
@@ -94,7 +99,17 @@
 选择<code>Run Python File in Terminal</code>，可以正常运行，两段代码效果一样。</p>
 <p>但是如果在 VS Code的终端窗口（呼出的快捷键是<code>Ctrl + '</code>）下，运行<code>python test.py</code>，
 运行的效果就不正常，浏览器会一直处于卡顿的状态。推测也许跟Windows下的socket机制有关。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

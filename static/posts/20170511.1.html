@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>适用于HTTP的handler - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">适用于HTTP的handler</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">适用于HTTP的handler</h3>
 
-        <div class="post-content">
-            <p>在这篇文章中我们讨论了Server的基本架构，最后给出的代码可以接受socket连接，但是作为一个Web Server来说还是不够的。存在如下问题：</p>
+            <div class="post-content">
+                <p>在这篇文章中我们讨论了Server的基本架构，最后给出的代码可以接受socket连接，但是作为一个Web Server来说还是不够的。存在如下问题：</p>
 <ol>
 <li>
 <p>如果使用浏览器访问该地址，浏览器会报错：“因为服务器意外中断了连接”，因为客户端请求中有：<code>Connection: keep-alive</code>，不应该调用finish去关闭request。</p>
@@ -299,7 +304,17 @@ Content-Type: text/html
 <span class="nt">&lt;p&gt;</span>Error code explanation: 501 = Server does not support this operation.
 <span class="nt">&lt;/body&gt;</span>
 </pre></div>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

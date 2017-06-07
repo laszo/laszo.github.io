@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>镜头边界检测中的基本概念和基本问题 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">镜头边界检测中的基本概念和基本问题</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">镜头边界检测中的基本概念和基本问题</h3>
 
-        <div class="post-content">
-            <p>要介绍镜头分割，就要先简要介绍一下帧（frame）和镜头（shot）的概念。</p>
+            <div class="post-content">
+                <p>要介绍镜头分割，就要先简要介绍一下帧（frame）和镜头（shot）的概念。</p>
 <p>帧是视频里一个个单独的画面。我们在电脑上看电影的时候，任意时刻暂停播放，可以看到一个静止的画面，这就是一个帧。</p>
 <p>镜头是一个摄像头单次拍摄的视频画面。比如拿起手机来录了一段像，得到的视频文件就是一个镜头，也可以称为单镜头视频。很显然，镜头是由一系列连续的帧组成。</p>
 <p>我们平常看到的电影、电视剧等视频结构非常复杂。它的制作过程，一般是前期按照特定的剧本拍摄出大量镜头，后期再把这些镜头进行处理、剪辑、拼接，最终得到一部完整的电影。一般一部电影会有数百个镜头，这样的视频文件称为多镜头视频。</p>
@@ -35,7 +40,17 @@
 <p>说到这里，终于该提到TRECVID了。美国有一个机构叫做美国国家标准技术研究所(National Institute of Standards and Technology，NIST)，该机构与另外一个大名鼎鼎的机构DARPA联合举办了一个叫做文本检索会议（Text Retrieval Conference，TREC）的评测会议，主要提供数据集和特定方向的问题任务，也就是相当于提供了几张试卷，供科研机构来参加考试。在2001年和2002年，TREC组织了一个视频检索的项目，从2003年开始该项目正式独立出来，命名为<a href="http://www-nlpir.nist.gov/projects/trecvid/">TRECVID</a>（TREC Video Retrieval Evaluation，中文名可以叫"文本检索会议之视频检索评估"）。从2001年至2007年，TRECVID均包含一个镜头边界检测的项目。之后，可能镜头分割的算法已经比较的成熟，效果已经非常之好，足以满足实际使用的需要，所以从2008年之后TRECVID不再提供该项目的评测。</p>
 <p>镜头分割从TRECVID中移除，并不表明当前的算法已经完美无缺，完全没有科研价值。只是说明它不再是最前沿的研究项目，没有那么难了而已。在视频处理领域，可以把镜头分割作为初入者的第一个研究课题，了解该领域中的基本问题和基本方法，还是有价值的。比如它作为计算机专业本科生的毕业设计就非常合适，既没有那么难、又有一定的研究意义。</p>
 <p>本文的目的是为了介绍镜头分割的基本情况，说到这里就算结束了。由于本人对这块非常熟悉，甚至可以说有一定感情，我会持续关注这方面的最新情况以及介绍在过去曾出现过的优秀算法和代表性论文，放在<a href="../../shot.html">Shot-Segment</a>页面。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

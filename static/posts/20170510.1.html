@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>RequestHandler分析 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">RequestHandler分析</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">RequestHandler分析</h3>
 
-        <div class="post-content">
-            <p>上篇文章我们分析了Python标准库中的基础Server的逻辑，这可以说只是一个完整服务端的一半，一个服务端其实包含两种对象：Server和RequestHandler，Server负责一直监听客户端请求，每次获得请求就传递给RequestHandler，RequestHandler进行实际的请求处理。</p>
+            <div class="post-content">
+                <p>上篇文章我们分析了Python标准库中的基础Server的逻辑，这可以说只是一个完整服务端的一半，一个服务端其实包含两种对象：Server和RequestHandler，Server负责一直监听客户端请求，每次获得请求就传递给RequestHandler，RequestHandler进行实际的请求处理。</p>
 <p>今天我们来分析各种Handler，从BaseServer的代码看起：</p>
 <div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">BaseServer</span>:
     <span class="kt">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">server_address</span><span class="p">,</span> <span class="nx">RequestHandlerClass</span><span class="p">)</span><span class="o">:</span>
@@ -323,7 +328,17 @@
     start_response(&#39;200 OK&#39;, [(&#39;Content-type&#39;, &#39;text/plain&#39;)])
     return &#39;Hello, world!\n&#39;
 </pre></div>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

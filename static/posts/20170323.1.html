@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Django 中的 application 的概念、配置、文件结构 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">Django 中的 application 的概念、配置、文件结构</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Django 中的 application 的概念、配置、文件结构</h3>
 
-        <div class="post-content">
-            <p>在 Django 的语境中，<code>project</code> 指的是整个 Web 项目/网站/系统，
+            <div class="post-content">
+                <p>在 Django 的语境中，<code>project</code> 指的是整个 Web 项目/网站/系统，
 <code>application</code> 指的是这个项目中的模块组件，负责实现项目的一部分功能。
 比如一个电子商务系统，如果用 Django 来开发，它的账户体系、支付系统、商品体系等模块的代码，
 就可以分别组织成不同的 application。所有的 application 加在一起，再加上项目的全局配置，
@@ -182,7 +187,17 @@ g: staticfiles&gt;]
 根本就找不到，你也会因此痛苦不堪。
 做任何实际的项目，还是应该像推荐的那样，把不同的代码逻辑放在不同的文件、目录、模块中去，
 并进行良好的命名，随着项目的发展，结构组织良好的代码会越来越体现出它的优点来。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

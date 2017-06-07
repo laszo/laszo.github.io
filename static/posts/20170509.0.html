@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>追踪Python标准库wsgiref的实现逻辑 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">追踪Python标准库wsgiref的实现逻辑</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">追踪Python标准库wsgiref的实现逻辑</h3>
 
-        <div class="post-content">
-            <p>我们都知道写一个WSGI的application是非常简单的：</p>
+            <div class="post-content">
+                <p>我们都知道写一个WSGI的application是非常简单的：</p>
 <div class="codehilite"><pre><span></span>def app(env, start_response):
     start_response(&#39;200 OK&#39;, [(&#39;Content-type&#39;, &#39;text/plain&#39;)])
     return &#39;Hello, world!\n&#39;
@@ -297,7 +302,17 @@
 <p>我们可以设想有一个大型商场，在它刚刚建造完工之后，虽然已经规划标明了一层是化妆品、二层是服装鞋帽、三层是母婴用品、四层是饮食、电梯在某某位置、卫生间在某某位置，但是这时候具体的商家还没有入住，顾客来到商场会发现，表明化妆品的地方并没有化妆品的柜台，去服装的房间也并没有衣服卖，去餐饮区也没有食物，电梯间并没有电梯，去卫生间也看不到马桶...。这样状态的商场，可以认为是提供了“框架”。</p>
 <p>等到商场完成了精装修和商家入驻，正式对外营业的时候，顾客再进来就会发现可以在一层买到化妆品、四层可以吃饭、上下楼有电梯、也可以去卫生间方便了...。这些具体的服务，服饰商家、餐厅、电梯、马桶等，就可以看做是子类。</p>
 <p>关于<code>&lt;调用处理类进行处理&gt;</code>这一过程，参看另外一篇文章的讨论。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

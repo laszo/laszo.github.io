@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>从最简Django项目深入分析Django框架的启动过程 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">从最简Django项目深入分析Django框架的启动过程</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">从最简Django项目深入分析Django框架的启动过程</h3>
 
-        <div class="post-content">
-            <p>建设一个能够输出“hello, world”的动态站点并非看起来那么简单，为何这点代码就能够跑起来一个站点，
+            <div class="post-content">
+                <p>建设一个能够输出“hello, world”的动态站点并非看起来那么简单，为何这点代码就能够跑起来一个站点，
 这中间至少包含了如下的功能或过程：</p>
 <ul>
 <li>启动服务器进程</li>
@@ -261,7 +266,17 @@ else:
 <p>再往深层次追究，就已经跳出了Django框架的范围，由Python标准库和wsgiref库来实现了。
 关于Python标准库提供以及wsgiref库所提供的一系列Handler和Server，
 留待<a href="20170303.1.html">后篇</a>分析。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Python 中的 select.select - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">Python 中的 select.select</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Python 中的 select.select</h3>
 
-        <div class="post-content">
-            <p>从一段最简单的网络服务器代码开始：</p>
+            <div class="post-content">
+                <p>从一段最简单的网络服务器代码开始：</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">socket</span>
 
 <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
@@ -89,7 +94,17 @@
 <li>表示异常的 ready object 列表</li>
 </ol>
 <p>最后一个参数指定了函数的等待超时时间。前面说到，select函数会检查waitable object并阻塞，直到变成 ready object为止。但是如果指定了超时时间，等待超过此时间以后select函数也会返回，此时返回的三个列表为空。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

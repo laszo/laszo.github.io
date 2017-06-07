@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>WSGI初探 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">WSGI初探</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">WSGI初探</h3>
 
-        <div class="post-content">
-            <p>WSGI是一个协议，用于Web服务器和Python Web应用程序之间的通讯。Web服务可以看作这样的架构：</p>
+            <div class="post-content">
+                <p>WSGI是一个协议，用于Web服务器和Python Web应用程序之间的通讯。Web服务可以看作这样的架构：</p>
 <blockquote>
 <p>客户端 &lt; ---- &gt; 服务器 &lt; ---- &gt; Web应用</p>
 </blockquote>
@@ -82,7 +87,17 @@ Web应用接收到请求以后，进行实际的处理，并将响应返回给�
 </li>
 </ol>
 </div>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

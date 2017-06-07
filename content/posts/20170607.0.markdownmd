@@ -1,0 +1,164 @@
+---
+title: '用Python从零开始一步一步构建Web Server，第四部分：静态文件服务器'
+---
+
+[PyWebServer]项目的目的是构建一个生产级别的Web服务器，今天来拓展它的静态文件功能。
+
+<h4 id='readconfig'>读取配置文件</h4>
+
+作为一个服务器，一般会有很多可配置的选项，保存在配置文件中。为了方便起见、以及避免重复设计，
+我们直接采用与nginx的配置文件类似的语法和指令集。当然，在开发初期，我们不可能支持nginx的所有指令，暂时只支持它的最核心的指令。对nginx不熟悉的可参看[Nginx的基本配置]。
+
+首先我们需要开发一个模块来读取配置文件、在内存中保留配置项。
+
+
+<h4 id='server_refactor'>Server代码的重新组织</h4>
+
+在本系列的前三部分，我们的服务器类名为`BaseServer`，主要功能是作为WSGI服务器。现在我们把它的代码拆成两部分：
+
+* 通用的服务器：监听请求、接收请求、处理请求。其中处理请求这一功能留给子类实现。
+* WSGI服务器：继承自通用服务器，通过调用WSGIHandler实现处理请求功能。
+
+BaseServer的逻辑与之前类似，不同之处是`handle_request`留给之类去实现。
+
+我们把WSGI服务的功能放在子类WSGIServer中：
+
+    :::python
+    class WSGIServer(BaseServer):
+        def __init__(self, address, wsgiapp):
+            BaseServer.__init__(self, address=address)
+            self.wsgiapp = wsgiapp
+            self.handlercls = handler.WSGIHandler
+            self.activate_server()
+
+        def handle_request(self, request):
+            hdler = self.handlercls(request, self.wsgiapp, self.base_environ.copy())
+            hdler.handle()
+
+WSGIServer的构造函数接收address和wsgiapp，并激活服务器，handle_request方法直接调用WSGIHandler实例的handle方法。
+
+<h4 id='configserver'>ConfigServer</h4>
+
+既然我们把WSGI的服务器类命名为`WSGIServer`，不妨把根据配置文件运行的服务器类命名为`ConfigServer`，它的每个实例代表ngxin配置文件中的一个`server` context。来看其中一项：
+
+    server {
+        listen       8080;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+    }
+
+来看ConfigServer的代码：
+
+    :::python
+    class ConfigServer(BaseServer):
+        def __init__(self, config):
+            BaseServer.__init__(self)
+            self.config = config
+            self.handlercls = handler.ConfigFileHandler
+            self.patterns = list()
+            self.root = t.parser(config.subd('root'))
+            self.read_config(config)
+            self.activate_server()
+
+它的构造函数接收一个config参数，类型为上文所说的`block`对象。它的handlercls采用 ConfigFileHandler。
+
+`self.patterns`是该类最重要的一个字段，代表`location`的集合，它在`self.read_config`方法中生成：
+
+    :::python
+    def read_config(self, config):
+        listens = [i for i in config.find('listen')]
+        port = listens[0].replace(';', '').split()[1]
+        self.address = ('', int(port))
+
+        names = [i for i in config.find('server_name')]
+        if names:
+            self.server_name = names[0]
+
+        for loc in config.find('location'):
+            if loc.args:
+                if loc.args[0] in '= | ~ | ~* | ^~':
+                    patt = loc.args[1]
+                else:
+                    patt = loc.args[0]
+                self.patterns.append((patt, loc))
+
+在上面的方法中，根据不同情况，`loc.args[0]`或`loc.args[1]`代表了location指令所指定的路径，这个路径也是在接受到客户端请求时，请求路径与之匹配的依据。self.patterns保存了(patt, loc)的pair对。
+
+再看ConfigServer实现的handle_request方法：
+
+    :::python
+    def handle_request(self, request):
+        hdler = self.handlercls(request, self.patterns, self.base_environ.copy())
+        hdler.handle()
+
+直接生成handlercls也就是ConfigFileHandler的实例的handle方法，注意它传递了上面讨论的`self.patterns`，然后调用handle方法处理。下面该看ConfigFileHandler的代码了，再次之前，我们还需要对Handler的代码进行重新组织。
+
+#### Handler的重新组织
+
+类似的，之前的Handler拆分为如下两部分：
+
+一、通用的处理类，包含如下功能：
+
+1. 获取请求
+2. 解析请求
+3. 把与客户端的socket连接包装成文件对象
+4. 提供通用的向客户端发送数据的方法，如发送状态行、发送首部等
+
+二、WSGI处理类:
+
+1. 提供`start_response`
+2. 提供`environ`
+3. 实现处理请求的方法：调用WSGI application，并把结果发送给客户端
+
+具体的代码就不粘贴在这里了，可参看这个版本的[handler.py]。我们的重点在于下面的`ConfigFileHandler`。
+
+#### ConfigFileHandler
+
+    :::python
+    class ConfigFileHandler(BaseHandler):
+        def __init__(self, request, patterns, env):
+            BaseHandler.__init__(self, request, env)
+            self.request_type = rtype.STATIC_FILE
+            self.patterns = patterns
+
+        def handle_requst(self):
+            uri = self.get_uri()
+            location = self.find_location()
+            root = self.get_root(location)
+            if location and uri and root:
+                fpath = os.path.join(root, uri)
+                self.send_file(fpath)
+                self.end_response()
+                self.close_request()
+
+ConfigFileHandler保存了ConfigServer传递给它的patterns，handle_requst方法
+主要的任务是：
+
+1. 根据请求路径找到匹配的location
+2. 找到此项location对应的文件系统目录
+3. 拼接根目录的路径和请求路径，找到找到客户端请求的文件在服务器的文件系统中的对应位置
+4. 把找到的文件的内容返回给客户端
+
+下面说一说self.find_location()方法：
+
+    :::python
+    def find_location(self):
+        mostmatch = 0
+        location = None
+        for pat, loc in self.patterns:
+            if self.request_path.startswith(pat):
+                if len(pat) > mostmatch:
+                    mostmatch = len(pat)
+                    location = loc
+        return location
+
+根据nginx的文档[Serving Static Content]节，对于请求路径的匹配，nginx会倾向于找到能够匹配最大长度的location，我们的代码采用类似的策略，这是一个简单的顺序查找算法。
+
+[PyWebServer]: https://github.com/laszo/PyWebServer
+[Nginx的基本配置]: 20170516.1.html
+[Serving Static Content]: http://nginx.org/en/docs/beginners_guide.html#static
+[handler.py]: https://github.com/laszo/PyWebServer/blob/e62072469b8d8440fd856aa7471281e27457e19f/pwserver/handler.py

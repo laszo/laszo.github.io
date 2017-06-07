@@ -22,24 +22,41 @@ blogtitle = u'Lv Xiaoyu `Site'
 
 
 def read_config(text):
+    anchors = get_anchors(text)
     get_header = re.compile(r'---[\s\S]*?---')
     header = get_header.findall(text)[0]
     content = text.replace(header, '', 1)
     header = header.replace('---', '')
     post_info = yaml.load(header)
     posttitle = ''
+    # anchors = list()
     for item in post_info:
         if item.upper() == 'title'.upper():
             posttitle = post_info[item]
-    return content, posttitle
+        # if item.upper().startswith('anchor'.upper()):
+        #     line = post_info[item]
+        #     words = line.split(',')
+        #     if len(words) == 2:
+        #         anchors.append((words[0], words[1]))
+    return content, posttitle, anchors
 
+def get_anchors(text):
+    anchors = list()
+    pat = re.compile(ur"<h\d\sid='(?P<href>\w+)'>(?P<title>.*)</h\d>")
+    res = pat.findall(text)
+    if res:
+        for mat in res:
+            anchors.append(mat)
+    return anchors
 
 def createPost(post):
     text = codecs.open(contentpath + post, 'r', encoding='utf8').read()
-    mkdtxt, posttitle = read_config(text)
-    content = markdown.markdown(mkdtxt, extensions=['markdown.extensions.footnotes','markdown.extensions.codehilite'])
+    mkdtxt, posttitle, anchors = read_config(text)
+    content = markdown.markdown(mkdtxt, \
+        extensions=['markdown.extensions.footnotes','markdown.extensions.codehilite'])
     t = codecs.open(postTemplatePath, 'r', encoding='utf8').read()
-    html = Template(t).render(content=content, title=posttitle, blogtitle=blogtitle, baseurl=indexFileName)
+    html = Template(t).render(content=content, title=posttitle, \
+        blogtitle=blogtitle, baseurl=indexFileName, anchors=anchors)
 
     outfile = postoutpath + os.path.splitext(post)[0] + '.html'
     output_file = codecs.open(outfile, "w", encoding="utf-8", errors="xmlcharrefreplace")
@@ -49,7 +66,7 @@ def createPost(post):
 
 def create_page(page, pagelinks):
     text = codecs.open(pagespath + page, 'r', encoding='utf8').read()
-    mkdtxt, title = read_config(text)
+    mkdtxt, title, anchors = read_config(text)
     content = markdown.markdown(mkdtxt, extensions=['markdown.extensions.footnotes'])
     t = codecs.open(pageTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(content=content, title=title, blogtitle=blogtitle, pagelinks=pagelinks)
@@ -62,7 +79,7 @@ def create_page(page, pagelinks):
 
 def get_page_info(page):
     text = codecs.open(pagespath + page, 'r', encoding='utf8').read()
-    mkdtxt, title = read_config(text)
+    mkdtxt, title, anchors = read_config(text)
     outfile = os.path.splitext(page)[0] + '.html'
     return outfile, title
 
@@ -92,7 +109,7 @@ def main():
         if not check_file_ext(p, 'markdownmd'):
             continue
         text = codecs.open(pagespath + p, 'r', encoding='utf8').read()
-        mkdtxt, title = read_config(text)
+        mkdtxt, title, anchors = read_config(text)
         outfile = os.path.splitext(p)[0] + '.html'
         temp_links.append({'title': title, 'url': url})
     pagelinks = []

@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Django 中的 URL 配置 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">Django 中的 URL 配置</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Django 中的 URL 配置</h3>
 
-        <div class="post-content">
-            <p>本文关注 Django 中的 URL 配置。
+            <div class="post-content">
+                <p>本文关注 Django 中的 URL 配置。
 Django 项目的所有 URL 配置都以 <code>urlpatterns</code> 变量开始，这变量是一个列表，
 列表中的单个元素称为 <code>url pattern</code>，即 url 模式。</p>
 <p>。比如：</p>
@@ -193,7 +198,17 @@ urlpattern 中的 regex。</p>
 <h4>有参数的情况</h4>
 <p>如果一个 url pattern 的 regex 里包含参数，同时使用了 include() 函数，
 那么捕获的所有参数都会传递给 include() 函数所包含的每一个 url pattern。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

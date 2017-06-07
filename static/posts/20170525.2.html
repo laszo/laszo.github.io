@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>比较几种Python框架的URL配置方式 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">比较几种Python框架的URL配置方式</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">比较几种Python框架的URL配置方式</h3>
 
-        <div class="post-content">
-            <h3>django的方式</h3>
+            <div class="post-content">
+                <h3>django的方式</h3>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
 
@@ -78,7 +83,17 @@ app.add_url_rule(&#39;/&#39;, &#39;hello&#39;, hello_world)
 因为<code>Flask.add_url_rule</code>方法在内部实现上就是把一条路由规则添加到url_map上：</p>
 <div class="codehilite"><pre><span></span>self.url_map.add(rule)
 </pre></div>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>

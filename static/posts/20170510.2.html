@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>WSGI协议中的environ变量 - Lv Xiaoyu `Site</title>
@@ -6,16 +7,20 @@
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
 </head>
+
 <body>
     <div class="container">
         <div class="blog-header">
-            <a href="../../index.html"><h1>Lv Xiaoyu `Site</h1></a>
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
         </div>
 
-        <h3 class="blog-post-title">WSGI协议中的environ变量</h3>
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">WSGI协议中的environ变量</h3>
 
-        <div class="post-content">
-            <p>在WSGI中，服务端传递给应用的第一个参数<code>environ</code>是一个字典，根据协议规定它必须包含如下值：</p>
+            <div class="post-content">
+                <p>在WSGI中，服务端传递给应用的第一个参数<code>environ</code>是一个字典，根据协议规定它必须包含如下值：</p>
 <ul>
 <li>
 <p>REQUEST_METHOD，HTTP协议请求的方法，如"GET" 或 "POST"</p>
@@ -80,7 +85,17 @@
 
 <p>除此之外，服务端也可以根据自己的需要添加其他变量到environ字典中，以传递给应用一些信息，
 当然变量的名字不能与上述规定的变量重复。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                <h3>目录</h3>
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
         </div>
     </div>
 </body>
+
 </html>
