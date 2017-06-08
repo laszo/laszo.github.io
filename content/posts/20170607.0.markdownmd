@@ -97,7 +97,7 @@ WSGIServer的构造函数接收address和wsgiapp，并激活服务器，handle_r
 
 直接生成handlercls也就是ConfigFileHandler的实例的handle方法，注意它传递了上面讨论的`self.patterns`，然后调用handle方法处理。下面该看ConfigFileHandler的代码了，再次之前，我们还需要对Handler的代码进行重新组织。
 
-#### Handler的重新组织
+<h4 id='handler_re'>Handler的重新组织</h4>
 
 类似的，之前的Handler拆分为如下两部分：
 
@@ -116,7 +116,7 @@ WSGIServer的构造函数接收address和wsgiapp，并激活服务器，handle_r
 
 具体的代码就不粘贴在这里了，可参看这个版本的[handler.py]。我们的重点在于下面的`ConfigFileHandler`。
 
-#### ConfigFileHandler
+<h4 id='configfilehandler'>ConfigFileHandler</h4>
 
     :::python
     class ConfigFileHandler(BaseHandler):
@@ -158,7 +158,42 @@ ConfigFileHandler保存了ConfigServer传递给它的patterns，handle_requst方
 
 根据nginx的文档[Serving Static Content]节，对于请求路径的匹配，nginx会倾向于找到能够匹配最大长度的location，我们的代码采用类似的策略，这是一个简单的顺序查找算法。
 
+<h4 id='launchhelper'>启动Server的帮助方法</h4>
+
+我们再来添加几个帮助方法，用于启动服务器：
+
+    :::python
+    def launch(address=None, wsgiapp=None, cfg_file=None):
+        if cfg_file:
+            config = t.config(cfg_file)
+            servers = config.find('http.server')
+            for server in servers:
+                worker = multiprocessing.Process(target=runserver, args=(server, ))
+                worker.start()
+        if address and wsgiapp:
+            worker = multiprocessing.Process(target=runwsgi, args=(address, wsgiapp, ))
+            worker.start()
+
+    def runserver(config):
+        server = ConfigServer(config=config)
+        server.run_server()
+
+    def runwsgi(address, wsgiapp):
+        server = WSGIServer(address, wsgiapp)
+        server.run_server()
+
+launch方法根据传递给它的参数来判断是否需要启动ConfigServer和WSGIServer，并启动独立的进程去承载这些服务。
+可以使用下面这样的代码来同时启动或单独启动：
+
+    :::python
+    launch(('127.0.0.1', 8094), app))
+    launch(cfg_file='config.conf')
+    launch(('127.0.0.1', 8094), app, 'config.conf')
+
+完整的代码仍然参看[当前版本的PyWebServer]。
+
 [PyWebServer]: https://github.com/laszo/PyWebServer
+[当前版本的PyWebServer]: https://github.com/laszo/PyWebServer/tree/475c95fdebccb2c46d394247dab762d1326623f6
 [Nginx的基本配置]: 20170516.1.html
 [Serving Static Content]: http://nginx.org/en/docs/beginners_guide.html#static
 [handler.py]: https://github.com/laszo/PyWebServer/blob/e62072469b8d8440fd856aa7471281e27457e19f/pwserver/handler.py
