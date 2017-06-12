@@ -28,24 +28,22 @@
 简单来说，整个模板系统需要如下三个部分协调工作：</p>
 <h4>1.动态数据，</h4>
 <p>比如从数据库中查询得到：</p>
-<div class="codehilite"><pre><span></span>user.name = &#39;Jack&#39;;
-user.age = 21
-</pre></div>
+<pre class="codehilite"><code>user.name = 'Jack';
+user.age = 21</code></pre>
 
 
 <h4>2.模板文件，</h4>
 <p>这是一个混合了HTML代码和模板标记的代码文件：</p>
-<div class="codehilite"><pre><span></span><span class="nt">&lt;html&gt;</span>
-    <span class="nt">&lt;head&gt;</span>
-    <span class="nt">&lt;title&gt;</span>
-        Hello, <span class="cp">{{</span> <span class="nv">user.name</span> <span class="cp">}}</span>
-    <span class="nt">&lt;/title&gt;</span>
-    <span class="nt">&lt;/head&gt;</span>
-    <span class="nt">&lt;body&gt;</span>
-        Hi, <span class="cp">{{</span> <span class="nv">user.name</span> <span class="cp">}}</span>, your age is <span class="cp">{{</span> <span class="nv">user.age</span> <span class="cp">}}</span>.
-    <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span>
-</pre></div>
+<pre class="codehilite"><code>&lt;html&gt;
+    &lt;head&gt;
+    &lt;title&gt;
+        Hello, {{ user.name }}
+    &lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        Hi, {{ user.name }}, your age is {{ user.age }}.
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
 
 
 <p>在上面文件中，除了普通的HTML标记之外，<code>{{ user.name }}</code>和<code>{{ user.age }}</code>都是模板的标记，
@@ -54,38 +52,36 @@ user.age = 21
 <p>模板引擎读取模板文件和动态数据，根据模板中的标记把动态数据替换其中，形成最终的纯粹的HTML代码。
 这个过程一般称为渲染（render）。
 在上面的例子里，模板文件最终渲染成为如下HTML代码：</p>
-<div class="codehilite"><pre><span></span><span class="nt">&lt;html&gt;</span>
-    <span class="nt">&lt;head&gt;</span>
-    <span class="nt">&lt;title&gt;</span>
+<pre class="codehilite"><code>&lt;html&gt;
+    &lt;head&gt;
+    &lt;title&gt;
         Hello, Jack
-    <span class="nt">&lt;/title&gt;</span>
-    <span class="nt">&lt;/head&gt;</span>
-    <span class="nt">&lt;body&gt;</span>
+    &lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
         Hi, Jack, your age is 21.
-    <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span>
-</pre></div>
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
 
 
 <h2>配置 Django Template</h2>
 <p>当我们使用 <code>django-admin</code> 的 <code>startproject</code> 命令新建一个项目时，
 项目文件下已经自动预设了模板的相关配置，在<code>settings.py</code>文件中有一个<code>TEMPLATES</code>变量：</p>
-<div class="codehilite"><pre><span></span>TEMPLATES = [
+<pre class="codehilite"><code>TEMPLATES = [
     {
-        &#39;BACKEND&#39;: &#39;django.template.backends.django.DjangoTemplagte&#39;,
-        &#39;DIRS&#39;: [],
-        &#39;APP_DIRS&#39;: True,
-        &#39;OPTIONS&#39;: {
-            &#39;context_processors&#39;: [
-                &#39;django.template.context_processors.debug&#39;,
-                &#39;django.template.context_processors.request&#39;,
-                &#39;django.contrib.auth.context_processors.auth&#39;,
-                &#39;django.contrib.messages.context_processors.messages&#39;,
+        'BACKEND': 'django.template.backends.django.DjangoTemplagte',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
-]
-</pre></div>
+]</code></pre>
 
 
 <p>可以看到TEMPLATES是一个列表，每一项元素都是一个字典，指明了其中一个模板的配置。字典包含如下项：</p>
@@ -119,16 +115,15 @@ templates的路径应该是：<code>~/myproject/myapp/tempaltes/</code>。</p>
 会先匹配到<code>/var/www/template/myapp/index.html</code>。</p>
 <h2>使用 Django Template</h2>
 <p>对于模板的使用主要在 view 的代码里操作：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
-<span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">loader</span>
+<pre class="codehilite"><code>from django.http import HttpResponse
+from django.template import loader
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;hello, world!&#39;</span>
-    <span class="p">}</span>
-    <span class="n">template</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s1">&#39;base.html&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">request</span><span class="p">))</span>
-</pre></div>
+def index(request):
+    context = {
+        'message': 'hello, world!'
+    }
+    template = loader.get_template('base.html')
+    return HttpResponse(template.render(context, request))</code></pre>
 
 
 <p>上述代码涉及到如下API：</p>

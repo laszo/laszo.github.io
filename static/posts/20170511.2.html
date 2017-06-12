@@ -30,69 +30,67 @@
 </blockquote>
 <h3>疑问二</h3>
 <p>如下代码可以正常运行，当做一个最简单的HTTP服务器来使用：</p>
-<div class="codehilite"><pre><span></span><span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">HTTP/1.0 200 OK</span>
+<pre class="codehilite"><code class="language-python">G_content = &quot;&quot;&quot;
+HTTP/1.0 200 OK
 
-<span class="s2">&lt;head&gt;</span>
-<span class="s2">&lt;title&gt;Hello, world!&lt;/title&gt;</span>
-<span class="s2">&lt;/head&gt;</span>
-<span class="s2">&lt;body&gt;</span>
-<span class="s2">Hello, world!</span>
-<span class="s2">&lt;/body&gt;</span>
-<span class="s2">&quot;&quot;&quot;</span>
+&lt;head&gt;
+&lt;title&gt;Hello, world!&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+Hello, world!
+&lt;/body&gt;
+&quot;&quot;&quot;
 
-<span class="kn">import</span> <span class="nn">socket</span>
-<span class="k">def</span> <span class="nf">server2</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-        <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
-        <span class="n">raw_request</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
-        <span class="k">print</span> <span class="n">raw_request</span>
-        <span class="c1"># c.send(G_response)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_content</span><span class="p">)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+import socket
+def server2(address):
+    s = socket.socket()
+    s.bind(address)
+    s.listen(5)
+    while True:
+        c, a = s.accept()
+        print 'Connected from ', a
+        raw_request = c.recv(65537)
+        print raw_request
+        # c.send(G_response)
+        c.send(G_content)
+        c.close()
+    s.close()
 
-<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">9003</span><span class="p">)</span>
-    <span class="n">server2</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-</pre></div>
+if __name__== '__main__':
+    address = ('', 9003)
+    server2(address)</code></pre>
 
 
 <p>但是略做改动，如下代码就会报错：</p>
-<div class="codehilite"><pre><span></span><span class="n">G_response</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 200 OK&#39;</span>
+<pre class="codehilite"><code class="language-python">G_response = 'HTTP/1.0 200 OK'
 
-<span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">&lt;head&gt;</span>
-<span class="s2">&lt;title&gt;Hello, world!&lt;/title&gt;</span>
-<span class="s2">&lt;/head&gt;</span>
-<span class="s2">&lt;body&gt;</span>
-<span class="s2">Hello, world!</span>
-<span class="s2">&lt;/body&gt;</span>
-<span class="s2">&quot;&quot;&quot;</span>
+G_content = &quot;&quot;&quot;
+&lt;head&gt;
+&lt;title&gt;Hello, world!&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+Hello, world!
+&lt;/body&gt;
+&quot;&quot;&quot;
 
-<span class="kn">import</span> <span class="nn">socket</span>
-<span class="k">def</span> <span class="nf">server2</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-        <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
-        <span class="n">raw_request</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
-        <span class="k">print</span> <span class="n">raw_request</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span><span class="p">)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_content</span><span class="p">)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+import socket
+def server2(address):
+    s = socket.socket()
+    s.bind(address)
+    s.listen(5)
+    while True:
+        c, a = s.accept()
+        print 'Connected from ', a
+        raw_request = c.recv(65537)
+        print raw_request
+        c.send(G_response)
+        c.send(G_content)
+        c.close()
+    s.close()
 
-<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">9003</span><span class="p">)</span>
-    <span class="n">server2</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-</pre></div>
+if __name__== '__main__':
+    address = ('', 9003)
+    server2(address)</code></pre>
 
 
 <p>最稀奇的是：由于本人用的编辑器是 VS Code，如果我在当前代码文件下右键弹出菜单，

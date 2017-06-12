@@ -29,13 +29,11 @@
 <li>可选的数据部分</li>
 </ol>
 <p>一，第一行指明请求的<code>种类</code>和<code>路径</code>，是下面这样的格式：</p>
-<div class="codehilite"><pre><span></span>&lt;command&gt; &lt;path&gt; &lt;version&gt;
-</pre></div>
+<pre class="codehilite"><code>&lt;command&gt; &lt;path&gt; &lt;version&gt;</code></pre>
 
 
 <p>或：</p>
-<div class="codehilite"><pre><span></span>&lt;command&gt; &lt;path&gt;
-</pre></div>
+<pre class="codehilite"><code>&lt;command&gt; &lt;path&gt;</code></pre>
 
 
 <p>其中：</p>
@@ -58,8 +56,7 @@ HTTP版本号有0.9、1.0、1.1等，目前最主流的版本是1.1，详细可�
 <li>数据部分</li>
 </ol>
 <p>一，第一行，返回响应的状态与代码，格式为：</p>
-<div class="codehilite"><pre><span></span>&lt;version&gt; &lt;responsecode&gt; &lt;responsestring&gt;
-</pre></div>
+<pre class="codehilite"><code>&lt;version&gt; &lt;responsecode&gt; &lt;responsestring&gt;</code></pre>
 
 
 <p>其中：</p>
@@ -71,16 +68,15 @@ HTTP版本号有0.9、1.0、1.1等，目前最主流的版本是1.1，详细可�
 <p>状态码的列表可参看<a href="http://www.w3school.com.cn/tags/html_ref_httpmessages.asp">HTTP 状态消息</a>，最权威的定义则来自<a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">Status Code Definitions</a>。</p>
 <p>二，首部，格式类似于请求的格式。这一部分是可选的。</p>
 <p>三，数据部分。最常见的数据格式是HTML格式的字符串。比如：</p>
-<div class="codehilite"><pre><span></span><span class="nt">&lt;head&gt;</span>
-<span class="nt">&lt;title&gt;</span>Error response<span class="nt">&lt;/title&gt;</span>
-<span class="nt">&lt;/head&gt;</span>
-<span class="nt">&lt;body&gt;</span>
-<span class="nt">&lt;h1&gt;</span>Error response<span class="nt">&lt;/h1&gt;</span>
-<span class="nt">&lt;p&gt;</span>Error code 501.
-<span class="nt">&lt;p&gt;</span>Message: Unsupported method (&#39;GET&#39;).
-<span class="nt">&lt;p&gt;</span>Error code explanation: 501 = Server does not support this operation.
-<span class="nt">&lt;/body&gt;</span>
-</pre></div>
+<pre class="codehilite"><code>&lt;head&gt;
+&lt;title&gt;Error response&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Error response&lt;/h1&gt;
+&lt;p&gt;Error code 501.
+&lt;p&gt;Message: Unsupported method ('GET').
+&lt;p&gt;Error code explanation: 501 = Server does not support this operation.
+&lt;/body&gt;</code></pre>
 
 
 <h3>关于首部的进一步说明</h3>

@@ -25,59 +25,50 @@
 <h4 id='cmd_syntax'>命令行的参数</h4>
 
 <p>启动静态文件服务(读取默认配置文件)：</p>
-<div class="codehilite"><pre><span></span>pwserver static
-</pre></div>
+<pre class="codehilite"><code>pwserver static</code></pre>
 
 
 <p>启动WSGI服务器：</p>
-<div class="codehilite"><pre><span></span>pwserver -w wsgi.app
-</pre></div>
+<pre class="codehilite"><code>pwserver -w wsgi.app</code></pre>
 
 
 <p>在上面的命令中，<code>wsgi</code>是WSGI应用所在的模块，<code>app</code>是WSGI应用的名字。默认的地址为<code>127.0.0.1</code>，端口号为<code>8081</code>。</p>
 <p>使用<code>-a</code>参数制定地址，使用<code>-b</code>参数制定端口号：</p>
-<div class="codehilite"><pre><span></span>pwserver -w wsgi.app -a &#39;127.0.0.1&#39; -p 8081
-</pre></div>
+<pre class="codehilite"><code>pwserver -w wsgi.app -a '127.0.0.1' -p 8081</code></pre>
 
 
 <p>如果类比于<code>gunicorn</code>，使用gunicorn启动上面的WSGI应用的方式为：</p>
-<div class="codehilite"><pre><span></span>gunicorn wsgi:app
-</pre></div>
+<pre class="codehilite"><code>gunicorn wsgi:app</code></pre>
 
 
 <p>如果想要同时启动WSGI服务器和静态文件服务：</p>
-<div class="codehilite"><pre><span></span>pwserver static -w wsgi.app
-</pre></div>
+<pre class="codehilite"><code>pwserver static -w wsgi.app</code></pre>
 
 
 <p>如果想要启动指定配置文件来替代默认路径的配置文件，采用如下命令：</p>
-<div class="codehilite"><pre><span></span>pwserver static -f /path/to/config.conf
-</pre></div>
+<pre class="codehilite"><code>pwserver static -f /path/to/config.conf</code></pre>
 
 
 <p>相应的，同时启动WSGI服务器和指定配置文件的静态文件服务：</p>
-<div class="codehilite"><pre><span></span>pwserver static -f /path/to/config.conf -w wsgi.app
-</pre></div>
+<pre class="codehilite"><code>pwserver static -f /path/to/config.conf -w wsgi.app</code></pre>
 
 
 <h4 id='serve_django'>承载Django网站</h4>
 
 <p>Django应用已自带了服务器，如果在开发调试阶段，直接使用自带服务器即可：</p>
-<div class="codehilite"><pre><span></span>./manage.py runserver
-</pre></div>
+<pre class="codehilite"><code>./manage.py runserver</code></pre>
 
 
 <p>如果要部署在PyWebServer上，按照以下步骤：</p>
 <ol>
 <li>确定将要部署的静态文件的路径，假如是<code>/path/to/static</code>。</li>
 <li>修改Django配置文件<code>setting.py</code>，将<code>STATIC_ROOT</code>的值修改为<code>/path/to/static</code>。</li>
-<li>修改PyWebServer的配置文件，添加一个server：<div class="codehilite"><pre><span></span>server {
+<li>修改PyWebServer的配置文件，添加一个server：<pre class="codehilite"><code>server {
     listen 8081;
     location /static/ {
         root /path/to/static;
     }
-}
-</pre></div>
+}</code></pre>
 
 
 </li>

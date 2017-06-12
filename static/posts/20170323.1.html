@@ -26,7 +26,7 @@
 就可以分别组织成不同的 application。所有的 application 加在一起，再加上项目的全局配置，
 组成了 project。虽然叫 application，它其实是一个标准的 Python package。</p>
 <p>一般来说一个 Django 项目的组成结构如下：</p>
-<div class="codehilite"><pre><span></span>.
+<pre class="codehilite"><code>.
 └── ProjectName
     ├── manage.py
     ├── ProjectName
@@ -39,138 +39,124 @@
     │   ├── ...
     └── application3
     │   ├── ...
-    │────── ...
-</pre></div>
+    │────── ...</code></pre>
 
 
 <p>生成一个 application 非常简单，需要用到 <code>startapp</code> 命令，在项目目录下执行：</p>
-<div class="codehilite"><pre><span></span>./manage.py startapp myapp
-</pre></div>
+<pre class="codehilite"><code>./manage.py startapp myapp</code></pre>
 
 
 <p>就在当前项目下添加了一个名为 myapp 的 application。但是这时候在整个项目范围内，
 还无法使用这个 application，还需要进行所谓的激活或注册。</p>
 <p>刚才的命令，生成的文件结构如下：</p>
-<div class="codehilite"><pre><span></span>├── myapp
+<pre class="codehilite"><code>├── myapp
     │   ├── __init__.py
     │   ├── admin.py
     │   ├── apps.py
     │   ├── migrations
     │   ├── models.py
     │   ├── tests.py
-    │   └── views.py
-</pre></div>
+    │   └── views.py</code></pre>
 
 
 <p>其中，<code>apps.py</code> 文件中定义了一个名为 <code>MyappConfig</code> 的类，继承自 <code>django.apps.AppConfig</code>:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">AppConfig</span>
+<pre class="codehilite"><code>from django.apps import AppConfig
 
-<span class="k">class</span> <span class="nc">MyappConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;myapp&#39;</span>
-</pre></div>
+class MyappConfig(AppConfig):
+    name = 'myapp'</code></pre>
 
 
 <p>这个类是 <code>startapp</code> 命令自动生成的。要进行 myapp 的激活，需要修改 <code>INSTALLED_APPS</code> 变量。
 在文件 <code>ProjectName\settings.py</code> 中，可以看到这个变量的配置代码：</p>
-<div class="codehilite"><pre><span></span>INSTALLED_APPS = [
-    &#39;django.contrib.admin&#39;,
-    &#39;django.contrib.auth&#39;,
-    &#39;django.contrib.contenttypes&#39;,
-    &#39;django.contrib.sessions&#39;,
-    &#39;django.contrib.messages&#39;,
-    &#39;django.contrib.staticfiles&#39;,
-]
-</pre></div>
+<pre class="codehilite"><code>INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]</code></pre>
 
 
 <p>这是 Django 预定义的内置 application，我们把刚才生成的 <code>MyappConfig</code> 添加到这个列表中：</p>
-<div class="codehilite"><pre><span></span>INSTALLED_APPS = [
-    &#39;myapp.apps.MyappConfig&#39;, # 添加自己的 application
-    &#39;django.contrib.admin&#39;,
-    &#39;django.contrib.auth&#39;,
-    &#39;django.contrib.contenttypes&#39;,
-    &#39;django.contrib.sessions&#39;,
-    &#39;django.contrib.messages&#39;,
-    &#39;django.contrib.staticfiles&#39;,
-]
-</pre></div>
+<pre class="codehilite"><code>INSTALLED_APPS = [
+    'myapp.apps.MyappConfig', # 添加自己的 application
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]</code></pre>
 
 
 <p>让我们来使用 django-admin 的 <code>shell</code> 命令来查看项目的配置：</p>
-<div class="codehilite"><pre><span></span>./manage.py shell
-</pre></div>
+<pre class="codehilite"><code>./manage.py shell</code></pre>
 
 
 <p>这时候就进入了 Python 交互环境，能够看到命令提示符 <code>&gt;&gt;&gt;</code> ，
 使用 <code>django.apps.apps.get_app_configs</code> 方法查看已注册的 application ：</p>
-<div class="codehilite"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_app_configs</span><span class="p">()</span>
-<span class="p">[</span><span class="o">&lt;</span><span class="n">MyappConfig</span><span class="p">:</span> <span class="n">myapp</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">AdminConfig</span><span class="p">:</span> <span class="n">admin</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">AuthConfig</span><span class="p">:</span> <span class="n">auth</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">ContentTypesConfig</span><span class="p">:</span>
-<span class="n">contenttypes</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">SessionsConfig</span><span class="p">:</span> <span class="n">sessions</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">MessagesConfig</span><span class="p">:</span> <span class="n">messages</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">StaticFilesCon</span>
-<span class="n">fig</span><span class="p">:</span> <span class="n">staticfiles</span><span class="o">&gt;</span><span class="p">]</span>
-</pre></div>
+<pre class="codehilite"><code>&gt;&gt;&gt; from django.apps import apps
+&gt;&gt;&gt; apps.get_app_configs()
+[&lt;MyappConfig: myapp&gt;, &lt;AdminConfig: admin&gt;, &lt;AuthConfig: auth&gt;, &lt;ContentTypesConfig:
+contenttypes&gt;, &lt;SessionsConfig: sessions&gt;, &lt;MessagesConfig: messages&gt;, &lt;StaticFilesCon
+fig: staticfiles&gt;]</code></pre>
 
 
 <p>可以看到，<code>MyappConfig: myapp</code> 就是我们刚才添加的 application。</p>
 <p>在 <code>INSTALLED_APPS</code> 中，如果我们添加的不是 <code>'myapp.apps.MyappConfig'</code> ，
 而直接是 <code>'myapp'</code>，也是可以的:</p>
-<div class="codehilite"><pre><span></span>INSTALLED_APPS = [
-    &#39;myapp&#39;, # 直接使用 application 的名字
-    &#39;django.contrib.admin&#39;,
-    &#39;django.contrib.auth&#39;,
-    &#39;django.contrib.contenttypes&#39;,
-    &#39;django.contrib.sessions&#39;,
-    &#39;django.contrib.messages&#39;,
-    &#39;django.contrib.staticfiles&#39;,
-]
-</pre></div>
+<pre class="codehilite"><code>INSTALLED_APPS = [
+    'myapp', # 直接使用 application 的名字
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]</code></pre>
 
 
 <p>只是这时候再去看 <code>django.apps.apps.get_app_configs</code> 方法， 就变成了：</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; apps.get_app_configs()
+<pre class="codehilite"><code>&gt;&gt;&gt; apps.get_app_configs()
 [&lt;AppConfig: myapp&gt;, &lt;AdminConfig: admin&gt;, &lt;AuthConfig: auth&gt;, &lt;ContentTypesConfig: co
 ntenttypes&gt;, &lt;SessionsConfig: sessions&gt;, &lt;MessagesConfig: messages&gt;, &lt;StaticFilesConfi
-g: staticfiles&gt;]
-</pre></div>
+g: staticfiles&gt;]</code></pre>
 
 
 <p>我们自己添加的 application 从 <code>MyappConfig: myapp</code> 变成了 <code>AppConfig: myapp</code>。</p>
 <p>也就是说，<code>INSTALLED_APPS</code> 这个列表变量，可以接受 <code>AppConfig</code> 类、也可以接受它的子类。
 如果我们再去添加一个 application：</p>
-<div class="codehilite"><pre><span></span>./manage.py startapp myapp1
-</pre></div>
+<pre class="codehilite"><code>./manage.py startapp myapp1</code></pre>
 
 
 <p>并注册：</p>
-<div class="codehilite"><pre><span></span>INSTALLED_APPS = [
-    &#39;myapp1.apps.Myapp1Config&#39;,
-    &#39;myapp&#39;,
-    &#39;django.contrib.admin&#39;,
+<pre class="codehilite"><code>INSTALLED_APPS = [
+    'myapp1.apps.Myapp1Config',
+    'myapp',
+    'django.contrib.admin',
     ...
-]
-</pre></div>
+]</code></pre>
 
 
 <p>再来看 <code>apps.get_app_configs</code> ：</p>
-<div class="codehilite"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_app_configs</span><span class="p">()</span>
-<span class="p">[</span><span class="o">&lt;</span><span class="n">Myapp1Config</span><span class="p">:</span> <span class="n">myapp1</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">AppConfig</span><span class="p">:</span> <span class="n">myapp</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">AdminConfig</span><span class="p">:</span> <span class="n">admin</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">AuthConfig</span><span class="p">:</span> <span class="n">auth</span><span class="o">&gt;</span><span class="p">,</span>
-<span class="o">&lt;</span><span class="n">ContentTypesConfig</span><span class="p">:</span> <span class="n">contenttypes</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">SessionsConfig</span><span class="p">:</span> <span class="n">sessions</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">MessagesConfig</span><span class="p">:</span> <span class="n">mess</span>
-<span class="n">ages</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">StaticFilesConfig</span><span class="p">:</span> <span class="n">staticfiles</span><span class="o">&gt;</span><span class="p">]</span>
-</pre></div>
+<pre class="codehilite"><code>&gt;&gt;&gt; from django.apps import apps
+&gt;&gt;&gt; apps.get_app_configs()
+[&lt;Myapp1Config: myapp1&gt;, &lt;AppConfig: myapp&gt;, &lt;AdminConfig: admin&gt;, &lt;AuthConfig: auth&gt;,
+&lt;ContentTypesConfig: contenttypes&gt;, &lt;SessionsConfig: sessions&gt;, &lt;MessagesConfig: mess
+ages&gt;, &lt;StaticFilesConfig: staticfiles&gt;]</code></pre>
 
 
 <p>得到了想要的效果。</p>
 <p>下面我们来看预定义的 application 文件结构的其余部分：</p>
-<div class="codehilite"><pre><span></span>├── myapp
+<pre class="codehilite"><code>├── myapp
     │   ├── __init__.py
     │   ├── admin.py
     │   ├── apps.py
     │   ├── migrations
     │   ├── models.py
     │   ├── tests.py
-    │   └── views.py
-</pre></div>
+    │   └── views.py</code></pre>
 
 
 <p>其中， <code>migrations</code>是一个文件夹，用于数据模型与数据库结构的同步，

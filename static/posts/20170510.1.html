@@ -22,69 +22,65 @@
             <div class="post-content">
                 <p>上篇文章我们分析了Python标准库中的基础Server的逻辑，这可以说只是一个完整服务端的一半，一个服务端其实包含两种对象：Server和RequestHandler，Server负责一直监听客户端请求，每次获得请求就传递给RequestHandler，RequestHandler进行实际的请求处理。</p>
 <p>今天我们来分析各种Handler，从BaseServer的代码看起：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">BaseServer</span>:
-    <span class="kt">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">server_address</span><span class="p">,</span> <span class="nx">RequestHandlerClass</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">RequestHandlerClass</span> <span class="o">=</span> <span class="nx">RequestHandlerClass</span>
-</pre></div>
+<pre class="codehilite"><code>class BaseServer:
+    def __init__(self, server_address, RequestHandlerClass):
+        self.RequestHandlerClass = RequestHandlerClass</code></pre>
 
 
 <p>Server在初始化的时候必须传入RequestHandlerClass，指明了要使用那个处理类，并保存在自身的同名成员中。在上篇文章中已经看到，<code>serve_forever</code>中最核心的一步就是调用<code>finish_request</code>，而后者则是调用了处理类成员，</p>
-<div class="codehilite"><pre><span></span>def finish_request(self, request, client_address):
-    self.RequestHandlerClass(request, client_address, self)
-</pre></div>
+<pre class="codehilite"><code>def finish_request(self, request, client_address):
+    self.RequestHandlerClass(request, client_address, self)</code></pre>
 
 
 <p>至于各种处理类究竟是如何处理的，我们从最基本的BaseRequestHandler看起：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">BaseRequestHandler</span>:
-    <span class="kt">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">client_address</span><span class="p">,</span> <span class="nx">server</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">request</span> <span class="o">=</span> <span class="nx">request</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">client_address</span> <span class="o">=</span> <span class="nx">client_address</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">server</span> <span class="o">=</span> <span class="nx">server</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">setup</span><span class="p">()</span>
-        <span class="k">try</span><span class="o">:</span>
-            <span class="nx">self</span><span class="p">.</span><span class="nx">handle</span><span class="p">()</span>
-        <span class="k">finally</span><span class="o">:</span>
-            <span class="nx">self</span><span class="p">.</span><span class="nx">finish</span><span class="p">()</span>
+<pre class="codehilite"><code>class BaseRequestHandler:
+    def __init__(self, request, client_address, server):
+        self.request = request
+        self.client_address = client_address
+        self.server = server
+        self.setup()
+        try:
+            self.handle()
+        finally:
+            self.finish()
 
-    <span class="nx">def</span> <span class="nx">setup</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">pass</span>
+    def setup(self):
+        pass
 
-    <span class="nx">def</span> <span class="nx">handle</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">pass</span>
+    def handle(self):
+        pass
 
-    <span class="nx">def</span> <span class="nx">finish</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">pass</span>
-</pre></div>
+    def finish(self):
+        pass</code></pre>
 
 
 <p>它的逻辑非常简单，像BaseServer一样，它仅仅提供了处理类的流程框架，没有进行任何实际的处理，但是保存了<code>request, client_address, server</code>等几个成员。在构造方法里调用了<code>handle</code>方法，一看便知这个方法是该类的核心，也是服务类处理客户端请求的实质逻辑。</p>
 <p>再来看<code>StreamRequestHandler</code>：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">StreamRequestHandler</span><span class="p">(</span><span class="nx">BaseRequestHandler</span><span class="p">)</span><span class="o">:</span>
-    <span class="nx">rbufsize</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="nx">wbufsize</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="nx">timeout</span> <span class="o">=</span> <span class="nx">None</span>
+<pre class="codehilite"><code>class StreamRequestHandler(BaseRequestHandler):
+    rbufsize = -1
+    wbufsize = 0
+    timeout = None
 
-    <span class="nx">disable_nagle_algorithm</span> <span class="o">=</span> <span class="nx">False</span>
+    disable_nagle_algorithm = False
 
-    <span class="nx">def</span> <span class="nx">setup</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">connection</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">request</span>
-        <span class="k">if</span> <span class="nx">self</span><span class="p">.</span><span class="nx">timeout</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">None</span>:
-            <span class="kt">self.connection.settimeout</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">timeout</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nx">self.disable_nagle_algorithm</span>:
-            <span class="kt">self.connection.setsockopt</span><span class="p">(</span><span class="nx">socket</span><span class="p">.</span><span class="nx">IPPROTO_TCP</span><span class="p">,</span>
-                                    <span class="nx">socket</span><span class="p">.</span><span class="nx">TCP_NODELAY</span><span class="p">,</span> <span class="nx">True</span><span class="p">)</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">rfile</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">makefile</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">rbufsize</span><span class="p">)</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">wfile</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">makefile</span><span class="p">(</span><span class="s1">&#39;wb&#39;</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">wbufsize</span><span class="p">)</span>
+    def setup(self):
+        self.connection = self.request
+        if self.timeout is not None:
+            self.connection.settimeout(self.timeout)
+        if self.disable_nagle_algorithm:
+            self.connection.setsockopt(socket.IPPROTO_TCP,
+                                    socket.TCP_NODELAY, True)
+        self.rfile = self.connection.makefile('rb', self.rbufsize)
+        self.wfile = self.connection.makefile('wb', self.wbufsize)
 
-    <span class="nx">def</span> <span class="nx">finish</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="k">if</span> <span class="nx">not</span> <span class="nx">self.wfile.closed</span>:
-            <span class="kt">try</span><span class="o">:</span>
-                <span class="nx">self</span><span class="p">.</span><span class="nx">wfile</span><span class="p">.</span><span class="nx">flush</span><span class="p">()</span>
-            <span class="nx">except</span> <span class="nx">socket.error</span>:
-                <span class="kt">pass</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">wfile</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">rfile</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
-</pre></div>
+    def finish(self):
+        if not self.wfile.closed:
+            try:
+                self.wfile.flush()
+            except socket.error:
+                pass
+        self.wfile.close()
+        self.rfile.close()</code></pre>
 
 
 <p>StreamRequestHandler覆写了setup和finish，这里最重要的一步是把自身持有的connection成员（代表服务端与客户端的连接）通过makefile转化为两个成员wfile和rfile。这样，就把对socket的操作recv和send，简化为了对rfile的read和对wfile的write。这在后续的子类中是非常有用的包装。</p>
@@ -94,23 +90,22 @@
 <li>平心静气，一步一步来</li>
 </ol>
 <p>一部分一部分来看：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">BaseHTTPRequestHandler</span><span class="p">(</span><span class="nx">SocketServer</span><span class="p">.</span><span class="nx">StreamRequestHandler</span><span class="p">)</span><span class="o">:</span>
-    <span class="nx">def</span> <span class="nx">handle</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">close_connection</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">handle_one_request</span><span class="p">()</span>
-        <span class="k">while</span> <span class="nx">not</span> <span class="nx">self.close_connection</span>:
-            <span class="kt">self.handle_one_request</span><span class="p">()</span>
-</pre></div>
+<pre class="codehilite"><code>class BaseHTTPRequestHandler(SocketServer.StreamRequestHandler):
+    def handle(self):
+        self.close_connection = 1
+        self.handle_one_request()
+        while not self.close_connection:
+            self.handle_one_request()</code></pre>
 
 
 <p>handle方法简单来说就是持续调用handle_one_request，如果需要停止调用，就需要把close_connection置为False。再来看handle_one_request：</p>
-<div class="codehilite"><pre><span></span>def handle_one_request(self):
+<pre class="codehilite"><code>def handle_one_request(self):
     try:
         self.raw_requestline = self.rfile.readline(65537)
         if len(self.raw_requestline) &gt; 65536:
-            self.requestline = &#39;&#39;
-            self.request_version = &#39;&#39;
-            self.command = &#39;&#39;
+            self.requestline = ''
+            self.request_version = ''
+            self.command = ''
             self.send_error(414)
             return
         if not self.raw_requestline:
@@ -118,7 +113,7 @@
             return
         if not self.parse_request():
             return
-        mname = &#39;do_&#39; + self.command
+        mname = 'do_' + self.command
         if not hasattr(self, mname):
             self.send_error(501, &quot;Unsupported method (%r)&quot; % self.command)
             return
@@ -128,8 +123,7 @@
     except socket.timeout, e:
         self.log_error(&quot;Request timed out: %r&quot;, e)
         self.close_connection = 1
-        return
-</pre></div>
+        return</code></pre>
 
 
 <p>代码有点多，简单来有如下几步：</p>
@@ -141,14 +135,13 @@
 <li>调用<code>wfile.flush()</code>，把响应返回给客户端</li>
 </ol>
 <p>我们查看了BaseHTTPRequestHandler的代码，并无任何以<code>do_</code>开头的方法，说明具体的方法留给子类去实现了。再来看<code>parse_request()</code>，它的代码过长，我们只给出核心操作的部分，并分步来看：</p>
-<div class="codehilite"><pre><span></span>def parse_request(self):
+<pre class="codehilite"><code>def parse_request(self):
     self.close_connection = 1
     requestline = self.raw_requestline
-    requestline = requestline.rstrip(&#39;\r\n&#39;)
+    requestline = requestline.rstrip('\r\n')
     self.requestline = requestline
     words = requestline.split()
-    ...
-</pre></div>
+    ...</code></pre>
 
 
 <ol>
@@ -156,13 +149,13 @@
 <li>把requestline按空格分割，存储在words中</li>
 </ol>
 <p>接着往下看：</p>
-<div class="codehilite"><pre><span></span>    if len(words) == 3:
+<pre class="codehilite"><code>    if len(words) == 3:
         command, path, version = words
-        if version[:5] != &#39;HTTP/&#39;:
+        if version[:5] != 'HTTP/':
             self.send_error(400, &quot;Bad request version (%r)&quot; % version)
             return False
         try:
-            base_version_number = version.split(&#39;/&#39;, 1)[1]
+            base_version_number = version.split('/', 1)[1]
             version_number = base_version_number.split(&quot;.&quot;)
             if len(version_number) != 2:
                 raise ValueError
@@ -174,51 +167,45 @@
             self.close_connection = 0
         if version_number &gt;= (2, 0):
             self.send_error(505, &quot;Invalid HTTP Version (%s)&quot; % base_version_number)
-            return False
-</pre></div>
+            return False</code></pre>
 
 
 <p>上面是如果words有三个元素，主要是进行各种检查，检查不通过则报错并返回。</p>
 <p>来看words有两个元素的情况：</p>
-<div class="codehilite"><pre><span></span>    elif len(words) == 2:
+<pre class="codehilite"><code>    elif len(words) == 2:
         command, path = words
         self.close_connection = 1
-        if command != &#39;GET&#39;:
+        if command != 'GET':
             self.send_error(400,
                             &quot;Bad HTTP/0.9 request type (%r)&quot; % command)
-            return False
-</pre></div>
+            return False</code></pre>
 
 
 <p>同样是进行各种检查，检查不通过则报错并返回。</p>
 <p>继续往下看：</p>
-<div class="codehilite"><pre><span></span>    elif not words:
+<pre class="codehilite"><code>    elif not words:
         return False
     else:
         self.send_error(400, &quot;Bad request syntax (%r)&quot; % requestline)
-        return False
-</pre></div>
+        return False</code></pre>
 
 
 <p>words的数量不对，会报错并返回。再往下看：</p>
-<div class="codehilite"><pre><span></span>    self.command, self.path, self.request_version = command, path, version
-</pre></div>
+<pre class="codehilite"><code>    self.command, self.path, self.request_version = command, path, version</code></pre>
 
 
 <p>在正确解析之后，保存在了自身的成员<code>self.command, self.path, self.request_version</code>中。继续往下看，下一句：</p>
-<div class="codehilite"><pre><span></span>    self.headers = self.MessageClass(self.rfile, 0)
-</pre></div>
+<pre class="codehilite"><code>    self.headers = self.MessageClass(self.rfile, 0)</code></pre>
 
 
 <p>这里调用了标准库<code>mimetools.Message</code>类，这个类我们后续再去分析，简单来说就是对rfile对象进行解析，获取必要的数据保存在自身的headers成员中。再往下看：</p>
-<div class="codehilite"><pre><span></span>    conntype = self.headers.get(&#39;Connection&#39;, &quot;&quot;)
-    if conntype.lower() == &#39;close&#39;:
+<pre class="codehilite"><code>    conntype = self.headers.get('Connection', &quot;&quot;)
+    if conntype.lower() == 'close':
         self.close_connection = 1
-    elif (conntype.lower() == &#39;keep-alive&#39; and
+    elif (conntype.lower() == 'keep-alive' and
           self.protocol_version &gt;= &quot;HTTP/1.1&quot;):
         self.close_connection = 0
-    return True
-</pre></div>
+    return True</code></pre>
 
 
 <p>这段代码主要是判断是否需要保持持续连接。通过检查<code>conntype</code>、也就是服务端请求中的<code>Connection</code>属性，看是否需要保持连接，并写入close_connection。前面我们看到过，close_connection会影响到handle方法是否继续执行handle_one_request方法，即是否持续的接收并处理请求。</p>
@@ -232,89 +219,85 @@
 <p>具体的处理方法留给了子类。</p>
 <h4>WSGIRequestHandler</h4>
 <p>直接来看<code>WSGIRequestHandler</code>：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">WSGIRequestHandler</span><span class="p">(</span><span class="nx">BaseHTTPRequestHandler</span><span class="p">)</span><span class="o">:</span>
-    <span class="nx">def</span> <span class="nx">handle</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">raw_requestline</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">rfile</span><span class="p">.</span><span class="nx">readline</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
-        <span class="p">...</span>
-        <span class="k">if</span> <span class="nx">not</span> <span class="nx">self</span><span class="p">.</span><span class="nx">parse_request</span><span class="p">()</span><span class="o">:</span> 
-            <span class="k">return</span>
+<pre class="codehilite"><code>class WSGIRequestHandler(BaseHTTPRequestHandler):
+    def handle(self):
+        self.raw_requestline = self.rfile.readline(65537)
+        ...
+        if not self.parse_request(): 
+            return
 
-        <span class="nx">handler</span> <span class="o">=</span> <span class="nx">ServerHandler</span><span class="p">(</span>
-            <span class="nx">self</span><span class="p">.</span><span class="nx">rfile</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">wfile</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">get_stderr</span><span class="p">(),</span> <span class="nx">self</span><span class="p">.</span><span class="nx">get_environ</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="nx">handler</span><span class="p">.</span><span class="nx">request_handler</span> <span class="o">=</span> <span class="nx">self</span>      <span class="err">#</span> <span class="nx">backpointer</span> <span class="k">for</span> <span class="nx">logging</span>
-        <span class="nx">handler</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nx">get_app</span><span class="p">())</span>
-</pre></div>
+        handler = ServerHandler(
+            self.rfile, self.wfile, self.get_stderr(), self.get_environ()
+        )
+        handler.request_handler = self      # backpointer for logging
+        handler.run(self.server.get_app())</code></pre>
 
 
 <p>这里必须提醒读者，WSGIRequestHandler虽然继承自BaseHTTPRequestHandler，但是它的handle方法生成了一个ServerHandler的实例，实际是调用了ServerHandler的run方法来进行处理。传递给该类的构造方法的几个参数：<code>self.rfile, self.wfile, self.get_stderr(), self.get_environ()</code>，后续会提到。</p>
 <p>ServerHandler继承自SimpleHandler：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">ServerHandler</span><span class="p">(</span><span class="nx">SimpleHandler</span><span class="p">)</span><span class="o">:</span>
-    <span class="p">...</span>
-</pre></div>
+<pre class="codehilite"><code>class ServerHandler(SimpleHandler):
+    ...</code></pre>
 
 
 <p>SimpleHandler继承自BaseHandler，代码比简单，直接贴上全部的：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">SimpleHandler</span><span class="p">(</span><span class="nx">BaseHandler</span><span class="p">)</span><span class="o">:</span>
+<pre class="codehilite"><code>class SimpleHandler(BaseHandler):
 
-    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">stdin</span><span class="p">,</span><span class="nx">stdout</span><span class="p">,</span><span class="nx">stderr</span><span class="p">,</span><span class="nx">environ</span><span class="p">,</span>
-        <span class="nx">multithread</span><span class="o">=</span><span class="nx">True</span><span class="p">,</span> <span class="nx">multiprocess</span><span class="o">=</span><span class="nx">False</span>
-    <span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">stdin</span> <span class="o">=</span> <span class="nx">stdin</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">stdout</span> <span class="o">=</span> <span class="nx">stdout</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">stderr</span> <span class="o">=</span> <span class="nx">stderr</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">base_env</span> <span class="o">=</span> <span class="nx">environ</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">wsgi_multithread</span> <span class="o">=</span> <span class="nx">multithread</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">wsgi_multiprocess</span> <span class="o">=</span> <span class="nx">multiprocess</span>
+    def __init__(self,stdin,stdout,stderr,environ,
+        multithread=True, multiprocess=False
+    ):
+        self.stdin = stdin
+        self.stdout = stdout
+        self.stderr = stderr
+        self.base_env = environ
+        self.wsgi_multithread = multithread
+        self.wsgi_multiprocess = multiprocess
 
-    <span class="nx">def</span> <span class="nx">get_stdin</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stdin</span>
+    def get_stdin(self):
+        return self.stdin
 
-    <span class="nx">def</span> <span class="nx">get_stderr</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stderr</span>
+    def get_stderr(self):
+        return self.stderr
 
-    <span class="nx">def</span> <span class="nx">add_cgi_vars</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">environ</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">base_env</span><span class="p">)</span>
+    def add_cgi_vars(self):
+        self.environ.update(self.base_env)
 
-    <span class="nx">def</span> <span class="nx">_write</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">data</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">_write</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span>
+    def _write(self,data):
+        self.stdout.write(data)
+        self._write = self.stdout.write
 
-    <span class="nx">def</span> <span class="nx">_flush</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">flush</span><span class="p">()</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">_flush</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">flush</span>
-</pre></div>
+    def _flush(self):
+        self.stdout.flush()
+        self._flush = self.stdout.flush</code></pre>
 
 
 <p>可以看到，SimpleHandler最重要的工作是对输入输出进行了重新定位，这样在WSGI application进行输入输出的时候，最终实际上定位到了WSGIRequestHandler的wfile和rfile，也就是代表服务端与客户端连接的socket。通过这样的方式，WSGI application能够将响应发送到客户端。</p>
 <p>最后来看一下<code>BaseHandler</code>，先列出最重要的三个方法：</p>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">BaseHandler</span>:
-    <span class="kt">def</span> <span class="nx">run</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">application</span><span class="p">)</span><span class="o">:</span>
-        <span class="k">try</span><span class="o">:</span>
-            <span class="nx">self</span><span class="p">.</span><span class="nx">setup_environ</span><span class="p">()</span>
-            <span class="nx">self</span><span class="p">.</span><span class="nx">result</span> <span class="o">=</span> <span class="nx">application</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">environ</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">start_response</span><span class="p">)</span>
-            <span class="nx">self</span><span class="p">.</span><span class="nx">finish_response</span><span class="p">()</span>
-        <span class="nx">except</span>:
-            <span class="kt">try</span><span class="o">:</span>
-                <span class="nx">self</span><span class="p">.</span><span class="nx">handle_error</span><span class="p">()</span>
-            <span class="nx">except</span>:
-                <span class="kt">self.close</span><span class="p">()</span>
-                <span class="nx">raise</span>
+<pre class="codehilite"><code>class BaseHandler:
+    def run(self, application):
+        try:
+            self.setup_environ()
+            self.result = application(self.environ, self.start_response)
+            self.finish_response()
+        except:
+            try:
+                self.handle_error()
+            except:
+                self.close()
+                raise
 
-    <span class="nx">def</span> <span class="nx">start_response</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">headers</span><span class="p">,</span><span class="nx">exc_info</span><span class="o">=</span><span class="nx">None</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="nx">status</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">headers_class</span><span class="p">(</span><span class="nx">headers</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">write</span>
+    def start_response(self, status, headers,exc_info=None):
+        self.status = status
+        self.headers = self.headers_class(headers)
+        return self.write
 
-    <span class="nx">def</span> <span class="nx">finish_response</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="k">try</span><span class="o">:</span>
-            <span class="k">if</span> <span class="nx">not</span> <span class="nx">self</span><span class="p">.</span><span class="nx">result_is_file</span><span class="p">()</span> <span class="nx">or</span> <span class="nx">not</span> <span class="nx">self</span><span class="p">.</span><span class="nx">sendfile</span><span class="p">()</span><span class="o">:</span>
-                <span class="k">for</span> <span class="nx">data</span> <span class="k">in</span> <span class="nx">self.result</span>:
-                    <span class="kt">self.write</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
-                <span class="nx">self</span><span class="p">.</span><span class="nx">finish_content</span><span class="p">()</span>
-        <span class="k">finally</span><span class="o">:</span>
-            <span class="nx">self</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
-</pre></div>
+    def finish_response(self):
+        try:
+            if not self.result_is_file() or not self.sendfile():
+                for data in self.result:
+                    self.write(data)
+                self.finish_content()
+        finally:
+            self.close()</code></pre>
 
 
 <p>注意，这是一个wsgiref库的BaseHanlder，与SocketServer库的BaseRequestHandler不是一回事。</p>
@@ -324,10 +307,9 @@
 <li>finish_response调用write函数，向客户端发送自己的result成员中的数据。</li>
 </ul>
 <p>到了这里，我们再来看以前自己写过的最简单的WSGI application，是不是有一种似曾相识而又恍然大悟的感觉呢？</p>
-<div class="codehilite"><pre><span></span>def app(env, start_response):
-    start_response(&#39;200 OK&#39;, [(&#39;Content-type&#39;, &#39;text/plain&#39;)])
-    return &#39;Hello, world!\n&#39;
-</pre></div>
+<pre class="codehilite"><code>def app(env, start_response):
+    start_response('200 OK', [('Content-type', 'text/plain')])
+    return 'Hello, world!\n'</code></pre>
             </div>
         </div>
         <div class="col-md-3" role="complementary">

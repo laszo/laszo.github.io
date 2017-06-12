@@ -31,8 +31,7 @@
 </li>
 </ul>
 <p>对于已经启动的nginx进程来说，可采用如下方式发送命令：</p>
-<div class="codehilite"><pre><span></span>nginx -s signal
-</pre></div>
+<pre class="codehilite"><code>nginx -s signal</code></pre>
 
 
 <p>其中<code>signal</code>有如下几种：</p>
@@ -53,7 +52,7 @@
 </li>
 </ul>
 <p>比如：</p>
-<div class="codehilite"><pre><span></span>worker_processes  1;
+<pre class="codehilite"><code>worker_processes  1;
 
 http {
     server {
@@ -61,35 +60,33 @@ http {
             root /data/www;
         }
     }
-}
-</pre></div>
+}</code></pre>
 
 
 <p>在上面的代码里，<code>worker_processes</code>和<code>root</code>是简单指令，<code>http</code>、<code>server</code>、<code>location</code>是块指令。一个块指令也可以称为<code>context</code>，可以认为这是一个指令的“环境”。</p>
 <p>如果一条指令不在任何一个context之内，那么就把它看做是包含在 <code>main context</code>（主环境）之中。比如上面代码里的<code>worker_processes</code>和<code>http</code>，就在<code>main context</code>之中。一般来说，大部分指令只有在特定的<code>context</code>之内才有意义。</p>
 <h4>配置一个简单的静态网站</h4>
 <p>安装完之后，nginx一般已经提供了一个默认的配置文件，满足一个静态网站运行的简单配置。这里我们把关注点放在<code>server</code>指令上，省略了其他细节性指令的一个配置文件如下：</p>
-<div class="codehilite"><pre><span></span><span class="k">http</span> <span class="p">{</span>
-    <span class="kn">server</span> <span class="p">{</span>
-        <span class="kn">listen</span> <span class="mi">8081</span><span class="p">;</span>
-        <span class="kn">root</span> <span class="s">/Users/laszo/data/8081</span><span class="p">;</span>
-        <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="kn">server</span> <span class="p">{</span>
-        <span class="kn">listen</span> <span class="mi">8080</span><span class="p">;</span>
-        <span class="kn">server_name</span>  <span class="s">localhost</span><span class="p">;</span>
-        <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
-            <span class="kn">root</span>   <span class="s">html</span><span class="p">;</span>
-            <span class="kn">index</span>  <span class="s">index.html</span> <span class="s">index.htm</span><span class="p">;</span>
-        <span class="p">}</span>
+<pre class="codehilite"><code class="language-nginx">http {
+    server {
+        listen 8081;
+        root /Users/laszo/data/8081;
+        location / {
+        }
+    }
+    server {
+        listen 8080;
+        server_name  localhost;
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
 
-        <span class="kn">location</span> <span class="s">/images/</span> <span class="p">{</span>
-            <span class="kn">root</span>   <span class="s">/Users/laszo/data</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
+        location /images/ {
+            root   /Users/laszo/data;
+        }
+    }
+}</code></pre>
 
 
 <p><code>http</code>指令需放在<code>main context</code>中，在<code>http</code> context内可以有一个或多个<code>server</code>指令，代表一个特定的服务器，也就是说nginx可以在一台主机上承载多个server。server之间由如下两条指令区分：</p>
@@ -99,24 +96,23 @@ http {
 </ul>
 <h4>如何选择server</h4>
 <p>我们知道一台主机可以有多个IP地址和多个域名，比如一台主机同时有<code>192.168.1.1</code>和<code>192.168.1.2</code>两个IP，以及<code>example.org</code>、<code>example.net</code>、<code>example.com</code>等多个域名，那么下面这样的配置：</p>
-<div class="codehilite"><pre><span></span><span class="k">server</span> <span class="p">{</span>
-    <span class="kn">listen</span>      <span class="n">192.168.1.1</span><span class="p">:</span><span class="mi">80</span><span class="p">;</span>
-    <span class="kn">server_name</span> <span class="s">example.org</span> <span class="s">www.example.org</span><span class="p">;</span>
-    <span class="kn">...</span>
-<span class="err">}</span>
+<pre class="codehilite"><code class="language-nginx">server {
+    listen      192.168.1.1:80;
+    server_name example.org www.example.org;
+    ...
+}
 
-<span class="s">server</span> <span class="p">{</span>
-    <span class="kn">listen</span>      <span class="n">192.168.1.1</span><span class="p">:</span><span class="mi">80</span> <span class="s">default_server</span><span class="p">;</span>
-    <span class="kn">server_name</span> <span class="s">example.net</span> <span class="s">www.example.net</span><span class="p">;</span>
-    <span class="kn">...</span>
-<span class="err">}</span>
+server {
+    listen      192.168.1.1:80 default_server;
+    server_name example.net www.example.net;
+    ...
+}
 
-<span class="s">server</span> <span class="p">{</span>
-    <span class="kn">listen</span>      <span class="n">192.168.1.2</span><span class="p">:</span><span class="mi">80</span> <span class="s">default_server</span><span class="p">;</span>
-    <span class="kn">server_name</span> <span class="s">example.com</span> <span class="s">www.example.com</span><span class="p">;</span>
-    <span class="kn">...</span>
-<span class="err">}</span>
-</pre></div>
+server {
+    listen      192.168.1.2:80 default_server;
+    server_name example.com www.example.com;
+    ...
+}</code></pre>
 
 
 <p>nginx在接收到客户端请求时，会检查请求的首部中的<code>HOST</code>字段，看能够匹配到哪个server，例如：</p>
@@ -142,18 +138,17 @@ http {
 </ul>
 <p>ngxin在查找需要的文件时，会将root目录与路径请求拼接起来，形成完整的文件路径。</p>
 <p>比如：</p>
-<div class="codehilite"><pre><span></span><span class="k">location</span> <span class="s">/</span> <span class="p">{</span>
-    <span class="kn">root</span>   <span class="s">/data/www/</span><span class="p">;</span>
-<span class="p">}</span>
+<pre class="codehilite"><code class="language-nginx">location / {
+    root   /data/www/;
+}
 
-<span class="k">location</span> <span class="s">/images/</span> <span class="p">{</span>
-    <span class="kn">root</span>   <span class="s">/data</span><span class="p">;</span>
-<span class="p">}</span>
+location /images/ {
+    root   /data;
+}
 
-<span class="k">location</span> <span class="s">/static/</span> <span class="p">{</span>
-    <span class="kn">root</span>   <span class="s">/data</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
+location /static/ {
+    root   /data;
+}</code></pre>
 
 
 <p>在上面的配置中：</p>
@@ -165,26 +160,24 @@ http {
 </ul>
 <h4>nginx用作代理服务器</h4>
 <p>nginx还可以用作代理服务器，当收到客户端请求时，nginx把该请求转发到指定的服务器，从后者获取响应，再把响应转发到客户端。只需使用<code>proxy_pass</code>指令：</p>
-<div class="codehilite"><pre><span></span><span class="k">server</span> <span class="p">{</span>
-    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
-        <span class="kn">proxy_pass</span> <span class="s">http://localhost:8080</span><span class="p">;</span>
-    <span class="p">}</span>
+<pre class="codehilite"><code class="language-nginx">server {
+    location / {
+        proxy_pass http://localhost:8080;
+    }
 
-    <span class="kn">location</span> <span class="s">/images/</span> <span class="p">{</span>
-        <span class="kn">root</span> <span class="s">/data</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
+    location /images/ {
+        root /data;
+    }
+}</code></pre>
 
 
 <p>在上面的例子中，所有以<code>/images/</code>为开头的请求路径仍然会向<code>/data</code>目录下查找文件；其余路径的请求则统统转发到<code>http://localhost:8080</code>上去。</p>
 <h4>转发到uwsgi服务器</h4>
 <p>nginx还支持将请求转发到uwsgi服务器，只需如下配置：</p>
-<div class="codehilite"><pre><span></span><span class="nt">location</span> <span class="o">/</span> <span class="p">{</span>
-    <span class="err">include</span> <span class="err">uwsgi_params</span><span class="p">;</span>
-    <span class="err">uwsgi_pass</span> <span class="err">127.0.0.1:3031</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
+<pre class="codehilite"><code>location / {
+    include uwsgi_params;
+    uwsgi_pass 127.0.0.1:3031;
+}</code></pre>
 
 
 <p>就可以将server的所有请求转发到本机的3031端口，关于uwsgi服务器可见其他文章的介绍。</p>
