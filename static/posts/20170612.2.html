@@ -1,0 +1,234 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Tornado的Web框架简介 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Tornado的Web框架简介</h3>
+
+            <div class="post-content">
+                <p>Tornado共有四个主要部分，分别是：</p>
+<ul>
+<li>Web框架：与Flask、Django等类似</li>
+<li>HTTP协议的实现：提供HTTP服务器和异步的HTTP客户端</li>
+<li>高效能的异步网络IO库</li>
+<li>协程库：提供组件，允许以<code>更直接</code>的方式进行异步编程<sup id="fnref:note_callback"><a class="footnote-ref" href="#fn:note_callback" rel="footnote">1</a></sup></li>
+</ul>
+<p>Tornado与其他Web框架相比，最大的特点就是提供了后面三部分，基于<code>tornado.web</code>的应用部署在自己的服务器上能够实现最高的效能、也能够支持其他几个组件提供的特性，比如<code>await</code>关键字等。
+仔细研究其源码会发现，上述几个部分仅仅是并非并列的关系，有一些组件是建立在另一些组件之上的，可以看做是基层组件的具体应用。</p>
+<p><span id='demo'>官网上的demo</span>，下文会用到这段代码：</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">tornado.ioloop</span>
+<span class="kn">import</span> <span class="nn">tornado.web</span>
+
+<span class="k">class</span> <span class="nc">MainHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Hello, world&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">make_app</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">MainHandler</span><span class="p">),</span>
+    <span class="p">])</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">make_app</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">8888</span><span class="p">)</span>
+    <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+
+<h4 id='web_f'>Web框架</h4>
+
+<p>但本文暂且只关注Web框架的部分，这一部分在众多的Python的Web框架里来说并不算复杂，有如下组件：</p>
+<ul>
+<li>tornado.web：Web框架的主要部分，提供RequestHandler和Application类</li>
+<li>tornado.template：模板系统</li>
+<li>tornado.routing：路由系统</li>
+<li>tornado.escape：转义和字符处理</li>
+<li>tornado.locale：国际化支持</li>
+<li>tornado.websocket：WebSocket的实现</li>
+</ul>
+<p>本文主要关注前三部分，其余的部分，转义、国际化、WebSocket等不能说不重要，但是对于一个Web框架的实现来说并非主干流程。</p>
+<h4 id='tor_web'>tornado.web</h4>
+
+<p>主要有Application类和RequestHandler类。</p>
+<p>Application类是Web应用的<code>骨架</code>，可以认为就是MVC中的<code>'C'</code>，主要的工作：</p>
+<ul>
+<li>持有路由表，包含URL的配置和对应的Handler</li>
+<li>包含所有全局配置项，包括路由表</li>
+<li>接收HTTP请求，寻找匹配的URL并调用相应的Handler</li>
+</ul>
+<p>RequestHandler是Web系统的<code>器官</code>，即主要的功能实现都是它来完成，由RequestHandler实现基本功能，
+下列它的子类实现其他功能：</p>
+<ul>
+<li>ErrorHandler：错误处理，向客户端发送错误响应</li>
+<li>RedirectHandler：用于转发请求</li>
+<li>StaticFileHandler：提供静态文件服务</li>
+<li>FallbackHandler：在承载其他非Tornado的Web应用时使用，本文不会涉及</li>
+</ul>
+<p>刚才的<a href="#demo">demo</a>里可以看到，我们写Web应用，主要就是写一系列RequestHandler的子类，在子类里实现自己的业务逻辑。我们都知道，HTTP协议规定了<code>GET</code>、<code>POST</code>等八种方法，我们在子类里必须至少提供一个同名方法，用于接收对应方式的客户端请求。</p>
+<p>下面按照官网文档的顺序列举RequestHandler的一些成员或方法，未包含全部。</p>
+<p>一、输入</p>
+<p>对于RequestHandler来说，所谓的输入就是客户端发来的HTTP请求，可以以下列方法获取请求的指定参数：</p>
+<ul>
+<li>get_argument：获取指定的参数值</li>
+<li>get_query_argument：从query中获取指定的参数值</li>
+<li>get_body_argument：从body中获取指定的参数值</li>
+<li>request：这是一个<a href="http://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest">tornado.httputil.HTTPServerRequest</a>对象，封装了客户端的HTTP请求应有的全部数据。包括method、uri、path、headers、body等成员，如果想要获取指定参数，可以以<code>self.request.body</code>等方式访问。</li>
+</ul>
+<p>二，输出</p>
+<p>对于RequestHandler来说，所谓的输出就是要返回的HTTP响应，可以以下列方法设置指定的响应参数<sup id="fnref:note_re_resp"><a class="footnote-ref" href="#fn:note_re_resp" rel="footnote">2</a></sup>，返回的即可以直接是字符串或html代码、也可以是调用模板渲染之后进行返回、也可以是转发到其他地址：</p>
+<ul>
+<li>set_status：返回HTTP状态</li>
+<li>set_header：设置首部</li>
+<li>add_header：添加一个首部</li>
+<li>write：返回HTTP的body</li>
+<li>render：调用模板，传递参数，渲染模板，并返回渲染的结果</li>
+<li>redirect：转发</li>
+<li>send_error：返回HTTP错误状态</li>
+</ul>
+<p>三、Cookies</p>
+<p>Cookies是Web应用必须支持的功能，下列方法提供了Cookies的操作：</p>
+<ul>
+<li>get_cookie：获取指定Cookie值</li>
+<li>set_sookie：设置指定Cookie值</li>
+<li>clear_cookie：清除指定Cookie值</li>
+<li>set_secure_cookie：以timestamps加密指定Cookie值，必须在Application里设置cookie_secret</li>
+<li>get_secure_cookie：获取指定的加密Cookie</li>
+</ul>
+<h4 id='tor_template'>tornado.template</h4>
+
+<p>tornado.template主要用于模板的渲染，其模板的主要语法与Jinja、Django Tempaltes等区别不大，
+不再详述。</p>
+<p>主要值得一提的是：</p>
+<ul>
+<li>
+<p>模板对<code>{% %}</code>内的表达式不进行任何限制，会直接翻译成Python代码，也就是说可以向模板传递自己定义的函数，然后在模板里调用这个函数。</p>
+</li>
+<li>
+<p>不得使用以<code>_tt_</code>开头的变量</p>
+</li>
+</ul>
+<h4 id='tor_rou'>tornado.routing</h4>
+
+<p>向其他的Web框架一样，Tornado的路由系统主要做如下工作：</p>
+<ul>
+<li>包含一个路由列表，用于客户端URL的匹配</li>
+<li>找到匹配的正则表达式即调用对应的RequestHanlder</li>
+</ul>
+<p>从使用的角度来说，需要关心的类主要是URLSpec，Tornado的路由表包含一系列URLSpec对象。每个对象包含一个正则表达式和一个RequestHandler，Tornado的路由表包含一系列这样的URLSpec对象</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:note_callback">
+<p>一堆callback就是屎&#160;<a class="footnote-backref" href="#fnref:note_callback" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:note_re_resp">
+<p>只是设置返回数据，具体的向客户端传输的动作由Application执行&#160;<a class="footnote-backref" href="#fnref:note_re_resp" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <h3>目录</h3>
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                    <li class="">
+                        <a href="#web_f">Web框架</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#tor_web">tornado.web</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#tor_template">tornado.template</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#tor_rou">tornado.routing</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>
