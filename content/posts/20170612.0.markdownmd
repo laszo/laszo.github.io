@@ -1,0 +1,69 @@
+---
+title: '用Python从零开始一步一步构建Web Server，第五部分：使用命令启动服务器'
+---
+
+命令行是用于与服务端程序的交互界面，其设计应当准确、直观、方便、简洁。我们的[PyWebServer]想要真正被人使用，添加命令行的界面是必须的。
+
+[PyWebServer]目前的功能只有两项，即静态文件服务和WSGI服务，本文来讨论它的命令行界面的设计和实现。
+
+
+<h4 id='cmd_syntax'>命令行的参数</h4>
+
+启动静态文件服务(读取默认配置文件)：
+
+    pwserver static
+
+启动WSGI服务器：
+
+    pwserver -w wsgi.app
+
+在上面的命令中，`wsgi`是WSGI应用所在的模块，`app`是WSGI应用的名字。默认的地址为`127.0.0.1`，端口号为`8081`。
+
+使用`-a`参数制定地址，使用`-b`参数制定端口号：
+
+    pwserver -w wsgi.app -a '127.0.0.1' -p 8081
+
+如果类比于`gunicorn`，使用gunicorn启动上面的WSGI应用的方式为：
+
+    gunicorn wsgi:app
+
+如果想要同时启动WSGI服务器和静态文件服务：
+
+    pwserver static -w wsgi.app
+
+如果想要启动指定配置文件来替代默认路径的配置文件，采用如下命令：
+
+    pwserver static -f /path/to/config.conf
+
+相应的，同时启动WSGI服务器和指定配置文件的静态文件服务：
+
+    pwserver static -f /path/to/config.conf -w wsgi.app
+
+
+<h4 id='serve_django'>承载Django网站</h4>
+
+Django应用已自带了服务器，如果在开发调试阶段，直接使用自带服务器即可：
+
+    ./manage.py runserver
+
+如果要部署在PyWebServer上，按照以下步骤：
+
+1. 确定将要部署的静态文件的路径，假如是`/path/to/static`。
+2. 修改Django配置文件`setting.py`，将`STATIC_ROOT`的值修改为`/path/to/static`。
+3. 修改PyWebServer的配置文件，添加一个server：
+
+        server {
+            listen 8081;
+            location /static/ {
+                root /path/to/static;
+            }
+        }
+
+注意上面设置的监听端口为`8081`。
+
+4. 修改Django配置文件`setting.py`，将`STATIC_URL`的值修改为`http://yourdomain:8081/static`
+5. 启动服务：
+
+    pwserver static -w /django/path/wsgi.application
+
+[PyWebServer]: https://github.com/laszo/PyWebServer

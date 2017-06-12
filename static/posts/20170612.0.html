@@ -1,0 +1,146 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>用Python从零开始一步一步构建Web Server，第五部分：使用命令启动服务器 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">用Python从零开始一步一步构建Web Server，第五部分：使用命令启动服务器</h3>
+
+            <div class="post-content">
+                <p>命令行是用于与服务端程序的交互界面，其设计应当准确、直观、方便、简洁。我们的<a href="https://github.com/laszo/PyWebServer">PyWebServer</a>想要真正被人使用，添加命令行的界面是必须的。</p>
+<p><a href="https://github.com/laszo/PyWebServer">PyWebServer</a>目前的功能只有两项，即静态文件服务和WSGI服务，本文来讨论它的命令行界面的设计和实现。</p>
+<h4 id='cmd_syntax'>命令行的参数</h4>
+
+<p>启动静态文件服务(读取默认配置文件)：</p>
+<div class="codehilite"><pre><span></span>pwserver static
+</pre></div>
+
+
+<p>启动WSGI服务器：</p>
+<div class="codehilite"><pre><span></span>pwserver -w wsgi.app
+</pre></div>
+
+
+<p>在上面的命令中，<code>wsgi</code>是WSGI应用所在的模块，<code>app</code>是WSGI应用的名字。默认的地址为<code>127.0.0.1</code>，端口号为<code>8081</code>。</p>
+<p>使用<code>-a</code>参数制定地址，使用<code>-b</code>参数制定端口号：</p>
+<div class="codehilite"><pre><span></span>pwserver -w wsgi.app -a &#39;127.0.0.1&#39; -p 8081
+</pre></div>
+
+
+<p>如果类比于<code>gunicorn</code>，使用gunicorn启动上面的WSGI应用的方式为：</p>
+<div class="codehilite"><pre><span></span>gunicorn wsgi:app
+</pre></div>
+
+
+<p>如果想要同时启动WSGI服务器和静态文件服务：</p>
+<div class="codehilite"><pre><span></span>pwserver static -w wsgi.app
+</pre></div>
+
+
+<p>如果想要启动指定配置文件来替代默认路径的配置文件，采用如下命令：</p>
+<div class="codehilite"><pre><span></span>pwserver static -f /path/to/config.conf
+</pre></div>
+
+
+<p>相应的，同时启动WSGI服务器和指定配置文件的静态文件服务：</p>
+<div class="codehilite"><pre><span></span>pwserver static -f /path/to/config.conf -w wsgi.app
+</pre></div>
+
+
+<h4 id='serve_django'>承载Django网站</h4>
+
+<p>Django应用已自带了服务器，如果在开发调试阶段，直接使用自带服务器即可：</p>
+<div class="codehilite"><pre><span></span>./manage.py runserver
+</pre></div>
+
+
+<p>如果要部署在PyWebServer上，按照以下步骤：</p>
+<ol>
+<li>确定将要部署的静态文件的路径，假如是<code>/path/to/static</code>。</li>
+<li>修改Django配置文件<code>setting.py</code>，将<code>STATIC_ROOT</code>的值修改为<code>/path/to/static</code>。</li>
+<li>修改PyWebServer的配置文件，添加一个server：<div class="codehilite"><pre><span></span>server {
+    listen 8081;
+    location /static/ {
+        root /path/to/static;
+    }
+}
+</pre></div>
+
+
+</li>
+</ol>
+<p>注意上面设置的监听端口为<code>8081</code>。</p>
+<ol>
+<li>修改Django配置文件<code>setting.py</code>，将<code>STATIC_URL</code>的值修改为<code>http://yourdomain:8081/static</code></li>
+<li>
+<p>启动服务：</p>
+<p>pwserver static -w /django/path/wsgi.application</p>
+</li>
+</ol>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <h3>目录</h3>
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                    <li class="">
+                        <a href="#cmd_syntax">命令行的参数</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#serve_django">承载Django网站</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>
