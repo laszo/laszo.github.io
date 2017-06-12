@@ -21,20 +21,23 @@
 
             <div class="post-content">
                 <p>循环可以说是任何一门程序语言中都必备的基本功能，进一步的，很多当代语言提供了迭代器（iterator）的概念，用于在序列（Sequences）类型、或者可以转换为序列的类型上进行循环。比如下面的代码：</p>
-<pre class="codehilite"><code>foo = [3, 4, 5, 6]
+<div class="codehilite"><pre><span></span>foo = [3, 4, 5, 6]
 for i in foo:
-    print i</code></pre>
+    print i
+</pre></div>
 
 
 <p>在上面代码中，<code>foo</code>是一个list对象，我们使用了最常见的<code>for in</code>语句来遍历它的成员。除此之外，还可以使用迭代器（<a href="https://docs.python.org/2.7/tutorial/classes.html#iterators">Iterators</a>）来进行遍历。首先用内置函数<a href="https://docs.python.org/2.7/library/functions.html#iter">iter</a>得到foo的迭代器：</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; it = iter(foo)</code></pre>
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; it = iter(foo)
+</pre></div>
 
 
 <p>通过dir函数查看迭代器it的属性：</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; dir(it)
-['__class__', '__delattr__', '__doc__', '__format__', '__getattribute__', '__hash__'
-, '__init__', '__iter__', '__length_hint__', '__new__', '__reduce__', '__reduce_ex__
-', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'next']</code></pre>
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; dir(it)
+[&#39;__class__&#39;, &#39;__delattr__&#39;, &#39;__doc__&#39;, &#39;__format__&#39;, &#39;__getattribute__&#39;, &#39;__hash__&#39;
+, &#39;__init__&#39;, &#39;__iter__&#39;, &#39;__length_hint__&#39;, &#39;__new__&#39;, &#39;__reduce__&#39;, &#39;__reduce_ex__
+&#39;, &#39;__repr__&#39;, &#39;__setattr__&#39;, &#39;__sizeof__&#39;, &#39;__str__&#39;, &#39;__subclasshook__&#39;, &#39;next&#39;]
+</pre></div>
 
 
 <p>我们关注其中的两个方法：</p>
@@ -48,22 +51,23 @@ for i in foo:
 </ul>
 <p>能够提供上述两个方法的对象，我们就可以称之为迭代器。</p>
 <p>那么我们当然可以定义自己的迭代器类型：</p>
-<pre class="codehilite"><code>class MyIntIterator(object):
-    def __init__(self, num):
-        self.number = num
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">MyIntIterator</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">num</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="kt">number</span> <span class="o">=</span> <span class="nx">num</span>
 
-    def __iter__(self):
-        return self
+    <span class="nx">def</span> <span class="nx">__iter__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="nx">self</span>
 
-    def next(self):
-        self.number += 2
-        if self.number &gt; 9:
-            raise StopIteration
-        return self.number</code></pre>
+    <span class="nx">def</span> <span class="nx">next</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="kt">number</span> <span class="o">+=</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="nx">self</span><span class="p">.</span><span class="kt">number</span> <span class="o">&gt;</span> <span class="nx">9</span>:
+            <span class="kt">raise</span> <span class="nx">StopIteration</span>
+        <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="kt">number</span>
+</pre></div>
 
 
 <p>这里定义了一个简单的迭代器类型，<code>__init__</code>方法用于接收初始化参数，保存在对象的<code>number</code>属性中。<code>__iter__</code>方法直接返回自身，<code>next</code>把当前的<code>number</code>属性加上2并返回，当<code>number</code>大于9时抛出<code>StopIteration</code>异常。下面来测试一下这个类：</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; foo = MyIntIterator(2)
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; foo = MyIntIterator(2)
 &gt;&gt;&gt; foo.next()
 4
 &gt;&gt;&gt; foo.next()
@@ -75,37 +79,41 @@ Traceback (most recent call last):
 File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
 File &quot;t1.py&quot;, line 58, in next
     raise StopIteration
-StopIteration</code></pre>
+StopIteration
+</pre></div>
 
 
 <p>第一次运行<code>foo.next()</code>返回4，第二次返回6，第三次返回8，运行到第四次时<code>number</code>已经等于10，大于9符合StopIteration的条件，于是抛出异常。</p>
 <p>我们同样也可以使用<code>for in</code>语句来进行遍历：</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; bar = MyIntIterator(2)
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; bar = MyIntIterator(2)
 &gt;&gt;&gt; for i in bar:
 ...     print i
 ...
 4
 6
 8
-&gt;&gt;&gt;</code></pre>
+&gt;&gt;&gt;
+</pre></div>
 
 
 <p>同样返回了4、6、8三个数字。不同的是，程序没有抛出StopIteration异常，而是运行到8之后就停止了遍历。</p>
 <p>我们可以认为，<code>for in</code>语句是可用迭代器的方式等价转换的，比如本文一开始的代码：</p>
-<pre class="codehilite"><code>foo = [3, 4, 5, 6]
+<div class="codehilite"><pre><span></span>foo = [3, 4, 5, 6]
 for i in foo:
-    print i</code></pre>
+    print i
+</pre></div>
 
 
 <p>可以改写成如下的等价语句：</p>
-<pre class="codehilite"><code>foo = [3, 4, 5, 6]
+<div class="codehilite"><pre><span></span>foo = [3, 4, 5, 6]
 it = iter(foo)
 while True:
     try:
         i = it.next()
         print i
     except StopIteration:
-        break</code></pre>
+        break
+</pre></div>
 
 
 <p>这样的写法比直接使用for in语句要麻烦的多，但是却更加接近for in语句的本质含义，正如python文档里所说：</p>
@@ -114,65 +122,71 @@ while True:
 </blockquote>
 <p>for语句正是对循环对象（容器）调用了iter()函数，得到一个迭代器，每次循环都调用迭代器的next()方法得到下一个元素，如果没有更多元素，这抛出StopIteration异常来结束循环。这真是我们上面的代码所做的。</p>
 <p>上面讨论了迭代器对象，它必须提供<code>__iter__</code>和<code>next</code>两个方法，如果一个对象只有<code>__iter__</code>方法，也是可以对它使用<code>iter()</code>内置函数的，但是该<code>__iter__</code>方法必须返回一个迭代器对象，否则会抛出<code>TypeError</code>异常：</p>
-<pre class="codehilite"><code>class only_iter(object):
-    def __iter__(self):
-        return 1</code></pre>
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">only_iter</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__iter__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+</pre></div>
 
 
 <p>来测试一下：</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; foo = only_iter()
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; foo = only_iter()
 &gt;&gt;&gt; iter(foo)
 Traceback (most recent call last):
 File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
-TypeError: iter() returned non-iterator of type 'int'</code></pre>
+TypeError: iter() returned non-iterator of type &#39;int&#39;
+</pre></div>
 
 
 <p>这里抛出了<code>TypeError</code>异常。但是我们从中可以看出，内置函数<code>iter()</code>其实就是对指定对象调用<code>__iter__</code>方法，然后检查该方法的返回值，如果返回值不是iterator对象，则抛出<code>TypeError</code>异常，如果是则返回该返回值。</p>
 <p>这里我们又忽发奇想，如果一个对象只提供next方法，它是否是一个迭代器呢？我们来写如下的代码：</p>
-<pre class="codehilite"><code>class next_only(object):
-    def next(self):
-        return 1
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">next_only</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">next</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
 
-class only_iter(object):
-    def __iter__(self):
-        return next_only()</code></pre>
+<span class="kr">class</span> <span class="nx">only_iter</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__iter__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="nx">next_only</span><span class="p">()</span>
+</pre></div>
 
 
 <p>定义一个<code>next_only</code>，只提供next方法，然后定义<code>only_iter</code>类型，提供<code>__iter__</code>方法。下面来进行测试：</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; foo = only_iter()
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; foo = only_iter()
 &gt;&gt;&gt; bar = iter(foo)
 &gt;&gt;&gt; bar
-&lt;t1.next_only object at 0x10f194250&gt;</code></pre>
+&lt;t1.next_only object at 0x10f194250&gt;
+</pre></div>
 
 
 <p>可以看到，在这样的定义下，对only_iter类型的对象调用内置函数<code>iter()</code>，不会再抛出<code>TypeError</code>异常了，而是返回了一个<code>next_only</code>类型的对象bar。这个对象是否就是迭代器类型呢？</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; for i in bar:
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; for i in bar:
 ...     print i
 ...
 Traceback (most recent call last):
 File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
-TypeError: 'next_only' object is not iterable</code></pre>
+TypeError: &#39;next_only&#39; object is not iterable
+</pre></div>
 
 
 <p>可以看到，对bar执行 for in语句，又跑出了TypeError异常。看来仅仅提供next方法，虽然可以过iter这一关，但仍然不能算是迭代器类型。只有像下面这样完整的定义了<code>__iter__</code>和<code>next</code>方法的类型才算是迭代器类型：</p>
-<pre class="codehilite"><code>class iter_only(object):
-    def __iter__(self):
-        return barcls(9)
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">iter_only</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__iter__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="nx">barcls</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
 
-class iterator_cls(object):
-    def __init__(self, num):
-        self.num = num
-    def __iter__(self):
-        return self
-    def next(self):
-        self.num += 1
-        if self.num &gt; 15:
-            raise StopIteration
-        return self.num</code></pre>
+<span class="kr">class</span> <span class="nx">iterator_cls</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">num</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">num</span> <span class="o">=</span> <span class="nx">num</span>
+    <span class="nx">def</span> <span class="nx">__iter__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="nx">self</span>
+    <span class="nx">def</span> <span class="nx">next</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">num</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nx">self</span><span class="p">.</span><span class="nx">num</span> <span class="o">&gt;</span> <span class="nx">15</span>:
+            <span class="kt">raise</span> <span class="nx">StopIteration</span>
+        <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">num</span>
+</pre></div>
 
 
 <p>测试对mnonitercls的实例调用iter：</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; foo = iter_only()
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; foo = iter_only()
 &gt;&gt;&gt; it = iter(foo)
 &gt;&gt;&gt; for i in it:
 ...     print i
@@ -183,24 +197,27 @@ class iterator_cls(object):
 13
 14
 15
-&gt;&gt;&gt;</code></pre>
+&gt;&gt;&gt;
+</pre></div>
 
 
 <p>可以得到预期的结果。</p>
 <p>值得一提的是，Python提供了标准库itertools，内置了很多实用的函数用于生成数字和字符相关的各种迭代器，详细可参看<a href="https://docs.python.org/2.7/library/itertools.html#module-itertools">itertools — Functions creating iterators for efficient looping</a>。</p>
 <p>Python语言其实内置了很多iterator，比如<code>file</code>对象：</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; wwwlog=open('access-log')
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; wwwlog=open(&#39;access-log&#39;)
 &gt;&gt;&gt; type(wwwlog)
-&lt;type 'file'&gt;
+&lt;type &#39;file&#39;&gt;
 &gt;&gt;&gt; dir(wwwlog)
-['__class__', '__delattr__', '__doc__', '__enter__', '__exit__', '__format__', '__getattribute__', '__hash__', '__init__', '__iter__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'close', 'closed', 'encoding', 'errors', 'fileno', 'flush', 'isatty', 'mode', 'name', 'newlines', 'next', 'read', 'readinto', 'readline', 'readlines', 'seek', 'softspace', 'tell', 'truncate', 'write', 'writelines', 'xreadlines']</code></pre>
+[&#39;__class__&#39;, &#39;__delattr__&#39;, &#39;__doc__&#39;, &#39;__enter__&#39;, &#39;__exit__&#39;, &#39;__format__&#39;, &#39;__getattribute__&#39;, &#39;__hash__&#39;, &#39;__init__&#39;, &#39;__iter__&#39;, &#39;__new__&#39;, &#39;__reduce__&#39;, &#39;__reduce_ex__&#39;, &#39;__repr__&#39;, &#39;__setattr__&#39;, &#39;__sizeof__&#39;, &#39;__str__&#39;, &#39;__subclasshook__&#39;, &#39;close&#39;, &#39;closed&#39;, &#39;encoding&#39;, &#39;errors&#39;, &#39;fileno&#39;, &#39;flush&#39;, &#39;isatty&#39;, &#39;mode&#39;, &#39;name&#39;, &#39;newlines&#39;, &#39;next&#39;, &#39;read&#39;, &#39;readinto&#39;, &#39;readline&#39;, &#39;readlines&#39;, &#39;seek&#39;, &#39;softspace&#39;, &#39;tell&#39;, &#39;truncate&#39;, &#39;write&#39;, &#39;writelines&#39;, &#39;xreadlines&#39;]
+</pre></div>
 
 
 <p>对一个file对象调用内置函数dir，发现它也有<code>__iter__</code>和<code>next</code>方法，每次调用next相当于调用一次<code>readline</code>：</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; wwwlog.next()
-'140.180.132.213 - - [24/Feb/2008:00:08:59 -0600] &quot;GET /ply/ply.html HTTP/1.1&quot; 200 97238\n'
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; wwwlog.next()
+&#39;140.180.132.213 - - [24/Feb/2008:00:08:59 -0600] &quot;GET /ply/ply.html HTTP/1.1&quot; 200 97238\n&#39;
 &gt;&gt;&gt; wwwlog.next()
-'140.180.132.213 - - [24/Feb/2008:00:08:59 -0600] &quot;GET /favicon.ico HTTP/1.1&quot; 404 133\n'</code></pre>
+&#39;140.180.132.213 - - [24/Feb/2008:00:08:59 -0600] &quot;GET /favicon.ico HTTP/1.1&quot; 404 133\n&#39;
+</pre></div>
 
 
 <p>花了这么多篇幅来讨论iterator，并不仅仅是为了探讨for循环语句的背后原理，更重要的是iterator是python里另外一个重要概念generator（生成器）的基础，关于generator，常见我的<a href="20170502.1.html">这篇博客</a>。</p>

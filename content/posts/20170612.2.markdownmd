@@ -55,6 +55,20 @@ Application类是Web应用的`骨架`，可以认为就是MVC中的`'C'`，主�
 * 包含所有全局配置项，包括路由表
 * 接收HTTP请求，寻找匹配的URL并调用相应的Handler
 
+在我们的Web应用中，需要实例化一个对象，并传入一个路由表：
+
+    :::python
+    tornado.web.Application([
+            (r"/", MainHandler),
+        ])
+
+除此之外，还可以向构造函数传递一个`settings`字典，进行各种各样的配置，主要有以下几种：
+
+* 通用配置：自动加载、调试、压缩、默认的登陆函数
+* 认证与安全配置：Cookies加密、跨域Cookies等
+* 模板配置：转义、模板路径、模板加载
+* 静态文件配置：静态文件的存放路径、URL前缀、处理类
+
 RequestHandler是Web系统的`器官`，即主要的功能实现都是它来完成，由RequestHandler实现基本功能，
 下列它的子类实现其他功能：
 

@@ -35,23 +35,24 @@
 </ul>
 <p>BaseServer的逻辑与之前类似，不同之处是<code>handle_request</code>留给之类去实现。</p>
 <p>我们把WSGI服务的功能放在子类WSGIServer中：</p>
-<pre class="codehilite"><code class="language-python">class WSGIServer(BaseServer):
-    def __init__(self, address, wsgiapp):
-        BaseServer.__init__(self, address=address)
-        self.wsgiapp = wsgiapp
-        self.handlercls = handler.WSGIHandler
-        self.activate_server()
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">WSGIServer</span><span class="p">(</span><span class="n">BaseServer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">wsgiapp</span><span class="p">):</span>
+        <span class="n">BaseServer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wsgiapp</span> <span class="o">=</span> <span class="n">wsgiapp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handlercls</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">WSGIHandler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activate_server</span><span class="p">()</span>
 
-    def handle_request(self, request):
-        hdler = self.handlercls(request, self.wsgiapp, self.base_environ.copy())
-        hdler.handle()</code></pre>
+    <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="n">hdler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlercls</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsgiapp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_environ</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">hdler</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
+</pre></div>
 
 
 <p>WSGIServer的构造函数接收address和wsgiapp，并激活服务器，handle_request方法直接调用WSGIHandler实例的handle方法。</p>
 <h4 id='configserver'>ConfigServer</h4>
 
 <p>既然我们把WSGI的服务器类命名为<code>WSGIServer</code>，不妨把根据配置文件运行的服务器类命名为<code>ConfigServer</code>，它的每个实例代表ngxin配置文件中的一个<code>server</code> context。来看其中一项：</p>
-<pre class="codehilite"><code>server {
+<div class="codehilite"><pre><span></span>server {
     listen       8080;
     server_name  localhost;
 
@@ -59,46 +60,50 @@
         root   html;
         index  index.html index.htm;
     }
-}</code></pre>
+}
+</pre></div>
 
 
 <p>来看ConfigServer的代码：</p>
-<pre class="codehilite"><code class="language-python">class ConfigServer(BaseServer):
-    def __init__(self, config):
-        BaseServer.__init__(self)
-        self.config = config
-        self.handlercls = handler.ConfigFileHandler
-        self.patterns = list()
-        self.root = t.parser(config.subd('root'))
-        self.read_config(config)
-        self.activate_server()</code></pre>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">ConfigServer</span><span class="p">(</span><span class="n">BaseServer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="n">BaseServer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handlercls</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">ConfigFileHandler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parser</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">subd</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activate_server</span><span class="p">()</span>
+</pre></div>
 
 
 <p>它的构造函数接收一个config参数，类型为上文所说的<code>block</code>对象。它的handlercls采用 ConfigFileHandler。</p>
 <p><code>self.patterns</code>是该类最重要的一个字段，代表<code>location</code>的集合，它在<code>self.read_config</code>方法中生成：</p>
-<pre class="codehilite"><code class="language-python">def read_config(self, config):
-    listens = [i for i in config.find('listen')]
-    port = listens[0].replace(';', '').split()[1]
-    self.address = ('', int(port))
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">read_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="n">listens</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;listen&#39;</span><span class="p">)]</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">listens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
 
-    names = [i for i in config.find('server_name')]
-    if names:
-        self.server_name = names[0]
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;server_name&#39;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-    for loc in config.find('location'):
-        if loc.args:
-            if loc.args[0] in '= | ~ | ~* | ^~':
-                patt = loc.args[1]
-            else:
-                patt = loc.args[0]
-            self.patterns.append((patt, loc))</code></pre>
+    <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">loc</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">loc</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;= | ~ | ~* | ^~&#39;</span><span class="p">:</span>
+                <span class="n">patt</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">patt</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">patt</span><span class="p">,</span> <span class="n">loc</span><span class="p">))</span>
+</pre></div>
 
 
 <p>在上面的方法中，根据不同情况，<code>loc.args[0]</code>或<code>loc.args[1]</code>代表了location指令所指定的路径，这个路径也是在接受到客户端请求时，请求路径与之匹配的依据。self.patterns保存了(patt, loc)的pair对。</p>
 <p>再看ConfigServer实现的handle_request方法：</p>
-<pre class="codehilite"><code class="language-python">def handle_request(self, request):
-    hdler = self.handlercls(request, self.patterns, self.base_environ.copy())
-    hdler.handle()</code></pre>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="n">hdler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlercls</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_environ</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    <span class="n">hdler</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
+</pre></div>
 
 
 <p>直接生成handlercls也就是ConfigFileHandler的实例的handle方法，注意它传递了上面讨论的<code>self.patterns</code>，然后调用handle方法处理。下面该看ConfigFileHandler的代码了，再次之前，我们还需要对Handler的代码进行重新组织。</p>
@@ -121,21 +126,22 @@
 <p>具体的代码就不粘贴在这里了，可参看这个版本的<a href="https://github.com/laszo/PyWebServer/blob/e62072469b8d8440fd856aa7471281e27457e19f/pwserver/handler.py">handler.py</a>。我们的重点在于下面的<code>ConfigFileHandler</code>。</p>
 <h4 id='configfilehandler'>ConfigFileHandler</h4>
 
-<pre class="codehilite"><code class="language-python">class ConfigFileHandler(BaseHandler):
-    def __init__(self, request, patterns, env):
-        BaseHandler.__init__(self, request, env)
-        self.request_type = rtype.STATIC_FILE
-        self.patterns = patterns
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">ConfigFileHandler</span><span class="p">(</span><span class="n">BaseHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
+        <span class="n">BaseHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_type</span> <span class="o">=</span> <span class="n">rtype</span><span class="o">.</span><span class="n">STATIC_FILE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span> <span class="o">=</span> <span class="n">patterns</span>
 
-    def handle_requst(self):
-        uri = self.get_uri()
-        location = self.find_location()
-        root = self.get_root(location)
-        if location and uri and root:
-            fpath = os.path.join(root, uri)
-            self.send_file(fpath)
-            self.end_response()
-            self.close_request()</code></pre>
+    <span class="k">def</span> <span class="nf">handle_requst</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uri</span><span class="p">()</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_location</span><span class="p">()</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_root</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">location</span> <span class="ow">and</span> <span class="n">uri</span> <span class="ow">and</span> <span class="n">root</span><span class="p">:</span>
+            <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_file</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_response</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_request</span><span class="p">()</span>
+</pre></div>
 
 
 <p>ConfigFileHandler保存了ConfigServer传递给它的patterns，handle_requst方法
@@ -147,46 +153,49 @@
 <li>把找到的文件的内容返回给客户端</li>
 </ol>
 <p>下面说一说self.find_location()方法：</p>
-<pre class="codehilite"><code class="language-python">def find_location(self):
-    mostmatch = 0
-    location = None
-    for pat, loc in self.patterns:
-        if self.request_path.startswith(pat):
-            if len(pat) &gt; mostmatch:
-                mostmatch = len(pat)
-                location = loc
-    return location</code></pre>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">find_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">mostmatch</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">pat</span><span class="p">,</span> <span class="n">loc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">pat</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pat</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">mostmatch</span><span class="p">:</span>
+                <span class="n">mostmatch</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pat</span><span class="p">)</span>
+                <span class="n">location</span> <span class="o">=</span> <span class="n">loc</span>
+    <span class="k">return</span> <span class="n">location</span>
+</pre></div>
 
 
 <p>根据nginx的文档<a href="http://nginx.org/en/docs/beginners_guide.html#static">Serving Static Content</a>节，对于请求路径的匹配，nginx会倾向于找到能够匹配最大长度的location，我们的代码采用类似的策略，这是一个简单的顺序查找算法。</p>
 <h4 id='launchhelper'>启动Server的帮助方法</h4>
 
 <p>我们再来添加几个帮助方法，用于启动服务器：</p>
-<pre class="codehilite"><code class="language-python">def launch(address=None, wsgiapp=None, cfg_file=None):
-    if cfg_file:
-        config = t.config(cfg_file)
-        servers = config.find('http.server')
-        for server in servers:
-            worker = multiprocessing.Process(target=runserver, args=(server, ))
-            worker.start()
-    if address and wsgiapp:
-        worker = multiprocessing.Process(target=runwsgi, args=(address, wsgiapp, ))
-        worker.start()
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">wsgiapp</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cfg_file</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">cfg_file</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">)</span>
+        <span class="n">servers</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;http.server&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">server</span> <span class="ow">in</span> <span class="n">servers</span><span class="p">:</span>
+            <span class="n">worker</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">runserver</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="p">))</span>
+            <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">address</span> <span class="ow">and</span> <span class="n">wsgiapp</span><span class="p">:</span>
+        <span class="n">worker</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">runwsgi</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">wsgiapp</span><span class="p">,</span> <span class="p">))</span>
+        <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-def runserver(config):
-    server = ConfigServer(config=config)
-    server.run_server()
+<span class="k">def</span> <span class="nf">runserver</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">ConfigServer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span>
 
-def runwsgi(address, wsgiapp):
-    server = WSGIServer(address, wsgiapp)
-    server.run_server()</code></pre>
+<span class="k">def</span> <span class="nf">runwsgi</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">wsgiapp</span><span class="p">):</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">WSGIServer</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">wsgiapp</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span>
+</pre></div>
 
 
 <p>launch方法根据传递给它的参数来判断是否需要启动ConfigServer和WSGIServer，并启动独立的进程去承载这些服务。
 可以使用下面这样的代码来同时启动或单独启动：</p>
-<pre class="codehilite"><code class="language-python">launch(('127.0.0.1', 8094), app))
-launch(cfg_file='config.conf')
-launch(('127.0.0.1', 8094), app, 'config.conf')</code></pre>
+<div class="codehilite"><pre><span></span><span class="n">launch</span><span class="p">((</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">8094</span><span class="p">),</span> <span class="n">app</span><span class="p">))</span>
+<span class="n">launch</span><span class="p">(</span><span class="n">cfg_file</span><span class="o">=</span><span class="s1">&#39;config.conf&#39;</span><span class="p">)</span>
+<span class="n">launch</span><span class="p">((</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">8094</span><span class="p">),</span> <span class="n">app</span><span class="p">,</span> <span class="s1">&#39;config.conf&#39;</span><span class="p">)</span>
+</pre></div>
 
 
 <p>完整的代码仍然参看<a href="https://github.com/laszo/PyWebServer/tree/475c95fdebccb2c46d394247dab762d1326623f6">当前版本的PyWebServer</a>。</p>

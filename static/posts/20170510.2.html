@@ -78,8 +78,9 @@
 </li>
 </ul>
 <p>另外，environ中还可以包含操作系统的变量，这可以用如下的Python代码来实现：</p>
-<pre class="codehilite"><code class="language-python">import os
-environ = dict(os.environ.items()).copy()</code></pre>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">environ</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
 
 
 <p>除此之外，服务端也可以根据自己的需要添加其他变量到environ字典中，以传递给应用一些信息，

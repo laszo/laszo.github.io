@@ -28,32 +28,34 @@
 <li>处理请求，返回HTTP响应</li>
 </ul>
 <p>下面来看Django版的 Hello world 所需最简代码。</p>
-<pre class="codehilite"><code>import sys
-from django.http import HttpResponse
-from django.conf.urls import url
-from django.conf import settings
-from django.core.management import execute_from_command_line
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">execute_from_command_line</span>
 
-def index(request):
-    return HttpResponse('Hello, world')
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s1">&#39;Hello, world&#39;</span><span class="p">)</span>
 
-urlpatterns=[
-    url(r'^$', index)
-]
+<span class="n">urlpatterns</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^$&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+<span class="p">]</span>
 
-settings.configure(
-    DEBUG=True,
-    ROOT_URLCONF=__name__
-)
+<span class="n">settings</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+    <span class="n">DEBUG</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">ROOT_URLCONF</span><span class="o">=</span><span class="vm">__name__</span>
+<span class="p">)</span>
 
-if __name__ == '__main__':
-    execute_from_command_line(sys.argv)</code></pre>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">execute_from_command_line</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+</pre></div>
 
 
 <p>Django官方文档推荐的 <a href="https://docs.djangoproject.com/en/1.10/intro/tutorial01/" title="Django Tutorial">Tutorial</a> 生成的代码适用于生产系统的项目架构，
 我们这里出于讨论的方便，把所需的最简代码整合到了一处。
 把上边的代码放在一个叫hello.py的文件里，运行：</p>
-<pre class="codehilite"><code>python hello.py runserver</code></pre>
+<div class="codehilite"><pre><span></span>python hello.py runserver
+</pre></div>
 
 
 <p>然后，使用浏览器打开 <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> 就能看到页面输出的“Hello, world”。</p>
@@ -81,171 +83,181 @@ if __name__ == '__main__':
 <p>以上这些只涉及到了Django的使用层面，下面我们开始追踪Django是如何实现这些功能的。</p>
 <p>我们程序的入口是<code>execute_from_command_line</code>，所传递的参数是<code>python hello.py runserver</code>，
 从 /Library/Python/2.7/site-packages/django/core/management/__init__.py 文件可以看到如下代码：</p>
-<pre class="codehilite"><code>def execute_from_command_line(argv=None):
+<div class="codehilite"><pre><span></span>def execute_from_command_line(argv=None):
     utility = ManagementUtility(argv)
-    utility.execute()</code></pre>
+    utility.execute()
+</pre></div>
 
 
 <p>这里只是简单的生成了一个ManagementUtility对象，把命令参数传递给了它，并执行execute。</p>
-<pre class="codehilite"><code>class ManagementUtility(object):
-    def fetch_command(self, subcommand):
-        if isinstance(app_name, BaseCommand):
-            # If the command is already loaded, use it directly.
-            klass = app_name
-        else:
-            klass = load_command_class(app_name, subcommand)
-        return klass
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">ManagementUtility</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">fetch_command</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">subcommand</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="nx">isinstance</span><span class="p">(</span><span class="nx">app_name</span><span class="p">,</span> <span class="nx">BaseCommand</span><span class="p">)</span><span class="o">:</span>
+            <span class="err">#</span> <span class="nx">If</span> <span class="nx">the</span> <span class="nx">command</span> <span class="nx">is</span> <span class="nx">already</span> <span class="nx">loaded</span><span class="p">,</span> <span class="nx">use</span> <span class="nx">it</span> <span class="nx">directly</span><span class="p">.</span>
+            <span class="nx">klass</span> <span class="o">=</span> <span class="nx">app_name</span>
+        <span class="k">else</span><span class="o">:</span>
+            <span class="nx">klass</span> <span class="o">=</span> <span class="nx">load_command_class</span><span class="p">(</span><span class="nx">app_name</span><span class="p">,</span> <span class="nx">subcommand</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nx">klass</span>
 
-    def execute(self):
-        if settings.configured:
-            ...
-            django.setup()
+    <span class="nx">def</span> <span class="nx">execute</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="nx">settings.configured</span>:
+            <span class="kt">...</span>
+            <span class="nx">django</span><span class="p">.</span><span class="nx">setup</span><span class="p">()</span>
 
-        if subcommand == 'help':
-            ...
-        else:
-            self.fetch_command(subcommand).run_from_argv(self.argv)</code></pre>
+        <span class="k">if</span> <span class="nx">subcommand</span> <span class="o">==</span> <span class="s1">&#39;help&#39;</span><span class="o">:</span>
+            <span class="p">...</span>
+        <span class="k">else</span><span class="o">:</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">fetch_command</span><span class="p">(</span><span class="nx">subcommand</span><span class="p">).</span><span class="nx">run_from_argv</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">argv</span><span class="p">)</span>
+</pre></div>
 
 
 <p>ManagementUtility对象的execute，执行了一系列参数和环境检查，包括settings，
 这就是为什么我们的最简项目必须有</p>
-<pre class="codehilite"><code>settings.configure(
+<div class="codehilite"><pre><span></span>settings.configure(
     DEBUG=True,
     ROOT_URLCONF=__name__
-)</code></pre>
+)
+</pre></div>
 
 
 <p>这段代码。在进行了检查和配置以后，execute会根据具体的command，进行相应的操作。
 对于我们现在研究的情况来说，就是 runserver。会执行：</p>
-<pre class="codehilite"><code>self.fetch_command(subcommand).run_from_argv(self.argv)</code></pre>
+<div class="codehilite"><pre><span></span>self.fetch_command(subcommand).run_from_argv(self.argv)
+</pre></div>
 
 
 <p>前面我们看到，fetch_command会检查command是否是BaseCommand，返回相应的类：</p>
-<pre class="codehilite"><code>if isinstance(app_name, BaseCommand):
+<div class="codehilite"><pre><span></span>if isinstance(app_name, BaseCommand):
     # If the command is already loaded, use it directly.
     klass = app_name
 else:
-    klass = load_command_class(app_name, subcommand)</code></pre>
+    klass = load_command_class(app_name, subcommand)
+</pre></div>
 
 
 <p>然后返回的这个类执行<code>run_from_argv(self.argv)</code>。那么下一步如何是如何进行的呢？</p>
 <p>在 “/Library/Python/2.7/site-packages/django/core/management/__init__.py”
 里可以发现有一个find_commands方法：</p>
-<pre class="codehilite"><code>def find_commands(management_dir):
-    command_dir = os.path.join(management_dir, 'commands')
+<div class="codehilite"><pre><span></span>def find_commands(management_dir):
+    command_dir = os.path.join(management_dir, &#39;commands&#39;)
     return [name for _, name, is_pkg in pkgutil.iter_modules([npath(command_dir)])
-            if not is_pkg and not name.startswith('_')]</code></pre>
+            if not is_pkg and not name.startswith(&#39;_&#39;)]
+</pre></div>
 
 
 <p>原来，所有的command都是从“/Library/Python/2.7/site-packages/django/core/management/commands/”文件夹下面查找，
 这个文件夹下的每一个py文件都代表一个命令，我们运行的<code>runserver</code>命令，就来自runserver.py。
 在这个文件里定义了一个Command对象，它继承自BaseCommand：</p>
-<pre class="codehilite"><code>class Command(BaseCommand):
-    ...</code></pre>
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">Command</span><span class="p">(</span><span class="nx">BaseCommand</span><span class="p">)</span><span class="o">:</span>
+    <span class="p">...</span>
+</pre></div>
 
 
 <p>在“/Library/Python/2.7/site-packages/django/core/management/base.py”文件中查看BaseCommand的定义，
 可以看到上面所说的run_from_argv方法：</p>
-<pre class="codehilite"><code>class BaseCommand(object):
-    def run_from_argv(self, argv):
-        args = cmd_options.pop('args', ())
-        handle_default_options(options)
-        try:
-            self.execute(*args, **cmd_options)
-        except Exception as e:
-            sys.exit(1)
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">BaseCommand</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">run_from_argv</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">argv</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">args</span> <span class="o">=</span> <span class="nx">cmd_options</span><span class="p">.</span><span class="nx">pop</span><span class="p">(</span><span class="s1">&#39;args&#39;</span><span class="p">,</span> <span class="p">())</span>
+        <span class="nx">handle_default_options</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span>
+        <span class="k">try</span><span class="o">:</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">execute</span><span class="p">(</span><span class="o">*</span><span class="nx">args</span><span class="p">,</span> <span class="o">**</span><span class="nx">cmd_options</span><span class="p">)</span>
+        <span class="nx">except</span> <span class="nx">Exception</span> <span class="kr">as</span> <span class="nx">e</span>:
+            <span class="kt">sys.exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    def execute(self, *args, **options):
-        try:
-        output = self.handle(*args, **options)
-        if output:
-            self.stdout.write(output)
+    <span class="nx">def</span> <span class="nx">execute</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="o">*</span><span class="nx">args</span><span class="p">,</span> <span class="o">**</span><span class="nx">options</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">try</span><span class="o">:</span>
+        <span class="nx">output</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">handle</span><span class="p">(</span><span class="o">*</span><span class="nx">args</span><span class="p">,</span> <span class="o">**</span><span class="nx">options</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">output</span>:
+            <span class="kt">self.stdout.write</span><span class="p">(</span><span class="nx">output</span><span class="p">)</span>
 
-    def handle(self, *args, **options):
-        raise NotImplementedError('subclasses of BaseCommand must provide a handle() method')</code></pre>
+    <span class="nx">def</span> <span class="nx">handle</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="o">*</span><span class="nx">args</span><span class="p">,</span> <span class="o">**</span><span class="nx">options</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">raise</span> <span class="nx">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;subclasses of BaseCommand must provide a handle() method&#39;</span><span class="p">)</span>
+</pre></div>
 
 
 <p>BaseCommand的run_from_argv会执行它自己的execute方法，后者又会调用handle方法。这是一个留待子类去实现的方法。
 再来看runserver.py文件：</p>
-<pre class="codehilite"><code>from django.core.servers.basehttp import get_internal_wsgi_application, run
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.servers.basehttp</span> <span class="kn">import</span> <span class="n">get_internal_wsgi_application</span><span class="p">,</span> <span class="n">run</span>
 
-class Command(BaseCommand):
-    def execute(self, *args, **options):
-        super(Command, self).execute(*args, **options)
+<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Command</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-    def get_handler(self, *args, **options):
-        return get_internal_wsgi_application()
+    <span class="k">def</span> <span class="nf">get_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">get_internal_wsgi_application</span><span class="p">()</span>
 
-    def handle(self, *args, **options):
-        from django.conf import settings
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
-        if not settings.DEBUG and not settings.ALLOWED_HOSTS:
-            raise CommandError('You must set settings.ALLOWED_HOSTS if DEBUG is False.')
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">ALLOWED_HOSTS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CommandError</span><span class="p">(</span><span class="s1">&#39;You must set settings.ALLOWED_HOSTS if DEBUG is False.&#39;</span><span class="p">)</span>
 
-        self.use_ipv6 = options['use_ipv6']
-        ...
-        if not options['addrport']:
-            self.addr = ''
-            self.port = self.default_port
-        else:
-            m = re.match(naiveip_re, options['addrport'])
-            if m is None:
-                raise CommandError('&quot;%s&quot; is not a valid port number '
-                                'or address:port pair.' % options['addrport'])
-            self.addr, _ipv4, _ipv6, _fqdn, self.port = m.groups()
-        ...
-        self.run(**options)
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_ipv6</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;use_ipv6&#39;</span><span class="p">]</span>
+        <span class="o">...</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;addrport&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_port</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">naiveip_re</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;addrport&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CommandError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; is not a valid port number &#39;</span>
+                                <span class="s1">&#39;or address:port pair.&#39;</span> <span class="o">%</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;addrport&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="n">_ipv4</span><span class="p">,</span> <span class="n">_ipv6</span><span class="p">,</span> <span class="n">_fqdn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-    def run(self, **options):
-        ...
-        self.inner_run(None, **options)
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_run</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-    def inner_run(self, *args, **options):
-        try:
-            handler = self.get_handler(*args, **options)
-            run(self.addr, int(self.port), handler,
-                ipv6=self.use_ipv6, threading=threading)
-        except socket.error as e:
-            ...
-            os._exit(1)
-        except KeyboardInterrupt:
-            ...
-            sys.exit(0)</code></pre>
+    <span class="k">def</span> <span class="nf">inner_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_handler</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+            <span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">),</span> <span class="n">handler</span><span class="p">,</span>
+                <span class="n">ipv6</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_ipv6</span><span class="p">,</span> <span class="n">threading</span><span class="o">=</span><span class="n">threading</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="o">...</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="o">...</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
 
 
 <p>runserver里的Command进行了很多重要工作，也实现了父类的handle方法。在这个方法里，进行了ip地址等数据的检查，
 然后调用run方法，后者调用了inner_run方法。inner_run是核心的处理函数，
 它获取相应的hanlder，并与地址、端口等参数一起传递给basehttp的run函数（非Command自己的run函数）。
 这里的run函数，存在于“/Library/Python/2.7/site-packages/django/core/servers/basehttp.py”文件中：</p>
-<pre class="codehilite"><code>class WSGIServer(simple_server.WSGIServer, object):
-    def server_bind(self):
-        ...
-    def handle_error(self, request, client_address):
-        ...
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">WSGIServer</span><span class="p">(</span><span class="nx">simple_server</span><span class="p">.</span><span class="nx">WSGIServer</span><span class="p">,</span> <span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">server_bind</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="p">...</span>
+    <span class="nx">def</span> <span class="nx">handle_error</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">client_address</span><span class="p">)</span><span class="o">:</span>
+        <span class="p">...</span>
 
-class ServerHandler(simple_server.ServerHandler, object):
-    def handle_error(self):
-        ...
+<span class="kr">class</span> <span class="nx">ServerHandler</span><span class="p">(</span><span class="nx">simple_server</span><span class="p">.</span><span class="nx">ServerHandler</span><span class="p">,</span> <span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">handle_error</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="p">...</span>
 
-class WSGIRequestHandler(simple_server.WSGIRequestHandler, object):
-    def handle(self):
-        handler = ServerHandler(
-            self.rfile, self.wfile, self.get_stderr(), self.get_environ()
-        )
-        handler.request_handler = self      # backpointer for logging
-        handler.run(self.server.get_app())
+<span class="kr">class</span> <span class="nx">WSGIRequestHandler</span><span class="p">(</span><span class="nx">simple_server</span><span class="p">.</span><span class="nx">WSGIRequestHandler</span><span class="p">,</span> <span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">handle</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">handler</span> <span class="o">=</span> <span class="nx">ServerHandler</span><span class="p">(</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">rfile</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">wfile</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">get_stderr</span><span class="p">(),</span> <span class="nx">self</span><span class="p">.</span><span class="nx">get_environ</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="nx">handler</span><span class="p">.</span><span class="nx">request_handler</span> <span class="o">=</span> <span class="nx">self</span>      <span class="err">#</span> <span class="nx">backpointer</span> <span class="k">for</span> <span class="nx">logging</span>
+        <span class="nx">handler</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nx">get_app</span><span class="p">())</span>
 
-def run(addr, port, wsgi_handler, ipv6=False, threading=False):
-    server_address = (addr, port)
-    if threading:
-        httpd_cls = type(str('WSGIServer'), (socketserver.ThreadingMixIn, WSGIServer), {})
-    else:
-        httpd_cls = WSGIServer
-    httpd = httpd_cls(server_address, WSGIRequestHandler, ipv6=ipv6)
-    if threading:
-        httpd.daemon_threads = True
-    httpd.set_app(wsgi_handler)
-    httpd.serve_forever()</code></pre>
+<span class="nx">def</span> <span class="nx">run</span><span class="p">(</span><span class="nx">addr</span><span class="p">,</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">wsgi_handler</span><span class="p">,</span> <span class="nx">ipv6</span><span class="o">=</span><span class="nx">False</span><span class="p">,</span> <span class="nx">threading</span><span class="o">=</span><span class="nx">False</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">server_address</span> <span class="o">=</span> <span class="p">(</span><span class="nx">addr</span><span class="p">,</span> <span class="nx">port</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">threading</span>:
+        <span class="kt">httpd_cls</span> <span class="o">=</span> <span class="nx">type</span><span class="p">(</span><span class="nx">str</span><span class="p">(</span><span class="s1">&#39;WSGIServer&#39;</span><span class="p">),</span> <span class="p">(</span><span class="nx">socketserver</span><span class="p">.</span><span class="nx">ThreadingMixIn</span><span class="p">,</span> <span class="nx">WSGIServer</span><span class="p">),</span> <span class="p">{})</span>
+    <span class="k">else</span><span class="o">:</span>
+        <span class="nx">httpd_cls</span> <span class="o">=</span> <span class="nx">WSGIServer</span>
+    <span class="nx">httpd</span> <span class="o">=</span> <span class="nx">httpd_cls</span><span class="p">(</span><span class="nx">server_address</span><span class="p">,</span> <span class="nx">WSGIRequestHandler</span><span class="p">,</span> <span class="nx">ipv6</span><span class="o">=</span><span class="nx">ipv6</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">threading</span>:
+        <span class="kt">httpd.daemon_threads</span> <span class="o">=</span> <span class="nx">True</span>
+    <span class="nx">httpd</span><span class="p">.</span><span class="nx">set_app</span><span class="p">(</span><span class="nx">wsgi_handler</span><span class="p">)</span>
+    <span class="nx">httpd</span><span class="p">.</span><span class="nx">serve_forever</span><span class="p">()</span>
+</pre></div>
 
 
 <p>在这里，run函数生成一个WSGIServer对象，并传递给该对象相应的hanlder。调用Server对象的serve_forever方法。

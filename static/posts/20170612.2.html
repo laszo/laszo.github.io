@@ -30,22 +30,23 @@
 <p>Tornado与其他Web框架相比，最大的特点就是提供了后面三部分，基于<code>tornado.web</code>的应用部署在自己的服务器上能够实现最高的效能、也能够支持其他几个组件提供的特性，比如<code>await</code>关键字等。
 仔细研究其源码会发现，上述几个部分仅仅是并非并列的关系，有一些组件是建立在另一些组件之上的，可以看做是基层组件的具体应用。</p>
 <p><span id='demo'>官网上的demo</span>，下文会用到这段代码：</p>
-<pre class="codehilite"><code class="language-python">import tornado.ioloop
-import tornado.web
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">tornado.ioloop</span>
+<span class="kn">import</span> <span class="nn">tornado.web</span>
 
-class MainHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.write(&quot;Hello, world&quot;)
+<span class="k">class</span> <span class="nc">MainHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Hello, world&quot;</span><span class="p">)</span>
 
-def make_app():
-    return tornado.web.Application([
-        (r&quot;/&quot;, MainHandler),
-    ])
+<span class="k">def</span> <span class="nf">make_app</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">MainHandler</span><span class="p">),</span>
+    <span class="p">])</span>
 
-if __name__ == &quot;__main__&quot;:
-    app = make_app()
-    app.listen(8888)
-    tornado.ioloop.IOLoop.current().start()</code></pre>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">make_app</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">8888</span><span class="p">)</span>
+    <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
 
 
 <h4 id='web_f'>Web框架</h4>
@@ -68,6 +69,20 @@ if __name__ == &quot;__main__&quot;:
 <li>持有路由表，包含URL的配置和对应的Handler</li>
 <li>包含所有全局配置项，包括路由表</li>
 <li>接收HTTP请求，寻找匹配的URL并调用相应的Handler</li>
+</ul>
+<p>在我们的Web应用中，需要实例化一个对象，并传入一个路由表：</p>
+<div class="codehilite"><pre><span></span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">MainHandler</span><span class="p">),</span>
+    <span class="p">])</span>
+</pre></div>
+
+
+<p>除此之外，还可以向构造函数传递一个<code>settings</code>字典，进行各种各样的配置，主要有以下几种：</p>
+<ul>
+<li>通用配置：自动加载、调试、压缩、默认的登陆函数</li>
+<li>认证与安全配置：Cookies加密、跨域Cookies等</li>
+<li>模板配置：转义、模板路径、模板加载</li>
+<li>静态文件配置：静态文件的存放路径、URL前缀、处理类</li>
 </ul>
 <p>RequestHandler是Web系统的<code>器官</code>，即主要的功能实现都是它来完成，由RequestHandler实现基本功能，
 下列它的子类实现其他功能：</p>

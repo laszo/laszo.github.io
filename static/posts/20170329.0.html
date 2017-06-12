@@ -22,66 +22,75 @@
             <div class="post-content">
                 <p>今天我们来看一下 <a href="http://www.sqlalchemy.org/">SqlAlchemy</a> 的简单使用。</p>
 <h3>安装</h3>
-<pre class="codehilite"><code>pip install sqlalchemy</code></pre>
+<div class="codehilite"><pre><span></span>pip install sqlalchemy
+</pre></div>
 
 
 <h3>数据库连接</h3>
 <p>数据库的连接需要使用 <code>create_engine</code> 函数，传入数据库的 URL 作为参数，URL 的语法是：</p>
-<pre class="codehilite"><code>dialect+driver://username:password@host:port/database</code></pre>
+<div class="codehilite"><pre><span></span>dialect+driver://username:password@host:port/database
+</pre></div>
 
 
 <p>对于我们使用的 MySQL-Python 来说，就是：</p>
-<pre class="codehilite"><code>from sqlalchemy import create_engine
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
 
-engine = create_engine('mysql+mysqldb://uname:passwd@localhost:3306/databasename')</code></pre>
+<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s1">&#39;mysql+mysqldb://uname:passwd@localhost:3306/databasename&#39;</span><span class="p">)</span>
+</pre></div>
 
 
 <p>其他数据库配置可参看 <a href="http://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls">Database Urls</a>。</p>
 <h3>定义数据模型</h3>
 <p>我们使用任何 ORM 框架，在定义数据模型时，框架一般都会要求我们指定一个特定的基类，
 在 SqlAlchemy 里，这个类需要用<code>declarative_base</code> 函数创建。</p>
-<pre class="codehilite"><code>from sqlalchemy.ext.declarative import declarative_base
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
 
-Base = declarative_base()</code></pre>
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+</pre></div>
 
 
 <p>然后就可以定义模型了，当然还要引入框架的数据类型：</p>
-<pre class="codehilite"><code>from sqlalchemy import Column, Integer, String
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
 
-class User(Base):
-    id = Column(Integer, primary_key=True)
-    name = Column(String(128))</code></pre>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">128</span><span class="p">))</span>
+</pre></div>
 
 
 <p>SQLAlchemy 要求模型必须有一个字段为主键<sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>，即指定了 <code>primary_key=True</code> 的 Column。
 如果这个表在数据库里还不存在，我们可以使用下面的语句进行创建：</p>
-<pre class="codehilite"><code>Base.metadata.create_all(engine)</code></pre>
+<div class="codehilite"><pre><span></span>Base.metadata.create_all(engine)
+</pre></div>
 
 
 <h3>建立 Session</h3>
 <p>在 SQLAlchemy 里，在跟数据库进行实际交互之前，必须先建立 <code>Session</code>， 由 Session 完成交互。
 这个 Session 是由 <code>session_maker</code> 来辅助创建的：</p>
-<pre class="codehilite"><code>from sqlalchemy.orm import sessionmaker
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
 
-MySessionMaker = sessionmaker(bind=engine)
-ms_session = MySessionMaker()</code></pre>
+<span class="n">MySessionMaker</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+<span class="n">ms_session</span> <span class="o">=</span> <span class="n">MySessionMaker</span><span class="p">()</span>
+</pre></div>
 
 
 <p>注意，这里的 sessionmaker 是一个工厂类，专门用于创建 <code>sqlalchemy.orm.session.Session</code> 类。
 <code>MySessionMaker</code> 是这个工厂类的实例，而 <code>ms_session</code> 是由这个实例创建的一个 Session 实例<sup id="fnref:note2"><a class="footnote-ref" href="#fn:note2" rel="footnote">2</a></sup>。</p>
-<pre class="codehilite"><code>&gt;&gt;&gt; type(sessionmaker)
-&lt;type 'type'&gt;
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; type(sessionmaker)
+&lt;type &#39;type&#39;&gt;
 &gt;&gt;&gt; type(MySessionMaker)
-&lt;class 'sqlalchemy.orm.session.sessionmaker'&gt;
+&lt;class &#39;sqlalchemy.orm.session.sessionmaker&#39;&gt;
 &gt;&gt;&gt; type(ms_session)
-&lt;class 'sqlalchemy.orm.session.Session'&gt;</code></pre>
+&lt;class &#39;sqlalchemy.orm.session.Session&#39;&gt;
+</pre></div>
 
 
 <p>有了 Session 实例之后，就可以进行数据库的增删改查了。</p>
 <h3>增加一个对象</h3>
-<pre class="codehilite"><code>u = User(name='laszo')
+<div class="codehilite"><pre><span></span>u = User(name=&#39;laszo&#39;)
 ms_session.add(u)
-ms_session.commit()</code></pre>
+ms_session.commit()
+</pre></div>
 
 
 <p>新建一个模型对象实例的方法与新建一个普通对象并无区别，但是在保存对象的环节，并不是常见的 <code>u.save</code>，
@@ -89,47 +98,55 @@ ms_session.commit()</code></pre>
 <h3>查找对象</h3>
 <p>查找数据仍然需要通过 <code>Session</code> 对象，该类型的实例有一个 <code>query()</code> 方法用于查找，该方法返回一个
 <code>Query</code> 对象。查找所有对象：</p>
-<pre class="codehilite"><code>q = ms_session.query(User).all()</code></pre>
+<div class="codehilite"><pre><span></span>q = ms_session.query(User).all()
+</pre></div>
 
 
 <p>query() 函数也可以接受对象的字段作为参数：</p>
-<pre class="codehilite"><code>q = ms_session.query(User.name, User.id).all()</code></pre>
+<div class="codehilite"><pre><span></span>q = ms_session.query(User.name, User.id).all()
+</pre></div>
 
 
 <p>类似于 SQL 语句的 <code>select name, id from user</code>。</p>
 <p>根据字段查找数据，需要用到 <code>Query</code> 对象的 <code>filter</code> 或 <code>filter_by</code> 函数：</p>
-<pre class="codehilite"><code>q = ms_session.query(User).filter_by(name='myname')</code></pre>
+<div class="codehilite"><pre><span></span>q = ms_session.query(User).filter_by(name=&#39;myname&#39;)
+</pre></div>
 
 
 <p>或者</p>
-<pre class="codehilite"><code>q = ms_session.query(User).filter(User.name=='laszo')</code></pre>
+<div class="codehilite"><pre><span></span>q = ms_session.query(User).filter(User.name==&#39;laszo&#39;)
+</pre></div>
 
 
 <p>注意，在使用 filter 的时候传入的查询条件必须是两个等号 <code>==</code>。 
 filter 或 filter_by 函数还可以多次叠加，实现复合查询：</p>
-<pre class="codehilite"><code>q = ms_session.query(User).filter(User.name=='laszo').filter_by(id=2)</code></pre>
+<div class="codehilite"><pre><span></span>q = ms_session.query(User).filter(User.name==&#39;laszo&#39;).filter_by(id=2)
+</pre></div>
 
 
 <p>关于 filter 的详细用法可以参看 <a href="http://docs.sqlalchemy.org/en/rel_1_1/orm/tutorial.html#common-filter-operators">Common Filter Operators</a>。</p>
 <p>我们上面代码中的变量 <code>q</code> 是一个 Query 的实例，可以像普通列表那样操作，
 以得到数据对象：</p>
-<pre class="codehilite"><code>print q.first().name
-print q[0].id</code></pre>
+<div class="codehilite"><pre><span></span>print q.first().name
+print q[0].id
+</pre></div>
 
 
 <h3>修改数据</h3>
 <p>查询到数据之后，可以对想要修改的字段直接赋值，然后再调用 Session 的 <code>add</code> 和 <code>commit</code> 函数更新数据库。</p>
-<pre class="codehilite"><code>u = ms_session.query(User).filter(User.name=='myname1').first()
-u.name = 'myname2'
+<div class="codehilite"><pre><span></span>u = ms_session.query(User).filter(User.name==&#39;myname1&#39;).first()
+u.name = &#39;myname2&#39;
 ms_session.add(u)
-ms_session.commit()</code></pre>
+ms_session.commit()
+</pre></div>
 
 
 <h3>删除数据</h3>
 <p>想要删除数据，直接调用 Session 的 <code>delete</code> 方法即可，传入的参数是数据对应的模型对象：</p>
-<pre class="codehilite"><code>u = ms_session.query(User).filter(User.name=='myname1').first()
+<div class="codehilite"><pre><span></span>u = ms_session.query(User).filter(User.name==&#39;myname1&#39;).first()
 ms_session.delete(u)
-ms_session.commit()</code></pre>
+ms_session.commit()
+</pre></div>
 
 
 <div class="footnote">

@@ -38,10 +38,11 @@ Web应用接收到请求以后，进行实际的处理，并将响应返回给�
 <p>服务器与应用这两个角色的概念上面已经说过了，中间件我们暂时还用不到，后面会专门写一篇文章来分析。</p>
 <h4>应用</h4>
 <p>下面来看一个最简单的WSGI的应用的代码：</p>
-<pre class="codehilite"><code class="language-python"># test.py
-def app(env, start_response):
-    start_response('200 OK', [('Content-type', 'text/plain')])
-    return ['hello, world']</code></pre>
+<div class="codehilite"><pre><span></span><span class="c1"># test.py</span>
+<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;hello, world&#39;</span><span class="p">]</span>
+</pre></div>
 
 
 <p>WSGI规定应用必须是一个可调用的对象（callable object），接受两个参数，即上面的<code>env</code>和<code>start_response</code>。</p>
@@ -51,15 +52,17 @@ def app(env, start_response):
 <li>可调用的对象（app）的返回值即为HTTP响应的data部分。</li>
 </ul>
 <p>上面的代码虽然简单，但已符合WSGI标准，使用任何支持WSGI的服务器都可以承载。比如使用<code>gunicorn</code>可以运行：</p>
-<pre class="codehilite"><code>gunicorn test:app</code></pre>
+<div class="codehilite"><pre><span></span>gunicorn test:app
+</pre></div>
 
 
 <p>或者使用Python标准库自带的wsgiref库提供的make_server：</p>
-<pre class="codehilite"><code>from wsgiref.simple_server import make_server
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
 
-if __name__ == '__main__':
-    s = make_server('', 8000, app)
-    s.serve_forever()</code></pre>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">make_server</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</pre></div>
 
 
 <p>这时候使用浏览器打开本机地址<code>http://127.0.0.1:8000</code>就可以看到我们的应用返回的<code>hello, world</code>。</p>

@@ -21,21 +21,22 @@
 
             <div class="post-content">
                 <p>从一段最简单的网络服务器代码开始：</p>
-<pre class="codehilite"><code>import socket
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">socket</span>
 
-s = socket.socket()
-s.bind(('', 50007))
-s.listen(5)
-while True:
-    print 'Waitting from client ...'
-    conn, addr = s.accept() # 在这一行阻塞
-    print 'Connected by', addr
-    while True:
-        data = conn.recv(1024)
-        if not data: break
-        print 'receive data: ' + data 
-        conn.sendall(data)
-    conn.close()</code></pre>
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">50007</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s1">&#39;Waitting from client ...&#39;</span>
+    <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span> <span class="c1"># 在这一行阻塞</span>
+    <span class="k">print</span> <span class="s1">&#39;Connected by&#39;</span><span class="p">,</span> <span class="n">addr</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span> <span class="k">break</span>
+        <span class="k">print</span> <span class="s1">&#39;receive data: &#39;</span> <span class="o">+</span> <span class="n">data</span> 
+        <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
 
 
 <p>这是一个最简单的网络服务器，当客户端发送任何请求时，它会原封不动的返回请求数据，然后等待下一个连接，无限循环。当没有任何请求连接的客户端时，它会阻塞在<code>conn, addr = s.accept()</code>这一句。</p>
@@ -54,28 +55,29 @@ while True:
 <p>区别在于，在程序中对于 <code>ready object</code> 进行操作时，程序不会阻塞，而是立即执行，所以该对象的状态会称为<code>ready</code>。而对于<code>waitable object</code>进行操作时，程序会阻塞，一直等待到对象可以被操作为止。比如上面的例子，socket服务器执行到<code>conn, addr = s.accept()</code>这一句时会一直等待到有新的客户端请求为止。</p>
 <p>理解了这两类对象，对于select机制也就容易理解了。select函数会检查多个waitable object并阻塞，直到它变成ready object为止，并返回相应的ready object列表。</p>
 <p>Python标准库提供了select模块，支持这一机制：</p>
-<pre class="codehilite"><code>import socket
-import select
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">select</span>
 
-s = socket.socket()
-s.bind(('', 50007))
-s.listen(5)
-inputs = [s]
-num = 0
-while True:
-    rs, ws, es = select.select(inputs, [], [])
-    for r in rs:
-        if r is s:
-            c, addr = s.accept()
-            print 'got conn from :', addr
-            inputs.append(c)
-        else:
-            data = r.recv(1024)
-            r.sendall('You send: ' +  data)
-            if not data:
-                inputs.remove(r)
-            else:
-                print 'receive data : ', data</code></pre>
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">50007</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span>
+<span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">rs</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">es</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[])</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">c</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s1">&#39;got conn from :&#39;</span><span class="p">,</span> <span class="n">addr</span>
+            <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="s1">&#39;You send: &#39;</span> <span class="o">+</span>  <span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">inputs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s1">&#39;receive data : &#39;</span><span class="p">,</span> <span class="n">data</span>
+</pre></div>
 
 
 <p><code>select.select</code>接收四个参数：</p>

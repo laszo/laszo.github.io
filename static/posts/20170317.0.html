@@ -24,39 +24,44 @@
 配置信息、API操作，以 MySQL 和 Django 1.10 为例。</p>
 <h4>数据库连接</h4>
 <p>当我们使用如下这样的命令创建了新的Django项目之后:</p>
-<pre class="codehilite"><code>django-admin startproject myproject;
+<div class="codehilite"><pre><span></span>django-admin startproject myproject;
 cd myproject;
-django-admin startapp myapp;</code></pre>
+django-admin startapp myapp;
+</pre></div>
 
 
 <p>Django 为我们配置了默认的数据库连接，在文件 myproject/settings.py 下，默认使用 sqlite：</p>
-<pre class="codehilite"><code>DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+<div class="codehilite"><pre><span></span>DATABASES = {
+    &#39;default&#39;: {
+        &#39;ENGINE&#39;: &#39;django.db.backends.sqlite3&#39;,
+        &#39;NAME&#39;: os.path.join(BASE_DIR, &#39;db.sqlite3&#39;),
     }
-}</code></pre>
+}
+</pre></div>
 
 
 <p>实际的生产环境中很少用到sqlite，我们把它更改为使用 MySQL ：</p>
-<pre class="codehilite"><code>DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'YOURHOST',
-        'USER': 'YOURUSER',
-        'PASSWORD': 'YOURPASSWORD',
-        'NAME': 'YOURDATABASE',
+<div class="codehilite"><pre><span></span>DATABASES = {
+    &#39;default&#39;: {
+        &#39;ENGINE&#39;: &#39;django.db.backends.mysql&#39;,
+        &#39;HOST&#39;: &#39;YOURHOST&#39;,
+        &#39;USER&#39;: &#39;YOURUSER&#39;,
+        &#39;PASSWORD&#39;: &#39;YOURPASSWORD&#39;,
+        &#39;NAME&#39;: &#39;YOURDATABASE&#39;,
     }
-}</code></pre>
+}
+</pre></div>
 
 
 <p>这里的<code>NAME</code>项指的是数据库名，<code>HOST</code>、<code>USER</code>、<code>PASSWORD</code> 这几项按照具体环境信息填写即可。
 然后我们可以在项目目录下运行:</p>
-<pre class="codehilite"><code>python manage.py check</code></pre>
+<div class="codehilite"><pre><span></span>python manage.py check
+</pre></div>
 
 
 <p>如果数据库配置有问题，会有相应的错误提示，如果完全配置正确，会有如下的信息显示：</p>
-<pre class="codehilite"><code>System check identified no issues (0 silenced).</code></pre>
+<div class="codehilite"><pre><span></span>System check identified no issues (0 silenced).
+</pre></div>
 
 
 <p>然后我们可以进行下一步。</p>
@@ -65,17 +70,18 @@ django-admin startapp myapp;</code></pre>
 Django 已经为我们设置好了 <code>myapp</code> 项目的架构，
 其中 Model 的定义代码可以放在项目目录的 <code>myapp/models.py</code> 文件下。</p>
 <p>假设我们要开发一个类似于 <a href="http://pinterest.com/">Pinterest</a> 的网站。现在姑且先定义两个Model，User 和 Pin :</p>
-<pre class="codehilite"><code>from django.db import models
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 
-class User(models.Model):
-    name = models.fields.CharField(max_lenth=128)
-    avatar = models.fields.URLField()
-    address = models.fields.CharField(max_length=1024)
-    email = models.fields.EmailField()
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_lenth</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+    <span class="n">avatar</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">EmailField</span><span class="p">()</span>
 
-class Pin(models.Model):
-    src = models.fields.URLField()
-    intro = models.fields.CharField()</code></pre>
+<span class="k">class</span> <span class="nc">Pin</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span>
+    <span class="n">intro</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+</pre></div>
 
 
 <p>定义的 Model 必须继承自 <code>django.db.models.Model</code>，然后按照业务逻辑需要定义相关字段即可。
@@ -109,26 +115,29 @@ Model 的每一个属性对应数据表的每一个字段。
 </ul>
 <p>下面来具体执行一下。在上面我们已经定义了Model，还需要在 <code>myproject/settings.py</code> 
 文件中的 <code>INSTALLED_APPS</code> 列表中加上 <code>'myapp.apps.MyappConfig'</code>：</p>
-<pre class="codehilite"><code>INSTALLED_APPS = [
-    'myapp.apps.MyappConfig',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-]</code></pre>
+<div class="codehilite"><pre><span></span>INSTALLED_APPS = [
+    &#39;myapp.apps.MyappConfig&#39;,
+    &#39;django.contrib.admin&#39;,
+    &#39;django.contrib.auth&#39;,
+    &#39;django.contrib.contenttypes&#39;,
+    &#39;django.contrib.sessions&#39;,
+    &#39;django.contrib.messages&#39;,
+    &#39;django.contrib.staticfiles&#39;,
+]
+</pre></div>
 
 
 <p>然后只要在项目目录下运行如下命令：</p>
-<pre class="codehilite"><code>python manage.py makemigration</code></pre>
+<div class="codehilite"><pre><span></span>python manage.py makemigration
+</pre></div>
 
 
 <p>得到输出：</p>
-<pre class="codehilite"><code>Migrations for 'myapp':
+<div class="codehilite"><pre><span></span>Migrations for &#39;myapp&#39;:
 myapp/migrations/0001_initial.py:
     - Create model Pin
-    - Create model User</code></pre>
+    - Create model User
+</pre></div>
 
 
 <p>该命令在 <code>myapp/migrations/</code> 文件夹下生成了一个 <code>0001_initial.py</code>，在 Django 中，
@@ -136,11 +145,12 @@ myapp/migrations/0001_initial.py:
 <code>django.db.migrations.Migration</code> 的类，命名为 <code>Migration</code>，
 稍微研究一下即可明白它的语法，这里不再赘述。</p>
 <p>如果我们想看当前的项目下有哪些 migration，可以运行如下命令：</p>
-<pre class="codehilite"><code>python manage.py showmigrations</code></pre>
+<div class="codehilite"><pre><span></span>python manage.py showmigrations
+</pre></div>
 
 
 <p>可以看到输出：</p>
-<pre class="codehilite"><code>admin
+<div class="codehilite"><pre><span></span>admin
 [ ] 0001_initial
 [ ] 0002_logentry_remove_auto_add
 auth
@@ -158,21 +168,24 @@ contenttypes
 myapp
 [ ] 0001_initial
 sessions
-[ ] 0001_initial</code></pre>
+[ ] 0001_initial
+</pre></div>
 
 
 <p>其中，除了</p>
-<pre class="codehilite"><code>myapp
-[ ] 0001_initial</code></pre>
+<div class="codehilite"><pre><span></span>myapp
+[ ] 0001_initial
+</pre></div>
 
 
 <p>是我们自己创建的模型所生成的 migration，其余的都是 Django 框架自行设置的 middleware 所使用的相关模型，将来我们说到 middleware 时再去研究。</p>
 <p>然后，我们既可以直接执行 <code>migrate</code>，也可以先执行 <code>sqlmigrate</code> 看一下某一个 migration 所代表的SQL语句。</p>
-<pre class="codehilite"><code>python manage.py sqlmigrate myapp 0001_initial</code></pre>
+<div class="codehilite"><pre><span></span>python manage.py sqlmigrate myapp 0001_initial
+</pre></div>
 
 
 <p><code>sqlmigrate</code> 这条命令需要两个参数，第一个参数 <code>myapp</code> 是需要指定的 app 名字，第二个参数 <code>0001_initial</code> 是该 app 下的指定 migration 的名字。得到输出：</p>
-<pre class="codehilite"><code>BEGIN;
+<div class="codehilite"><pre><span></span>BEGIN;
 --
 -- Create model Pin
 --
@@ -181,17 +194,19 @@ CREATE TABLE `myapp_pin` (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY, `src
 -- Create model User
 --
 CREATE TABLE `myapp_user` (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY, `name` varchar(128) NOT NULL, `avatar` varchar(200) NOT NULL);
-COMMIT;</code></pre>
+COMMIT;
+</pre></div>
 
 
 <p>这是标准的SQL语句，创建了两个表 <code>myapp_pin</code> 和 <code>myapp_user</code> 。这说明，migration 所生成的表名就是 <code>app名_Model名</code> 的格式。</p>
 <p>虽然我们并没有在 Model 里定义 id 属性，migration 还是自动给我们生成了一个 标准的 id 字段作为主键<sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>。</p>
 <p>下面该执行 <code>migrate</code> 了：</p>
-<pre class="codehilite"><code>python manage.py migrate</code></pre>
+<div class="codehilite"><pre><span></span>python manage.py migrate
+</pre></div>
 
 
 <p>可以看到如下输出：</p>
-<pre class="codehilite"><code>Operations to perform:
+<div class="codehilite"><pre><span></span>Operations to perform:
     Apply all migrations: admin, auth, contenttypes, myapp, sessions
 Running migrations:
     Applying contenttypes.0001_initial... OK
@@ -207,15 +222,17 @@ Running migrations:
     Applying auth.0007_alter_validators_add_error_messages... OK
     Applying auth.0008_alter_user_username_max_length... OK
     Applying myapp.0001_initial... OK
-    Applying sessions.0001_initial... OK</code></pre>
+    Applying sessions.0001_initial... OK
+</pre></div>
 
 
 <p>每个 migration 都顺利执行了。这时候如果再次执行 <code>showmigrations</code> ：</p>
-<pre class="codehilite"><code>python manage.py showmigrations</code></pre>
+<div class="codehilite"><pre><span></span>python manage.py showmigrations
+</pre></div>
 
 
 <p>可以看到跟刚才不一样的输出：</p>
-<pre class="codehilite"><code>admin
+<div class="codehilite"><pre><span></span>admin
 [X] 0001_initial
 [X] 0002_logentry_remove_auto_add
 auth
@@ -233,7 +250,8 @@ contenttypes
 myapp
 [X] 0001_initial
 sessions
-[X] 0001_initial</code></pre>
+[X] 0001_initial
+</pre></div>
 
 
 <p>每个 migration 前面的 <code>[ ]</code> 变成了 <code>[X]</code> 。这代表这个 migration 的状态从未执行变成了已执行。</p>
@@ -241,19 +259,22 @@ sessions
 <p>对于一个 Web 系统来说，最基本的操作就是对于数据的增、查、改、删，任何复杂的业务逻辑也要基于此。
 以前面我们定义的模型为例，分别来看看 Django 提供的相关 API。</p>
 <h4>增加一条数据：</h4>
-<pre class="codehilite"><code>u = User(name='myname', avatar='http://image.com/user.png')
-u.save()</code></pre>
+<div class="codehilite"><pre><span></span>u = User(name=&#39;myname&#39;, avatar=&#39;http://image.com/user.png&#39;)
+u.save()
+</pre></div>
 
 
 <p>或者：</p>
-<pre class="codehilite"><code>u = User()
-u.name = 'myname'
-u.avatar = 'http://image.com/user.png'
-u.save()</code></pre>
+<div class="codehilite"><pre><span></span>u = User()
+u.name = &#39;myname&#39;
+u.avatar = &#39;http://image.com/user.png&#39;
+u.save()
+</pre></div>
 
 
 <h4>查询数据：</h4>
-<pre class="codehilite"><code>results = User.objects.filter(name='myname')</code></pre>
+<div class="codehilite"><pre><span></span>results = User.objects.filter(name=&#39;myname&#39;)
+</pre></div>
 
 
 <p>这时候返回的是一个集合，包含所有符合 name 是 <code>myname</code> 的 User 模型，
@@ -263,7 +284,7 @@ u.save()</code></pre>
 构建什么样的查询条件，主要取决于我们给 <code>filter</code> 函数传递什么样的参数，具体的语法可参看
 <a href="https://docs.djangoproject.com/en/1.10/topics/db/queries/#retrieving-objects">Retrieving objects</a>。 </p>
 <p>要通过 QuerySet 获得具体的数据模型对象，就像从普通的 Python 列表中获取对象一样：</p>
-<pre class="codehilite"><code>u1 = results[0]
+<div class="codehilite"><pre><span></span>u1 = results[0]
 print u1.name
 
 uf = results.first()
@@ -273,38 +294,45 @@ ulast = results.last()
 print ulast.name
 
 for u in results:
-    print u.name</code></pre>
+    print u.name
+</pre></div>
 
 
 <p>除了 filter 函数用于获取结果集之外，还有一个 <code>get</code> 函数，用于获取单个查询结果：</p>
-<pre class="codehilite"><code>u = User.objects.get(name='myname')</code></pre>
+<div class="codehilite"><pre><span></span>u = User.objects.get(name=&#39;myname&#39;)
+</pre></div>
 
 
 <p>这里必须要提醒的是，get 函数只用于查询单条数据，如果从数据库中查到了多条数据，就会报错：</p>
-<pre class="codehilite"><code>MultipleObjectsReturned: get() returned more than one User -- it returned 2!</code></pre>
+<div class="codehilite"><pre><span></span><span class="n">MultipleObjectsReturned</span><span class="o">:</span> <span class="kd">get</span><span class="o">()</span> <span class="n">returned</span> <span class="n">more</span> <span class="n">than</span> <span class="n">one</span> <span class="n">User</span> <span class="o">--</span> <span class="n">it</span> <span class="n">returned</span> <span class="mi">2</span><span class="o">!</span>
+</pre></div>
 
 
 <p>所以，get 函数最好是只用来查询 <code>unique</code> 字段。</p>
 <p>另外，还有一个 <code>exclude</code> 函数，它的作用与 filter 正好相反，返回所有不符合查询条件的参数：</p>
-<pre class="codehilite"><code>results = User.objects.exclude(name='myname')</code></pre>
+<div class="codehilite"><pre><span></span>results = User.objects.exclude(name=&#39;myname&#39;)
+</pre></div>
 
 
 <p>该语句同样会返回一个 QuerySet，包含所有 name 不是 myname 的数据对象。</p>
 <p>对于查询得到的 QuerySet，还可以再次使用 filter 或 exclude 函数，形成一个多重的查询：</p>
-<pre class="codehilite"><code>results = User.objects.filter(name='myname').filter(email='user@email.com').exclude(address='Beijing')</code></pre>
+<div class="codehilite"><pre><span></span>results = User.objects.filter(name=&#39;myname&#39;).filter(email=&#39;user@email.com&#39;).exclude(address=&#39;Beijing&#39;)
+</pre></div>
 
 
 <h4>修改数据：</h4>
 <p>对于一个数据模型的实例，我们可以对它的字段进行赋值，然后调用 <code>save</code> 方法，就实现了数据的更新：</p>
-<pre class="codehilite"><code>user = User.objects.filter(name='myname').first()
-user.address = 'Shanghai'
-user.save()</code></pre>
+<div class="codehilite"><pre><span></span>user = User.objects.filter(name=&#39;myname&#39;).first()
+user.address = &#39;Shanghai&#39;
+user.save()
+</pre></div>
 
 
 <h4>删除数据</h4>
 <p>删除数据很简单，调用数据实例的 <code>delete</code> 方法即可：</p>
-<pre class="codehilite"><code>user = User.objects.filter(name='myname').first()
-user.delete()</code></pre>
+<div class="codehilite"><pre><span></span>user = User.objects.filter(name=&#39;myname&#39;).first()
+user.delete()
+</pre></div>
 
 
 <p>调用了 delete 方法之后，数据库中虽然删掉了这条数据，但是在程序运行的范围内，

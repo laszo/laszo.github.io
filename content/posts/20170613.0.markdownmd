@@ -1,0 +1,124 @@
+---
+title: '从Tornado源码追踪ioloop的实现'
+---
+
+tornado官网的demo：
+
+    :::python
+    import tornado.ioloop
+    import tornado.web
+
+    class MainHandler(tornado.web.RequestHandler):
+        def get(self):
+            self.write("Hello, world")
+
+    def make_app():
+        return tornado.web.Application([
+            (r"/", MainHandler),
+        ])
+
+    if __name__ == "__main__":
+        app = make_app()
+        app.listen(8888)
+        tornado.ioloop.IOLoop.current().start()
+
+如果是第一次接触，会对这一句
+
+    tornado.ioloop.IOLoop.current().start()
+
+感到不明觉厉，今天就来八一八。
+
+<h4 id='socket_io'>socket的IO</h4>
+
+IOLoop用来处理非阻塞的socket的IO事件，关于socket的io可参看以前的文章，这里简要说明一下。
+下面这样的代码可以看作是直接使用socket构建的一个最简单的服务端程序：
+
+    :::python
+    import socket
+    s = socket.socket()
+    s.bind(address)
+    s.listen(5)
+    while True:
+        c, a = s.accept()
+        print 'Connected from ', a
+        c.recv(65536)
+        # do something
+        c.send('hello')
+        c.close()
+
+上面的代码，在没有接到客户端连接时，Python的进程会阻塞在`s.accept()`这一句上，每当有客户端连接时，接受数据并返回hello。如果接受了第一个客户端请求，正在处理的过程中，第二个客户端也连接过来了，只有等待服务端处理完第一个客户端的请求之后，才能处理第二个请求。每次只能处理一个请求，这样的服务器用处并不大。
+
+为了解决这样的问题，现代操作系统提供了IO的多路复用（multiplexing）技术，有如下几种：
+
+* select：支持所有的操作系统
+* poll：支持很多系统，但不包括windows
+* epoll：只支持Linux 2.5.44以上
+* kqueue：只支持BSD系统
+
+看ioloop的文档也有类似的描述：如果可以的话，我们在Linux上使用epoll、在BSD和Mac OS X上使用kqueue，否则就使用select。
+
+<h4 id='api'>API</h4>
+
+看到`IOLoop.current()`就知道，IOLoop通常使用单例对象，它有如下方法：
+
+* start
+* stop
+* close
+* run_sync
+* current
+* make_current
+* instance
+* initialized
+
+IO事件：
+
+* add_handler
+* update_handler
+* remove_handler
+
+这三个方法是使用IOLoop管理IO事件的主要方式，add_handler的参数：
+
+    IOLoop.add_handler(fd, handler, events)
+
+其中events有三种值：
+
+* fd是文件描述符
+* handler是一个callable对象
+* events有三种值：IOLoop.READ、IOLoop.WRITE、IOLoop.ERROR
+
+当events发生时，会调用：
+
+    handler(fd, events)
+
+乍一看与select、epoll等原理差不多，只是更方便了，事实也的确是这样，IOLoop的目的本来就是：
+
+1. 尽量使用当前平台最高效的方式来处理IO事件，能够管理大量的文件描述符
+2. 封装IO事件的监听逻辑，提供API使得能够方便的监听和处理IO
+
+回调与超时：
+
+* add_callback
+* add_callback_from_signal
+* add_future
+* add_timeout
+* call_at
+* call_later
+* remove_timeout
+* spawn_callback
+* time
+
+<h4 id='source_code'>源码</h4>
+
+首先来看tornado项目的文件结构，下面列出了今天会涉及到的几个文件：
+
+    tornado
+    |
+    |----platform
+    |    |
+    |    |----select.py
+    |    |----kqueue.py
+    |    |----epoll.py
+    |
+    |----ioloop.py
+
+tornado的根目录下有ioloop.py，即所谓的tornado.ioloop模块。     
