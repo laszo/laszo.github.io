@@ -66,4 +66,6 @@ Django应用已自带了服务器，如果在开发调试阶段，直接使用�
 
     pwserver static -w /django/path/wsgi.application
 
+本文所述功能在当前版本尚未实现。
+
 [PyWebServer]: https://github.com/laszo/PyWebServer
