@@ -1,0 +1,138 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>[_]异步与非阻塞 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">[_]异步与非阻塞</h3>
+
+            <div class="post-content">
+                <p>几个要点：</p>
+<ul>
+<li>大量的线程开销很大</li>
+<li>Tornado使用了单线程事件循环<ul>
+<li>同一时间只有一个活跃的动作</li>
+<li>所有的应用代码都应当是异步、非阻塞的</li>
+</ul>
+</li>
+<li>异步与非阻塞这两个概念：<ul>
+<li>非常相关</li>
+<li>经常可以交换使用</li>
+<li>但不是同一个东西</li>
+</ul>
+</li>
+<li>关于阻塞：<ul>
+<li>一个函数阻塞，意味着它要等待某件事的发生<ul>
+<li>网络IO</li>
+<li>磁盘IO</li>
+<li>mutex</li>
+</ul>
+</li>
+<li>实际上，每个函数起码都有一点点阻塞，因为起码会耗费和等待一个CPU指令周期<ul>
+<li>所以，通常所说的阻塞指的是需要等待可观时间的动作，特别是网络IO</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>关于异步：<ul>
+<li>一个同步的函数，执行完所有的代码之后才会返回</li>
+<li>一个异步函数：<ul>
+<li>执行完成之前就返回</li>
+<li>在后台执行某些动作</li>
+<li>执行完成之后会触发某项动作</li>
+</ul>
+</li>
+<li>异步函数的接口有如下形式：<ul>
+<li>向异步函数传递一个回调函数作为参数</li>
+<li>异步函数自己返回一个placeholder</li>
+<li>把异步函数投递到队列</li>
+<li>回调注册表（Callback registry），比如signal</li>
+</ul>
+</li>
+<li>不存在透明、无开销的方式把一个异步函数变成一个同步的函数<ul>
+<li><a href="http://www.gevent.org">gevent</a>使用轻量级线程（基于协程）提供了与异步系统类似的性能，但其实并没有把东西变成异步的</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Tornado相关文档中的例子：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tornado.httpclient</span> <span class="kn">import</span> <span class="n">HTTPClient</span>
+
+<span class="k">def</span> <span class="nf">synchronous_fetch</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">http_client</span> <span class="o">=</span> <span class="n">HTTPClient</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">http_client</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span>
+</pre></div>
+
+
+<p>上面是一个同步的函数，当然它也会阻塞，阻塞在<code>http_client.fetch(url)</code>一句上。</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tornado.httpclient</span> <span class="kn">import</span> <span class="n">AsyncHTTPClient</span>
+
+<span class="k">def</span> <span class="nf">asynchronous_fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+    <span class="n">http_client</span> <span class="o">=</span> <span class="n">AsyncHTTPClient</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">handle_response</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+        <span class="n">callback</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+    <span class="n">http_client</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">handle_response</span><span class="p">)</span>
+</pre></div>
+
+
+<p>AsyncHTTPClient.fetch是一个异步函数，执行完毕后会调用传递给它的<code>handle_response</code>，而后者又会调用asynchronous_fetch的参数callback。这是异步函数的典型使用方式。</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tornado.concurrent</span> <span class="kn">import</span> <span class="n">Future</span>
+
+<span class="k">def</span> <span class="nf">async_fetch_future</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">http_client</span> <span class="o">=</span> <span class="n">AsyncHTTPClient</span><span class="p">()</span>
+    <span class="n">my_future</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
+    <span class="n">fetch_future</span> <span class="o">=</span> <span class="n">http_client</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">fetch_future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">my_future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">my_future</span>
+</pre></div>
+
+
+<p>上面是使用tornado提供的concurrent库的方式，该库提供了Future类型。AsyncHTTPClient.fetch除了像前一段代码那样传递callback，函数自身还返回一个Future类型。涉及到如下两个方法：</p>
+<ul>
+<li>Future.add_done_callback(fn)</li>
+<li>Future.set_result(result)</li>
+</ul>
+<p>一个函数如果调用了另一个返回Future类型的函数，它自身一般也返回Future类型。Tornado官方文档推荐使用这种方式，有如下两个优点：</p>
+<ul>
+<li>Future.result可以直接抛出异常，优于callback方式的临时性异常处理</li>
+<li>Future能很好地与协程配合使用</li>
+</ul>
+<p>下面是使用协程的版本：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tornado</span> <span class="kn">import</span> <span class="n">gen</span>
+
+<span class="nd">@gen.coroutine</span>
+<span class="k">def</span> <span class="nf">fetch_coroutine</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">http_client</span> <span class="o">=</span> <span class="n">AsyncHTTPClient</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">http_client</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">gen</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+</pre></div>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>

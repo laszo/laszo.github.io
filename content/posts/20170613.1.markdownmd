@@ -1,0 +1,91 @@
+---
+title: '[_]异步与非阻塞'
+---
+
+几个要点：
+
+* 大量的线程开销很大
+* Tornado使用了单线程事件循环
+    * 同一时间只有一个活跃的动作
+    * 所有的应用代码都应当是异步、非阻塞的
+* 异步与非阻塞这两个概念：
+    * 非常相关
+    * 经常可以交换使用
+    * 但不是同一个东西
+* 关于阻塞：
+    * 一个函数阻塞，意味着它要等待某件事的发生
+        * 网络IO
+        * 磁盘IO
+        * mutex
+    * 实际上，每个函数起码都有一点点阻塞，因为起码会耗费和等待一个CPU指令周期
+        * 所以，通常所说的阻塞指的是需要等待可观时间的动作，特别是网络IO
+* 关于异步：
+    * 一个同步的函数，执行完所有的代码之后才会返回
+    * 一个异步函数：
+        * 执行完成之前就返回
+        * 在后台执行某些动作
+        * 执行完成之后会触发某项动作
+    * 异步函数的接口有如下形式：
+        * 向异步函数传递一个回调函数作为参数
+        * 异步函数自己返回一个placeholder
+        * 把异步函数投递到队列
+        * 回调注册表（Callback registry），比如signal
+    * 不存在透明、无开销的方式把一个异步函数变成一个同步的函数
+        * [gevent]使用轻量级线程（基于协程）提供了与异步系统类似的性能，但其实并没有把东西变成异步的
+
+Tornado相关文档中的例子：
+
+    :::python
+    from tornado.httpclient import HTTPClient
+
+    def synchronous_fetch(url):
+        http_client = HTTPClient()
+        response = http_client.fetch(url)
+        return response.body
+
+上面是一个同步的函数，当然它也会阻塞，阻塞在`http_client.fetch(url)`一句上。
+
+    :::python
+    from tornado.httpclient import AsyncHTTPClient
+
+    def asynchronous_fetch(url, callback):
+        http_client = AsyncHTTPClient()
+        def handle_response(response):
+            callback(response.body)
+        http_client.fetch(url, callback=handle_response)
+
+AsyncHTTPClient.fetch是一个异步函数，执行完毕后会调用传递给它的`handle_response`，而后者又会调用asynchronous_fetch的参数callback。这是异步函数的典型使用方式。
+
+    :::python
+    from tornado.concurrent import Future
+
+    def async_fetch_future(url):
+        http_client = AsyncHTTPClient()
+        my_future = Future()
+        fetch_future = http_client.fetch(url)
+        fetch_future.add_done_callback(
+            lambda f: my_future.set_result(f.result()))
+        return my_future
+
+上面是使用tornado提供的concurrent库的方式，该库提供了Future类型。AsyncHTTPClient.fetch除了像前一段代码那样传递callback，函数自身还返回一个Future类型。涉及到如下两个方法：
+
+* Future.add_done_callback(fn)
+* Future.set_result(result)
+
+一个函数如果调用了另一个返回Future类型的函数，它自身一般也返回Future类型。Tornado官方文档推荐使用这种方式，有如下两个优点：
+
+* Future.result可以直接抛出异常，优于callback方式的临时性异常处理
+* Future能很好地与协程配合使用
+
+下面是使用协程的版本：
+
+    :::python
+    from tornado import gen
+
+    @gen.coroutine
+    def fetch_coroutine(url):
+        http_client = AsyncHTTPClient()
+        response = yield http_client.fetch(url)
+        raise gen.Return(response.body)
+
+[gevent]: http://www.gevent.org
