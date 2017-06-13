@@ -64,16 +64,10 @@
 </pre></div>
 
 
-<p>上面的代码，在没有接到客户端连接时，Python的进程会阻塞在<code>s.accept()</code>这一句上，每当有客户端连接时，接受数据并返回hello。如果接受了第一个客户端请求，正在处理的过程中，第二个客户端也连接过来了，只有等待服务端处理完第一个客户端的请求之后，才能处理第二个请求。每次只能处理一个请求，这样的服务器用处并不大。</p>
-<p>为了解决这样的问题，现代操作系统提供了IO的多路复用（multiplexing）技术，有如下几种：</p>
-<ul>
-<li>select：支持所有的操作系统</li>
-<li>poll：支持很多系统，但不包括windows</li>
-<li>epoll：只支持Linux 2.5.44以上</li>
-<li>kqueue：只支持BSD系统</li>
-</ul>
-<p>看ioloop的文档也有类似的描述：如果可以的话，我们在Linux上使用epoll、在BSD和Mac OS X上使用kqueue，否则就使用select。</p>
-<h4 id='api'>API</h4>
+<p>上面的代码，在没有接到客户端连接时，Python的进程会阻塞在<code>s.accept()</code>这一句上，每当有客户端连接时，接受数据并返回hello。</p>
+<p><span id='def_muplex'>但是，如果接受了第一个客户端请求，正在处理的过程中，第二个客户端也连接过来了，只有等待服务端处理完第一个客户端的请求之后，才能处理第二个请求。每次只能处理一个请求，这样的服务器用处并不大。</span></p>
+<p>为了解决这样的问题，现代操作系统提供了IO的多路复用（multiplexing）技术，Tornado的ioloop模块正是基于这样的技术提供了高效的IO事件处理。</p>
+<h4 id='api'>Tornado IOLoop API</h4>
 
 <p>看到<code>IOLoop.current()</code>就知道，IOLoop通常使用单例对象，它有如下方法：</p>
 <ul>
@@ -86,7 +80,7 @@
 <li>instance</li>
 <li>initialized</li>
 </ul>
-<p>IO事件：</p>
+<p>IO事件的管理：</p>
 <ul>
 <li>add_handler</li>
 <li>update_handler</li>
@@ -125,22 +119,305 @@
 <li>spawn_callback</li>
 <li>time</li>
 </ul>
-<h4 id='source_code'>源码</h4>
+<p>我们前面看到的Tornado事件循环的代码：</p>
+<div class="codehilite"><pre><span></span>IOLoop.current().start()
+</pre></div>
 
-<p>首先来看tornado项目的文件结构，下面列出了今天会涉及到的几个文件：</p>
+
+<p>涉及到current()和start()两个方法。下面分别来说明。</p>
+<h4 id='iol_cur'>IOLoop.current()</h4>
+
+<p>前面已经说过，API文档里也说过，IOLoop.current()一看就是单例模式，该模式的特点请自行查阅相关文章。
+我们来看这个单例是如何实现的：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">IOLoop</span><span class="p">(</span><span class="n">Configurable</span><span class="p">):</span>
+    <span class="n">_instance_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+    <span class="n">_current</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">_current</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">current</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">instance</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">IOLoop</span><span class="p">,</span> <span class="s2">&quot;_instance&quot;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">_instance_lock</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">IOLoop</span><span class="p">,</span> <span class="s2">&quot;_instance&quot;</span><span class="p">):</span>
+                    <span class="c1"># New instance after double check</span>
+                    <span class="n">IOLoop</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="n">IOLoop</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">_instance</span>
+</pre></div>
+
+
+<p>上面代码中各种instance和current来回绕，名字又都差不多，需要进行明确的区分，下面三项是IOLoop类的成员：</p>
+<ul>
+<li>
+<p>_current：使用threading.local()创建。这是Python标准库threading的方法，返回一个thread-local（线程内）数据，这样的数据只在本线程内有效。这为IOLoop在本线程内是有一个实例提供了保证的基础。</p>
+</li>
+<li>
+<p>_instance_lock：使用threading.Lock()创建，即线程锁，在同一时间只能有一个线程使用线程锁。</p>
+</li>
+<li>
+<p>_instance：是IOLoop的实例对象，见上面的代码<code>IOLoop._instance = IOLoop()</code>。</p>
+</li>
+</ul>
+<p>下面两项是IOLoop类的静态方法：</p>
+<ul>
+<li>
+<p>instance()方法会检查IOLoop是否有成员_instance，有则返回。没有则锁定线程锁，创建IOLoop对象并赋予_instance，只有在这个方法里才能创建IOLoop对象，从这个意义上说这才是单例模式的具体实现。</p>
+</li>
+<li>
+<p>current()方法会检查_current成员是否有"instance"属性，有则直接返回该属性，没有的话就要检查它的参数instance是否为True，来判断是否需要调用IOLoop.instance()。</p>
+</li>
+</ul>
+<p>instance()方法用于保证IOLoop实例的唯一性，current()用于保证在本线程内的IOLoop实例的唯一性。</p>
+<h4 id='ioloop_start'>IOLoop.start()</h4>
+
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">IOLoop</span><span class="p">(</span><span class="n">Configurable</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+</pre></div>
+
+
+<p>IOLoop类的start方法并未实现，留给了子类PollIOLoop，先要看它的initialize方法：</p>
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">PollIOLoop</span><span class="p">(</span><span class="nx">IOLoop</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">initialize</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">impl</span><span class="p">,</span> <span class="nx">time_func</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span> <span class="o">**</span><span class="nx">kwargs</span><span class="p">)</span><span class="o">:</span>
+        <span class="kr">super</span><span class="p">(</span><span class="nx">PollIOLoop</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">initialize</span><span class="p">(</span><span class="o">**</span><span class="nx">kwargs</span><span class="p">)</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">_impl</span> <span class="o">=</span> <span class="nx">impl</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">_handlers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">_events</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">_callbacks</span> <span class="o">=</span> <span class="nx">collections</span><span class="p">.</span><span class="nx">deque</span><span class="p">()</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">_waker</span> <span class="o">=</span> <span class="nx">Waker</span><span class="p">()</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">add_handler</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">_waker</span><span class="p">.</span><span class="nx">fileno</span><span class="p">(),</span> 
+                        <span class="nx">lambda</span> <span class="nx">fd</span><span class="p">,</span> <span class="nx">events</span>: <span class="kt">self._waker.consume</span><span class="p">(),</span>
+                        <span class="nx">self</span><span class="p">.</span><span class="nx">READ</span><span class="p">)</span>
+</pre></div>
+
+
+<p>在initialize方法内上面列出的几个成员都非常重要，后面都会提到：</p>
+<div class="codehilite"><pre><span></span>* _impl：用于指定具体的平台实现
+* _handlers：保存handler
+* _events：保存事件
+* _callbacks：保存回调
+* _waker：Waker后面会提到
+</pre></div>
+
+
+<p>再来看add_handler方法：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">add_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
+    <span class="n">fd</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_fd</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_handlers</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">stack_context</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">handler</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_impl</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">events</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+</pre></div>
+
+
+<p>add_handler用于注册以下对象：</p>
+<ul>
+<li>fd：IO源，一般来说是网络IO，即socket</li>
+<li>events：fd的事件，这样的事件对socket类型来说就是可读、可写、错误三种。</li>
+<li>handler：事件发生后的处理方法</li>
+</ul>
+<p>下面来看start，代码非常多，这是IOLoop的核心逻辑，只摘出其中一部分：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">ncallbacks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncallbacks</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="o">.</span><span class="n">popleft</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">event_pairs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_impl</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="n">poll_timeout</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_events</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">event_pairs</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_events</span><span class="p">:</span>
+            <span class="n">fd</span><span class="p">,</span> <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_events</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fd_obj</span><span class="p">,</span> <span class="n">handler_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handlers</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span>
+                <span class="n">handler_func</span><span class="p">(</span><span class="n">fd_obj</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
+</pre></div>
+
+
+<p>start是一个无限循环，在每次循环中，做如下几件事：</p>
+<ol>
+<li>先处理所有的callback</li>
+<li>调用自身<code>_impl</code>成员的poll方法，获取所有的IO事件，更新到自身<code>_events</code>成员中</li>
+<li>遍历自身<code>_events</code>成员，获取响应的fd和handler_func</li>
+<li>调用handler_func，向其传递fd和event</li>
+</ol>
+<p>这里的fd、events、handler等，显然是前面的add_handler方法所添加的。</p>
+<h4 id='waker'>Waker</h4>
+
+<p>Pytho没有接口类型，Tornado以在interface.py内定义抽象类的方式实现类似的效果，interface.Waker抽象类的定义：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Waker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fileno</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">write_fileno</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">wake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+</pre></div>
+
+
+<p>waker对IO源进行了包装，提供了fileno，在IOLoop类的定义中，add_handler的参数fd其实就是一个Waker对象。根据具体的平台不同，其内部使用socket.socket()或os.pipe()。</p>
+<p>再来回顾一下ioloop.py里面PollIOLoop的initialize：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tornado.platform.auto</span> <span class="kn">import</span> <span class="n">set_close_exec</span><span class="p">,</span> <span class="n">Waker</span>
+
+<span class="k">class</span> <span class="nc">PollIOLoop</span><span class="p">(</span><span class="n">IOLoop</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">impl</span><span class="p">,</span> <span class="n">time_func</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waker</span> <span class="o">=</span> <span class="n">Waker</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_waker</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> 
+                        <span class="k">lambda</span> <span class="n">fd</span><span class="p">,</span> <span class="n">events</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waker</span><span class="o">.</span><span class="n">consume</span><span class="p">(),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">READ</span><span class="p">)</span>
+</pre></div>
+
+
+<p>从ioloop从tornado.platform.auto中获取Waker类型。而auto.py：</p>
+<div class="codehilite"><pre><span></span><span class="k">if</span> <span class="s1">&#39;APPENGINE_RUNTIME&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">tornado.platform.common</span> <span class="kn">import</span> <span class="n">Waker</span>
+
+    <span class="k">def</span> <span class="nf">set_close_exec</span><span class="p">(</span><span class="n">fd</span><span class="p">):</span>
+        <span class="k">pass</span>
+<span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">tornado.platform.common</span> <span class="kn">import</span> <span class="n">Waker</span>
+    <span class="kn">from</span> <span class="nn">tornado.platform.windows</span> <span class="kn">import</span> <span class="n">set_close_exec</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">tornado.platform.posix</span> <span class="kn">import</span> <span class="n">set_close_exec</span><span class="p">,</span> <span class="n">Waker</span>
+</pre></div>
+
+
+<p>可以看到，根据操作系统的环境不同，PollIOLoop的_waker成员分别是：</p>
+<ul>
+<li>APPENGINE_RUNTIME：tornado.platform.common.Waker</li>
+<li>windows：tornado.platform.common.Waker</li>
+<li>其他：tornado.platform.posix.Waker</li>
+</ul>
+<p>具体这几个Waker的实现请自行看Tornado的源码，非常简单。至于为什么起名叫Waker，说实话我没太想明白。</p>
+<h4 id='impl'>_impl成员的进一步分析</h4>
+
+<p><a href="#def_muplex">前面</a>提到，不同的操作系统能够支持的多路复用技术不同，有如下几种：</p>
+<ul>
+<li>select：支持所有的操作系统</li>
+<li>poll：支持很多系统，但不包括windows</li>
+<li>epoll：只支持Linux 2.5.44以上</li>
+<li>kqueue：只支持BSD系统</li>
+</ul>
+<p>看ioloop的文档也有类似的描述：如果可以的话，我们在Linux上使用epoll、在BSD和Mac OS X上使用kqueue，否则就使用select。也就是说select有最大的广泛性，也是最后的选择。</p>
+<p>来看tornado项目的文件结构，下面列出了不同平台会涉及到的几个文件和其中定义的类型：</p>
 <div class="codehilite"><pre><span></span>tornado
 |
 |----platform
 |    |
 |    |----select.py
+|    |    |----class _Select(object):
+|    |    |----class SelectIOLoop(PollIOLoop):
 |    |----kqueue.py
+|    |    |----class _KQueue(object):
+|    |    |----class KQueueIOLoop(PollIOLoop):
 |    |----epoll.py
-|
+|    |    |----class EPollIOLoop(PollIOLoop):
+|    |
 |----ioloop.py
+|    |----class IOLoop(Configurable):
+|    |----class PollIOLoop(IOLoop):
+|
 </pre></div>
 
 
-<p>tornado的根目录下有ioloop.py，即所谓的tornado.ioloop模块。     </p>
+<p>tornado的根目录下有ioloop.py，即所谓的tornado.ioloop模块，platform文件夹下面有select.py、kqueue.py、epoll.py三个文件。</p>
+<p>ioloop.py文件里定义了IOLoop类，和子类PollIOLoop，后者又有以下三个子类：</p>
+<ol>
+<li>SelectIOLoop</li>
+<li>EPollIOLoop</li>
+<li>KQueueIOLoop</li>
+</ol>
+<p>来看select.py文件：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">_Select</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">poll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="n">readable</span><span class="p">,</span> <span class="n">writeable</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read_fds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_fds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_fds</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">fd</span> <span class="ow">in</span> <span class="n">readable</span><span class="p">:</span>
+            <span class="n">events</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">READ</span>
+        <span class="k">for</span> <span class="n">fd</span> <span class="ow">in</span> <span class="n">writeable</span><span class="p">:</span>
+            <span class="n">events</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">WRITE</span>
+        <span class="k">for</span> <span class="n">fd</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="n">events</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">ERROR</span>
+        <span class="k">return</span> <span class="n">events</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">SelectIOLoop</span><span class="p">(</span><span class="n">PollIOLoop</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SelectIOLoop</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">impl</span><span class="o">=</span><span class="n">_Select</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+
+<p>SelectIOLoop是PollIOLoop的子类，在initialize方法内传递impl为_Select类型。也就是说，
+如果当前线程的IOLoop单例是SelectIOLoop实例的话，它的_impl成员即为_Select对象。
+在前面列出的start方法内：</p>
+<div class="codehilite"><pre><span></span>event_pairs = self._impl.poll(poll_timeout)
+</pre></div>
+
+
+<p>执行的正式_Select.poll方法，也就是说使用Python标准库的select.select函数监听IO事件。</p>
+<p>来看kqueue.py：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">_KQueue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kqueue</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">kqueue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+        <span class="n">kevents</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">events</span> <span class="o">&amp;</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">WRITE</span><span class="p">:</span>
+            <span class="n">kevents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">select</span><span class="o">.</span><span class="n">kevent</span><span class="p">(</span>
+                <span class="n">fd</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">select</span><span class="o">.</span><span class="n">KQ_FILTER_WRITE</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">flags</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">events</span> <span class="o">&amp;</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">READ</span><span class="p">:</span>
+            <span class="n">kevents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">select</span><span class="o">.</span><span class="n">kevent</span><span class="p">(</span>
+                <span class="n">fd</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">select</span><span class="o">.</span><span class="n">KQ_FILTER_READ</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">flags</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">kevent</span> <span class="ow">in</span> <span class="n">kevents</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_kqueue</span><span class="o">.</span><span class="n">control</span><span class="p">([</span><span class="n">kevent</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">poll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="n">kevents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kqueue</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">kevent</span> <span class="ow">in</span> <span class="n">kevents</span><span class="p">:</span>
+            <span class="n">fd</span> <span class="o">=</span> <span class="n">kevent</span><span class="o">.</span><span class="n">ident</span>
+            <span class="k">if</span> <span class="n">kevent</span><span class="o">.</span><span class="n">filter</span> <span class="o">==</span> <span class="n">select</span><span class="o">.</span><span class="n">KQ_FILTER_READ</span><span class="p">:</span>
+                <span class="n">events</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">READ</span>
+            <span class="k">if</span> <span class="n">kevent</span><span class="o">.</span><span class="n">filter</span> <span class="o">==</span> <span class="n">select</span><span class="o">.</span><span class="n">KQ_FILTER_WRITE</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">kevent</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">KQ_EV_EOF</span><span class="p">:</span>
+                    <span class="n">events</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span> <span class="o">=</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">ERROR</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">events</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">WRITE</span>
+            <span class="k">if</span> <span class="n">kevent</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">KQ_EV_ERROR</span><span class="p">:</span>
+                <span class="n">events</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">ERROR</span>
+        <span class="k">return</span> <span class="n">events</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">KQueueIOLoop</span><span class="p">(</span><span class="n">PollIOLoop</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">KQueueIOLoop</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">impl</span><span class="o">=</span><span class="n">_KQueue</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+
+<p>虽然有点绕，但也能看出来，如果当前线程的IOLoop是KQueueIOLoop对象的话，
+start内部的循环执行的其实是_KQueue.poll()方法，它实际调用了Python标准库的select.kevent函数。</p>
+<p>以及epoll.py：</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">EPollIOLoop</span><span class="p">(</span><span class="n">PollIOLoop</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EPollIOLoop</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">impl</span><span class="o">=</span><span class="n">select</span><span class="o">.</span><span class="n">epoll</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+
+<p>epoll.py文件最为简单，只有EPollIOLoop类的定义，其传递的impl直接就是Python标准库的select.epoll函数。</p>
+<p>通过这些类型和方法的定义，Tornado能够合理利用所在平台的多路复用技术，把这些技术进行包装，利用它提供的接口可以进行高效的网络IO异步编程。</p>
             </div>
         </div>
         <div class="col-md-3" role="complementary">
@@ -170,7 +447,7 @@
                     </li>-->
                     
                     <li class="">
-                        <a href="#api">API</a>
+                        <a href="#api">Tornado IOLoop API</a>
                     </li>
                     <!--<li class="">
                         <a href="#download">下载</a>
@@ -189,7 +466,64 @@
                     </li>-->
                     
                     <li class="">
-                        <a href="#source_code">源码</a>
+                        <a href="#iol_cur">IOLoop.current()</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#ioloop_start">IOLoop.start()</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#waker">Waker</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#impl">_impl成员的进一步分析</a>
                     </li>
                     <!--<li class="">
                         <a href="#download">下载</a>

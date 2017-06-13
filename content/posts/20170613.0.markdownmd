@@ -46,18 +46,13 @@ IOLoop用来处理非阻塞的socket的IO事件，关于socket的io可参看以�
         c.send('hello')
         c.close()
 
-上面的代码，在没有接到客户端连接时，Python的进程会阻塞在`s.accept()`这一句上，每当有客户端连接时，接受数据并返回hello。如果接受了第一个客户端请求，正在处理的过程中，第二个客户端也连接过来了，只有等待服务端处理完第一个客户端的请求之后，才能处理第二个请求。每次只能处理一个请求，这样的服务器用处并不大。
+上面的代码，在没有接到客户端连接时，Python的进程会阻塞在`s.accept()`这一句上，每当有客户端连接时，接受数据并返回hello。
 
-为了解决这样的问题，现代操作系统提供了IO的多路复用（multiplexing）技术，有如下几种：
+<span id='def_muplex'>但是，如果接受了第一个客户端请求，正在处理的过程中，第二个客户端也连接过来了，只有等待服务端处理完第一个客户端的请求之后，才能处理第二个请求。每次只能处理一个请求，这样的服务器用处并不大。</span>
 
-* select：支持所有的操作系统
-* poll：支持很多系统，但不包括windows
-* epoll：只支持Linux 2.5.44以上
-* kqueue：只支持BSD系统
+为了解决这样的问题，现代操作系统提供了IO的多路复用（multiplexing）技术，Tornado的ioloop模块正是基于这样的技术提供了高效的IO事件处理。
 
-看ioloop的文档也有类似的描述：如果可以的话，我们在Linux上使用epoll、在BSD和Mac OS X上使用kqueue，否则就使用select。
-
-<h4 id='api'>API</h4>
+<h4 id='api'>Tornado IOLoop API</h4>
 
 看到`IOLoop.current()`就知道，IOLoop通常使用单例对象，它有如下方法：
 
@@ -70,7 +65,7 @@ IOLoop用来处理非阻塞的socket的IO事件，关于socket的io可参看以�
 * instance
 * initialized
 
-IO事件：
+IO事件的管理：
 
 * add_handler
 * update_handler
@@ -107,18 +102,300 @@ IO事件：
 * spawn_callback
 * time
 
-<h4 id='source_code'>源码</h4>
+我们前面看到的Tornado事件循环的代码：
 
-首先来看tornado项目的文件结构，下面列出了今天会涉及到的几个文件：
+    IOLoop.current().start()
+
+涉及到current()和start()两个方法。下面分别来说明。
+
+<h4 id='iol_cur'>IOLoop.current()</h4>
+
+前面已经说过，API文档里也说过，IOLoop.current()一看就是单例模式，该模式的特点请自行查阅相关文章。
+我们来看这个单例是如何实现的：
+
+    :::python
+    class IOLoop(Configurable):
+        _instance_lock = threading.Lock()
+        _current = threading.local()
+
+        @staticmethod
+        def current(instance=True):
+            current = getattr(IOLoop._current, "instance", None)
+            if current is None and instance:
+                return IOLoop.instance()
+            return current
+        
+        @staticmethod
+        def instance():
+            if not hasattr(IOLoop, "_instance"):
+                with IOLoop._instance_lock:
+                    if not hasattr(IOLoop, "_instance"):
+                        # New instance after double check
+                        IOLoop._instance = IOLoop()
+            return IOLoop._instance
+
+
+上面代码中各种instance和current来回绕，名字又都差不多，需要进行明确的区分，下面三项是IOLoop类的成员：
+
+* _current：使用threading.local()创建。这是Python标准库threading的方法，返回一个thread-local（线程内）数据，这样的数据只在本线程内有效。这为IOLoop在本线程内是有一个实例提供了保证的基础。
+
+* _instance_lock：使用threading.Lock()创建，即线程锁，在同一时间只能有一个线程使用线程锁。
+
+* _instance：是IOLoop的实例对象，见上面的代码`IOLoop._instance = IOLoop()`。
+
+下面两项是IOLoop类的静态方法：
+
+* instance()方法会检查IOLoop是否有成员_instance，有则返回。没有则锁定线程锁，创建IOLoop对象并赋予_instance，只有在这个方法里才能创建IOLoop对象，从这个意义上说这才是单例模式的具体实现。
+
+* current()方法会检查_current成员是否有"instance"属性，有则直接返回该属性，没有的话就要检查它的参数instance是否为True，来判断是否需要调用IOLoop.instance()。
+
+instance()方法用于保证IOLoop实例的唯一性，current()用于保证在本线程内的IOLoop实例的唯一性。
+
+<h4 id='ioloop_start'>IOLoop.start()</h4>
+
+    :::python
+    class IOLoop(Configurable):
+        def start(self):
+            raise NotImplementedError()
+
+IOLoop类的start方法并未实现，留给了子类PollIOLoop，先要看它的initialize方法：
+
+    class PollIOLoop(IOLoop):
+        def initialize(self, impl, time_func=None, **kwargs):
+            super(PollIOLoop, self).initialize(**kwargs)
+            self._impl = impl
+            self._handlers = {}
+            self._events = {}
+            self._callbacks = collections.deque()
+            self._waker = Waker()
+            self.add_handler(self._waker.fileno(), 
+                            lambda fd, events: self._waker.consume(),
+                            self.READ)
+
+在initialize方法内上面列出的几个成员都非常重要，后面都会提到：
+
+    * _impl：用于指定具体的平台实现
+    * _handlers：保存handler
+    * _events：保存事件
+    * _callbacks：保存回调
+    * _waker：Waker后面会提到
+
+再来看add_handler方法：
+
+    :::python
+    def add_handler(self, fd, handler, events):
+        fd, obj = self.split_fd(fd)
+        self._handlers[fd] = (obj, stack_context.wrap(handler))
+        self._impl.register(fd, events | self.ERROR)
+
+add_handler用于注册以下对象：
+
+* fd：IO源，一般来说是网络IO，即socket
+* events：fd的事件，这样的事件对socket类型来说就是可读、可写、错误三种。
+* handler：事件发生后的处理方法
+
+下面来看start，代码非常多，这是IOLoop的核心逻辑，只摘出其中一部分：
+
+    :::python
+    def start(self):
+        while True:
+            ncallbacks = len(self._callbacks)
+            for i in range(ncallbacks):
+                self._run_callback(self._callbacks.popleft())
+            try:
+                event_pairs = self._impl.poll(poll_timeout)
+            except Exception as e:
+                ...
+            self._events.update(event_pairs)
+            while self._events:
+                fd, events = self._events.popitem()
+                try:
+                    fd_obj, handler_func = self._handlers[fd]
+                    handler_func(fd_obj, events)
+
+start是一个无限循环，在每次循环中，做如下几件事：
+
+1. 先处理所有的callback
+2. 调用自身`_impl`成员的poll方法，获取所有的IO事件，更新到自身`_events`成员中
+3. 遍历自身`_events`成员，获取响应的fd和handler_func
+4. 调用handler_func，向其传递fd和event
+
+这里的fd、events、handler等，显然是前面的add_handler方法所添加的。
+
+<h4 id='waker'>Waker</h4>
+
+Pytho没有接口类型，Tornado以在interface.py内定义抽象类的方式实现类似的效果，interface.Waker抽象类的定义：
+
+    :::python
+    class Waker(object):
+        def fileno(self):
+            raise NotImplementedError()
+
+        def write_fileno(self):
+            raise NotImplementedError()
+
+        def wake(self):
+            raise NotImplementedError()
+
+        def consume(self):
+            raise NotImplementedError()
+
+        def close(self):
+            raise NotImplementedError()
+
+waker对IO源进行了包装，提供了fileno，在IOLoop类的定义中，add_handler的参数fd其实就是一个Waker对象。根据具体的平台不同，其内部使用socket.socket()或os.pipe()。
+
+再来回顾一下ioloop.py里面PollIOLoop的initialize：
+
+    :::python
+    from tornado.platform.auto import set_close_exec, Waker
+
+    class PollIOLoop(IOLoop):
+        def initialize(self, impl, time_func=None, **kwargs):
+            ...
+            self._waker = Waker()
+            self.add_handler(self._waker.fileno(), 
+                            lambda fd, events: self._waker.consume(),
+                            self.READ)
+
+从ioloop从tornado.platform.auto中获取Waker类型。而auto.py：
+
+    :::python
+    if 'APPENGINE_RUNTIME' in os.environ:
+        from tornado.platform.common import Waker
+
+        def set_close_exec(fd):
+            pass
+    elif os.name == 'nt':
+        from tornado.platform.common import Waker
+        from tornado.platform.windows import set_close_exec
+    else:
+        from tornado.platform.posix import set_close_exec, Waker
+
+可以看到，根据操作系统的环境不同，PollIOLoop的_waker成员分别是：
+
+* APPENGINE_RUNTIME：tornado.platform.common.Waker
+* windows：tornado.platform.common.Waker
+* 其他：tornado.platform.posix.Waker
+
+具体这几个Waker的实现请自行看Tornado的源码，非常简单。至于为什么起名叫Waker，说实话我没太想明白。
+
+<h4 id='impl'>_impl成员的进一步分析</h4>
+
+[前面](#def_muplex)提到，不同的操作系统能够支持的多路复用技术不同，有如下几种：
+
+* select：支持所有的操作系统
+* poll：支持很多系统，但不包括windows
+* epoll：只支持Linux 2.5.44以上
+* kqueue：只支持BSD系统
+
+看ioloop的文档也有类似的描述：如果可以的话，我们在Linux上使用epoll、在BSD和Mac OS X上使用kqueue，否则就使用select。也就是说select有最大的广泛性，也是最后的选择。
+
+来看tornado项目的文件结构，下面列出了不同平台会涉及到的几个文件和其中定义的类型：
 
     tornado
     |
     |----platform
     |    |
     |    |----select.py
+    |    |    |----class _Select(object):
+    |    |    |----class SelectIOLoop(PollIOLoop):
     |    |----kqueue.py
+    |    |    |----class _KQueue(object):
+    |    |    |----class KQueueIOLoop(PollIOLoop):
     |    |----epoll.py
-    |
+    |    |    |----class EPollIOLoop(PollIOLoop):
+    |    |
     |----ioloop.py
+    |    |----class IOLoop(Configurable):
+    |    |----class PollIOLoop(IOLoop):
+    |    
 
-tornado的根目录下有ioloop.py，即所谓的tornado.ioloop模块。     
+tornado的根目录下有ioloop.py，即所谓的tornado.ioloop模块，platform文件夹下面有select.py、kqueue.py、epoll.py三个文件。
+
+ioloop.py文件里定义了IOLoop类，和子类PollIOLoop，后者又有以下三个子类：
+
+3. SelectIOLoop
+4. EPollIOLoop
+2. KQueueIOLoop
+
+来看select.py文件：
+
+    :::python
+    class _Select(object):
+        def poll(self, timeout):
+            readable, writeable, errors = select.select(
+                self.read_fds, self.write_fds, self.error_fds, timeout)
+            events = {}
+            for fd in readable:
+                events[fd] = events.get(fd, 0) | IOLoop.READ
+            for fd in writeable:
+                events[fd] = events.get(fd, 0) | IOLoop.WRITE
+            for fd in errors:
+                events[fd] = events.get(fd, 0) | IOLoop.ERROR
+            return events.items()
+
+    class SelectIOLoop(PollIOLoop):
+        def initialize(self, **kwargs):
+            super(SelectIOLoop, self).initialize(impl=_Select(), **kwargs)
+
+SelectIOLoop是PollIOLoop的子类，在initialize方法内传递impl为_Select类型。也就是说，
+如果当前线程的IOLoop单例是SelectIOLoop实例的话，它的_impl成员即为_Select对象。
+在前面列出的start方法内：
+
+    event_pairs = self._impl.poll(poll_timeout)
+
+执行的正式_Select.poll方法，也就是说使用Python标准库的select.select函数监听IO事件。
+
+来看kqueue.py：
+
+    :::python
+    class _KQueue(object):
+        def __init__(self):
+            self._kqueue = select.kqueue()
+            self._active = {}
+
+        def _control(self, fd, events, flags):
+            kevents = []
+            if events & IOLoop.WRITE:
+                kevents.append(select.kevent(
+                    fd, filter=select.KQ_FILTER_WRITE, flags=flags))
+            if events & IOLoop.READ:
+                kevents.append(select.kevent(
+                    fd, filter=select.KQ_FILTER_READ, flags=flags))
+            for kevent in kevents:
+                self._kqueue.control([kevent], 0)
+
+        def poll(self, timeout):
+            kevents = self._kqueue.control(None, 1000, timeout)
+            events = {}
+            for kevent in kevents:
+                fd = kevent.ident
+                if kevent.filter == select.KQ_FILTER_READ:
+                    events[fd] = events.get(fd, 0) | IOLoop.READ
+                if kevent.filter == select.KQ_FILTER_WRITE:
+                    if kevent.flags & select.KQ_EV_EOF:
+                        events[fd] = IOLoop.ERROR
+                    else:
+                        events[fd] = events.get(fd, 0) | IOLoop.WRITE
+                if kevent.flags & select.KQ_EV_ERROR:
+                    events[fd] = events.get(fd, 0) | IOLoop.ERROR
+            return events.items()
+
+    class KQueueIOLoop(PollIOLoop):
+        def initialize(self, **kwargs):
+            super(KQueueIOLoop, self).initialize(impl=_KQueue(), **kwargs)
+
+虽然有点绕，但也能看出来，如果当前线程的IOLoop是KQueueIOLoop对象的话，
+start内部的循环执行的其实是_KQueue.poll()方法，它实际调用了Python标准库的select.kevent函数。
+
+以及epoll.py：
+
+    :::python
+    class EPollIOLoop(PollIOLoop):
+        def initialize(self, **kwargs):
+            super(EPollIOLoop, self).initialize(impl=select.epoll(), **kwargs)
+
+epoll.py文件最为简单，只有EPollIOLoop类的定义，其传递的impl直接就是Python标准库的select.epoll函数。
+
+通过这些类型和方法的定义，Tornado能够合理利用所在平台的多路复用技术，把这些技术进行包装，利用它提供的接口可以进行高效的网络IO异步编程。

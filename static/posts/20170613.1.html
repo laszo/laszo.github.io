@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>[_]异步与非阻塞 - Lv Xiaoyu `Site</title>
+    <title>异步与非阻塞的概念以及Tornado和Python的相关库 - Lv Xiaoyu `Site</title>
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
@@ -17,17 +17,12 @@
         </div>
 
         <div class="col-sm-9">
-            <h3 class="blog-post-title">[_]异步与非阻塞</h3>
+            <h3 class="blog-post-title">异步与非阻塞的概念以及Tornado和Python的相关库</h3>
 
             <div class="post-content">
-                <p>几个要点：</p>
+                <h4 id='concept'>异步与非阻塞概念的几个要点</h4>
+
 <ul>
-<li>大量的线程开销很大</li>
-<li>Tornado使用了单线程事件循环<ul>
-<li>同一时间只有一个活跃的动作</li>
-<li>所有的应用代码都应当是异步、非阻塞的</li>
-</ul>
-</li>
 <li>异步与非阻塞这两个概念：<ul>
 <li>非常相关</li>
 <li>经常可以交换使用</li>
@@ -68,8 +63,15 @@
 </li>
 </ul>
 </li>
+<li>大量的线程开销很大</li>
+<li>Tornado使用了单线程事件循环<ul>
+<li>同一时间只有一个活跃的动作</li>
+<li>所有的应用代码都应当是异步、非阻塞的</li>
 </ul>
-<p>Tornado相关文档中的例子：</p>
+</li>
+</ul>
+<h4 id='sample_tor'>Tornado相关文档中的例子</h4>
+
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tornado.httpclient</span> <span class="kn">import</span> <span class="n">HTTPClient</span>
 
 <span class="k">def</span> <span class="nf">synchronous_fetch</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
@@ -122,12 +124,130 @@
     <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">http_client</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
     <span class="k">raise</span> <span class="n">gen</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
 </pre></div>
+
+
+<p>追踪代码可以发现，gen.coroutine函数内部也使用了Future，也就是说后者比前者更加基本。</p>
+<h4 id='py_std_con'>Python标准库concurrent.futures</h4>
+
+<p>从3.2开始，Python提供了标准库concurrent.futures为异步编程提供方便。下面简述库中的几个对象。</p>
+<p>一、Executor</p>
+<p>Executor是一个抽象类，帮助异步调用函数，有下面三个方法：</p>
+<ul>
+<li>submit(fn, <em>args, </em>*kwargs)，异步执行函数<code>fn</code>，返回一个Future对象</li>
+<li>map(func, <em>iterables, timeout=None, chunksize=1)，对iterables中的每个元素执行submit，相当于执行map(func, </em>iterables)</li>
+<li>shutdown(wait=True)，关闭Executor，根据wait判断是否需要等待</li>
+</ul>
+<p>上面的三个方法不能直接使用，必须使用子类的对应方法。</p>
+<p>二、ThreadPoolExecutor</p>
+<p>ThreadPoolExecutor是Executor的子类，以线程池的方式异步调用函数，有可能会出现死锁。</p>
+<p>三、ProcessPoolExecutor</p>
+<p>ProcessPoolExecutor以进程池的方式异步调用函数。对于提交给ProcessPoolExecutor的函数，
+如果这个函数内也调用了Executor或Future的方法会导致死锁。 </p>
+<p>ProcessPoolExecutor适用于执行CPU密集型的函数，因为它会使用多个进程，而宿主操作系统又会把这些进程分配给多个处理器（如果有的话）来处理。</p>
+<p>ThreadPoolExecutor适用于执行IO密集型的函数，由于GIL机制，一个Python进程中同时只能有一个线程在运行，把CPU密集型的运算分配给多个线程并不会提高效率，反而会因为线程切换的开销而降低效率。</p>
+<p>注意，Executor是异步调用函数，而不是调用异步函数。</p>
+<p>四、Future</p>
+<p>上面所说的所有Executor，其使用方法都是调用它们的submit方法，得到一个Future对象。下面来看这个类型的方法。</p>
+<ul>
+<li>result(timeout=None)，获取执行结果，等待指定的时间或一直等待</li>
+<li>add_done_callback(fn)，添加回调函数，这个函数会在执行完毕后被调用</li>
+<li>set_result(result)，设置结果</li>
+</ul>
+<p>上述方法，前两个是被调用者执行，最后一个方法显然必须在Executor对象内部执行。</p>
+<p>五、wait</p>
+<p>这个方法用于等待多个Future对象的执行。参数为：</p>
+<div class="codehilite"><pre><span></span>concurrent.futures.wait(fs, timeout=None, return_when=ALL_COMPLETED)
+</pre></div>
+
+
+<ul>
+<li>fs是一个Future的列表</li>
+<li>timeout是等待时间</li>
+<li>return_when制定了等待的方式：<ul>
+<li>FIRST_COMPLETED：第一个执行结束就返回</li>
+<li>FIRST_EXCEPTION：第一个出现异常就返回</li>
+<li>ALL_COMPLETED：等待所有的Future执行完毕或被取消</li>
+</ul>
+</li>
+</ul>
+<p>六、as_completed</p>
+<p>as_completed函数返回一个Future对象的迭代器，这些对象要么执行完毕了、要么被取消了，参数为：</p>
+<div class="codehilite"><pre><span></span>concurrent.futures.as_completed(fs, timeout=None)
+</pre></div>
+
+
+<ul>
+<li>fs是一个Future的列表</li>
+<li>timeout是等待时间</li>
+</ul>
+<p>相对来说，Python标准库的concurrents.futures比较好理解，从Executor子类的名字就可以看出来，
+其实现方式是采用线程池或进程池。</p>
+<p>Tornado的tornado.concurrent的实现方式不太好观察，至少我粗略的看了它的源码还是没有发现它的实现原理。</p>
             </div>
         </div>
         <div class="col-md-3" role="complementary">
             <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
                 
+                <h3>目录</h3>
+                
                 <ul class="nav bs-docs-sidenav">
+                    
+                    <li class="">
+                        <a href="#concept">异步与非阻塞概念的几个要点</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#sample_tor">Tornado相关文档中的例子</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#py_std_con">Python标准库concurrent.futures</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
                     
                 </ul>              
             </nav>

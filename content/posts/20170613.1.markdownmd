@@ -1,13 +1,9 @@
 ---
-title: '[_]异步与非阻塞'
+title: '异步与非阻塞的概念以及Tornado和Python的相关库'
 ---
 
-几个要点：
+<h4 id='concept'>异步与非阻塞概念的几个要点</h4>
 
-* 大量的线程开销很大
-* Tornado使用了单线程事件循环
-    * 同一时间只有一个活跃的动作
-    * 所有的应用代码都应当是异步、非阻塞的
 * 异步与非阻塞这两个概念：
     * 非常相关
     * 经常可以交换使用
@@ -32,8 +28,12 @@ title: '[_]异步与非阻塞'
         * 回调注册表（Callback registry），比如signal
     * 不存在透明、无开销的方式把一个异步函数变成一个同步的函数
         * [gevent]使用轻量级线程（基于协程）提供了与异步系统类似的性能，但其实并没有把东西变成异步的
+* 大量的线程开销很大
+* Tornado使用了单线程事件循环
+    * 同一时间只有一个活跃的动作
+    * 所有的应用代码都应当是异步、非阻塞的
 
-Tornado相关文档中的例子：
+<h4 id='sample_tor'>Tornado相关文档中的例子</h4>
 
     :::python
     from tornado.httpclient import HTTPClient
@@ -87,5 +87,73 @@ AsyncHTTPClient.fetch是一个异步函数，执行完毕后会调用传递给�
         http_client = AsyncHTTPClient()
         response = yield http_client.fetch(url)
         raise gen.Return(response.body)
+
+追踪代码可以发现，gen.coroutine函数内部也使用了Future，也就是说后者比前者更加基本。
+
+<h4 id='py_std_con'>Python标准库concurrent.futures</h4>
+
+从3.2开始，Python提供了标准库concurrent.futures为异步编程提供方便。下面简述库中的几个对象。
+
+一、Executor
+
+Executor是一个抽象类，帮助异步调用函数，有下面三个方法：
+
+* submit(fn, *args, **kwargs)，异步执行函数`fn`，返回一个Future对象
+* map(func, *iterables, timeout=None, chunksize=1)，对iterables中的每个元素执行submit，相当于执行map(func, *iterables)
+* shutdown(wait=True)，关闭Executor，根据wait判断是否需要等待
+
+上面的三个方法不能直接使用，必须使用子类的对应方法。
+
+二、ThreadPoolExecutor
+
+ThreadPoolExecutor是Executor的子类，以线程池的方式异步调用函数，有可能会出现死锁。
+
+三、ProcessPoolExecutor
+
+ProcessPoolExecutor以进程池的方式异步调用函数。对于提交给ProcessPoolExecutor的函数，
+如果这个函数内也调用了Executor或Future的方法会导致死锁。 
+
+ProcessPoolExecutor适用于执行CPU密集型的函数，因为它会使用多个进程，而宿主操作系统又会把这些进程分配给多个处理器（如果有的话）来处理。
+
+ThreadPoolExecutor适用于执行IO密集型的函数，由于GIL机制，一个Python进程中同时只能有一个线程在运行，把CPU密集型的运算分配给多个线程并不会提高效率，反而会因为线程切换的开销而降低效率。
+
+注意，Executor是异步调用函数，而不是调用异步函数。
+
+四、Future
+
+上面所说的所有Executor，其使用方法都是调用它们的submit方法，得到一个Future对象。下面来看这个类型的方法。
+
+* result(timeout=None)，获取执行结果，等待指定的时间或一直等待
+* add_done_callback(fn)，添加回调函数，这个函数会在执行完毕后被调用
+* set_result(result)，设置结果
+
+上述方法，前两个是被调用者执行，最后一个方法显然必须在Executor对象内部执行。
+
+五、wait
+
+这个方法用于等待多个Future对象的执行。参数为：
+
+    concurrent.futures.wait(fs, timeout=None, return_when=ALL_COMPLETED)
+
+* fs是一个Future的列表
+* timeout是等待时间
+* return_when制定了等待的方式：
+    * FIRST_COMPLETED：第一个执行结束就返回
+    * FIRST_EXCEPTION：第一个出现异常就返回
+    * ALL_COMPLETED：等待所有的Future执行完毕或被取消
+
+六、as_completed
+
+as_completed函数返回一个Future对象的迭代器，这些对象要么执行完毕了、要么被取消了，参数为：
+
+    concurrent.futures.as_completed(fs, timeout=None)
+
+* fs是一个Future的列表
+* timeout是等待时间
+
+相对来说，Python标准库的concurrents.futures比较好理解，从Executor子类的名字就可以看出来，
+其实现方式是采用线程池或进程池。
+
+Tornado的tornado.concurrent的实现方式不太好观察，至少我粗略的看了它的源码还是没有发现它的实现原理。
 
 [gevent]: http://www.gevent.org
