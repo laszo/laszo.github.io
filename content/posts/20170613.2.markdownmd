@@ -1,0 +1,244 @@
+---
+title: 'Flask的Flask类'
+---
+
+以官网的demo开始：
+
+    :::python
+    from flask import Flask
+    app = Flask(__name__)
+
+    @app.route('/')
+    def hello_world():
+        return 'Hello, World!'
+
+运行：
+
+    $ export FLASK_APP=hello.py
+    $ flask run
+    * Running on http://127.0.0.1:5000/
+
+ Flask类是Flask框架的核心，它持有路由表和其他全局配置项，并且它自身就是符合标准的WSGI应用，
+ 搞清楚了Flask类的运行原理，整个Flaks就了解了一半。本文涉及的源码见[app.py]。
+
+<h4 id='wsgi_callstack'>浅析WSGI调用过程</h4>
+
+ 由于它自身就是WSGI应用，也即是说它必须是一个callable，看它的`__call__`方法：
+
+    :::python
+    def __call__(self, environ, start_response):
+        return self.wsgi_app(environ, start_response)
+
+    def wsgi_app(self, environ, start_response):
+        try:
+            response = self.full_dispatch_request()
+        except Exception as e:
+            error = e
+            response = self.handle_exception(e)
+        return response(environ, start_response)
+    
+`__call__`调用`wsgi_app`，后者通过full_dispatch_request获取response对象并调用：
+
+    :::python
+    def full_dispatch_request(self):
+        try:
+            rv = self.preprocess_request()
+            if rv is None:
+                rv = self.dispatch_request()
+        except Exception as e:
+            rv = self.handle_user_exception(e)
+        return self.finalize_request(rv)
+
+full_dispatch_request对客户端请求进行了事前事后的处理，但核心的一步是dispatch_request：
+
+    :::python
+    def dispatch_request(self):
+        req = _request_ctx_stack.top.request
+        rule = req.url_rule
+        return self.view_functions[rule.endpoint](**req.view_args)
+
+dispatch_request获取所需的request，根据request的rule从view_functions获取所需的view_function。
+
+<h4 id='rout_table'>路由的注册</h4>
+
+根据名字和上下文代码可以推测，view_functions是一个路由表。demo代码的下列语句添加了一项路由：
+
+    @app.route('/')
+
+Flask的route函数是一个装饰器，把要装饰的函数添加到路由表中：
+
+    :::python
+    def route(self, rule, **options):
+        def decorator(f):
+            endpoint = options.pop('endpoint', None)
+            self.add_url_rule(rule, endpoint, f, **options)
+            return f
+        return decorator
+
+    @setupmethod
+    def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
+        if endpoint is None:
+            endpoint = _endpoint_from_view_func(view_func)
+        self.url_map.add(rule)
+        if view_func is not None:
+            self.view_functions[endpoint] = view_func
+
+上面的代码证实了我们的推测。
+
+<h4 id='sr_debug'>调试Flask源码</h4>
+
+为了进一步研究，我们调试它的源码，首先需要下载：
+
+    git clone git@github.com:pallets/flask.git
+
+由于我们调试的是项目源码，不是使用pip安装好的包，所以不能使用`flask run`这样的命令启动。
+可以使用Python标准库wsgiref，写这样一段代码：
+
+    :::python
+    from flask import Flask
+    app = Flask(__name__)
+
+
+    @app.route('/')
+    def hello_world():
+        return 'Hello, World!'
+
+    from wsgiref.simple_server import make_server
+
+    s = make_server('', 8180, app)
+    s.serve_forever()
+
+命名为hello.py，保存在从GitHub上clone下来的flask项目根目录。使用PyCharm或者你喜欢的什么IDE调试这个hello.py。
+
+<h4 id='inout'>输入与输出的分界线</h4>
+
+每一次客户端发来请求，Flask对象的`__call__`都会被调用，当然后面的所有调用关系都会被调用。
+一个函数，无非就是输入和输出，对于WSGI应用来说，输入就是HTTP请求，输出就是HTTP响应。
+我们来追踪输入是如何构建的，输出是如何形成的。以我们的demo app代码为例，我们定义的函数：
+
+    :::python
+    def hello_world():
+        return 'Hello, World!'
+
+实际上是被Flask对象的的方法dispatch_request的如下代码所调用：
+
+    :::python
+    def dispatch_request(self):
+        ...
+        return self.view_functions[rule.endpoint](**req.view_args)
+
+可以把行代码作为分界线，在此之前的所有处理过程是对请求的包装和预处理，在此之后所有的处理过程是对输出的包装。
+
+<h4 id='req_gen'>追踪request的构建</h4>
+
+下面顺序列出涉及到request的代码：
+
+    :::python
+    def wsgi_app(self, environ, start_response):
+        ctx = self.request_context(environ)
+        ctx.push()
+        try:
+            response = self.full_dispatch_request()
+            ...
+
+    def request_context(self, environ):
+        return RequestContext(self, environ)
+        
+request_context把WSGI的environ进行包装，生成了一个RequestContext类型，调用push方法。
+
+wsgi_app然后调用了full_dispatch_request：
+
+    :::python
+    def full_dispatch_request(self):
+        rv = self.preprocess_request()
+        if rv is None:
+            rv = self.dispatch_request()
+
+在full_dispatch_request中，调用了preprocess_request:
+
+    :::python
+    def preprocess_request(self):
+        bp = _request_ctx_stack.top.request.blueprint
+
+        funcs = self.url_value_preprocessors.get(None, ())
+        if bp is not None and bp in self.url_value_preprocessors:
+            funcs = chain(funcs, self.url_value_preprocessors[bp])
+        for func in funcs:
+            func(request.endpoint, request.view_args)
+
+        funcs = self.before_request_funcs.get(None, ())
+        if bp is not None and bp in self.before_request_funcs:
+            funcs = chain(funcs, self.before_request_funcs[bp])
+        for func in funcs:
+            rv = func()
+            if rv is not None:
+                return rv
+
+preprocess_request做了很多预处理的工作，主要有：
+
+1. 从url_value_preprocessors中获取预处理方法，并执行这些方法
+2. 从before_request_funcs中获取需要提前处理的方法，并执行这些方法
+
+我们希望app在处理之前调用某些处理方法，只需把这些方法加入before_request_funcs即可。
+
+再来看full_dispatch_request调用的另一个方法dispatch_request：
+
+    :::python
+    def dispatch_request(self):
+        req = _request_ctx_stack.top.request
+        rule = req.url_rule
+
+        return self.view_functions[rule.endpoint](**req.view_args)
+
+追踪到了我们的分界线，也就是说传递给view_function的参数到这里已经完全构建完毕了。
+最终传递给它的参数是req.view_args。
+
+这里需要关注一个变量`_request_ctx_stack`，可以看到view_functio的参数最终是从那个变量中得到的。
+
+在app.py文件的头部可以看到它的由来：
+
+    :::python
+    from .globals import _request_ctx_stack
+
+查看globals.py：
+
+    :::python
+    from werkzeug.local import LocalStack
+    ...
+    _request_ctx_stack = LocalStack()
+
+这是一个LocalStack类型，这个类型来自werkzeug库。我们根据它的名字以及它的top属性，
+可以姑且认为这是一个栈的数据结构。
+
+但是搜索了app.py文件，发现对它只有取值，没有赋值，那么它的值是从哪里来的呢？
+
+结合上文提到的RequestContext类型，查看它所在的ctx.py，也能够发现_request_ctx_stack的身影：
+
+    :::python
+    from .globals import _request_ctx_stack
+
+    class RequestContext(object):
+        def push(self):
+            ...
+            _request_ctx_stack.push(self)
+
+原来RequestContext.push方法修改了_request_ctx_stack的值。那么刚才wsgi_app函数的代码：
+
+    :::python
+    def wsgi_app(self, environ, start_response):
+        ctx = self.request_context(environ)
+        ctx.push()
+        ...
+
+其作用也就很明显了。至于为何要采用这样的方式，而不是直接保存在Flask对象的成员里，还需要进一步研究。
+
+<h4 id='res_gen'>追踪Response的形成</h4>
+
+    response = self.make_response(rv)
+
+
+<h4 id='sub'>总结</h4>
+
+Flask类本身代表一个WSGI应用，可以用它的route装饰器来注册路由表。当有客户端请求传来时，它把客户端请求包装成RequestContext类型，并执行一系列的预处理函数；然后，Flask对象查找对应的路由表得到view函数，传递参数并获取view函数的结果，并把结果包装成Response对象返回给WSGI服务器。
+
+[app.py]: https://github.com/pallets/flask/blob/master/flask/app.py

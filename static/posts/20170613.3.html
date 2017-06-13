@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>理解Flask的BluePrint - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">理解Flask的BluePrint</h3>
+
+            <div class="post-content">
+                <blockquote>
+<p>Flask uses a concept of blueprints for making application components and supporting common patterns within an application or across applications. Blueprints can greatly simplify how large applications work and provide a central means for Flask extensions to register operations on applications. A Blueprint object works similarly to a Flask application object, but it is not actually an application. Rather it is a blueprint of how to construct or extend an application.</p>
+</blockquote>
+<p>Blueprints in Flask are intended for these cases:</p>
+<ul>
+<li>
+<p>Factor an application into a set of blueprints. This is ideal for larger applications; a project could instantiate an application object, initialize several extensions, and register a collection of blueprints.</p>
+</li>
+<li>
+<p>Register a blueprint on an application at a URL prefix and/or subdomain. Parameters in the URL prefix/subdomain become common view arguments (with defaults) across all view functions in the blueprint.</p>
+</li>
+<li>
+<p>Register a blueprint multiple times on an application with different URL rules.</p>
+</li>
+<li>
+<p>Provide template filters, static files, templates, and other utilities through blueprints. A blueprint does not have to implement applications or view functions.</p>
+</li>
+<li>
+<p>Register a blueprint on an application for any of these cases when initializing a Flask extension.</p>
+</li>
+</ul>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>

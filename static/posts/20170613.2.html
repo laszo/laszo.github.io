@@ -1,0 +1,401 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Flask的Flask类 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Flask的Flask类</h3>
+
+            <div class="post-content">
+                <p>以官网的demo开始：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
+</pre></div>
+
+
+<p>运行：</p>
+<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">FLASK_APP</span><span class="o">=</span>hello.py
+$ flask run
+* Running on http://127.0.0.1:5000/
+</pre></div>
+
+
+<p>Flask类是Flask框架的核心，它持有路由表和其他全局配置项，并且它自身就是符合标准的WSGI应用，
+ 搞清楚了Flask类的运行原理，整个Flaks就了解了一半。本文涉及的源码见<a href="https://github.com/pallets/flask/blob/master/flask/app.py">app.py</a>。</p>
+<h4 id='wsgi_callstack'>浅析WSGI调用过程</h4>
+
+<p>由于它自身就是WSGI应用，也即是说它必须是一个callable，看它的<code>__call__</code>方法：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_dispatch_request</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">e</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+</pre></div>
+
+
+<p><code>__call__</code>调用<code>wsgi_app</code>，后者通过full_dispatch_request获取response对象并调用：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">full_dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_request</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatch_request</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_user_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">finalize_request</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span>
+</pre></div>
+
+
+<p>full_dispatch_request对客户端请求进行了事前事后的处理，但核心的一步是dispatch_request：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">request</span>
+    <span class="n">rule</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">url_rule</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">endpoint</span><span class="p">](</span><span class="o">**</span><span class="n">req</span><span class="o">.</span><span class="n">view_args</span><span class="p">)</span>
+</pre></div>
+
+
+<p>dispatch_request获取所需的request，根据request的rule从view_functions获取所需的view_function。</p>
+<h4 id='rout_table'>路由的注册</h4>
+
+<p>根据名字和上下文代码可以推测，view_functions是一个路由表。demo代码的下列语句添加了一项路由：</p>
+<div class="codehilite"><pre><span></span>@app.route(&#39;/&#39;)
+</pre></div>
+
+
+<p>Flask的route函数是一个装饰器，把要装饰的函数添加到路由表中：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;endpoint&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span>
+    <span class="k">return</span> <span class="n">decorator</span>
+
+<span class="nd">@setupmethod</span>
+<span class="k">def</span> <span class="nf">add_url_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">_endpoint_from_view_func</span><span class="p">(</span><span class="n">view_func</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">url_map</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">view_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">view_func</span>
+</pre></div>
+
+
+<p>上面的代码证实了我们的推测。</p>
+<h4 id='sr_debug'>调试Flask源码</h4>
+
+<p>为了进一步研究，我们调试它的源码，首先需要下载：</p>
+<div class="codehilite"><pre><span></span>git clone git@github.com:pallets/flask.git
+</pre></div>
+
+
+<p>由于我们调试的是项目源码，不是使用pip安装好的包，所以不能使用<code>flask run</code>这样的命令启动。
+可以使用Python标准库wsgiref，写这样一段代码：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
+
+<span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">make_server</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8180</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</pre></div>
+
+
+<p>命名为hello.py，保存在从GitHub上clone下来的flask项目根目录。使用PyCharm或者你喜欢的什么IDE调试这个hello.py。</p>
+<h4 id='inout'>输入与输出的分界线</h4>
+
+<p>每一次客户端发来请求，Flask对象的<code>__call__</code>都会被调用，当然后面的所有调用关系都会被调用。
+一个函数，无非就是输入和输出，对于WSGI应用来说，输入就是HTTP请求，输出就是HTTP响应。
+我们来追踪输入是如何构建的，输出是如何形成的。以我们的demo app代码为例，我们定义的函数：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
+</pre></div>
+
+
+<p>实际上是被Flask对象的的方法dispatch_request的如下代码所调用：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">endpoint</span><span class="p">](</span><span class="o">**</span><span class="n">req</span><span class="o">.</span><span class="n">view_args</span><span class="p">)</span>
+</pre></div>
+
+
+<p>可以把行代码作为分界线，在此之前的所有处理过程是对请求的包装和预处理，在此之后所有的处理过程是对输出的包装。</p>
+<h4 id='req_gen'>追踪request的构建</h4>
+
+<p>下面顺序列出涉及到request的代码：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_context</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_dispatch_request</span><span class="p">()</span>
+        <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">request_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">RequestContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">)</span>
+</pre></div>
+
+
+<p>request_context把WSGI的environ进行包装，生成了一个RequestContext类型，调用push方法。</p>
+<p>wsgi_app然后调用了full_dispatch_request：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">full_dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_request</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">rv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatch_request</span><span class="p">()</span>
+</pre></div>
+
+
+<p>在full_dispatch_request中，调用了preprocess_request:</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">preprocess_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">blueprint</span>
+
+    <span class="n">funcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_value_preprocessors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="p">())</span>
+    <span class="k">if</span> <span class="n">bp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_value_preprocessors</span><span class="p">:</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">funcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_value_preprocessors</span><span class="p">[</span><span class="n">bp</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+        <span class="n">func</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">view_args</span><span class="p">)</span>
+
+    <span class="n">funcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_request_funcs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="p">())</span>
+    <span class="k">if</span> <span class="n">bp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_request_funcs</span><span class="p">:</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">funcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_request_funcs</span><span class="p">[</span><span class="n">bp</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">rv</span>
+</pre></div>
+
+
+<p>preprocess_request做了很多预处理的工作，主要有：</p>
+<ol>
+<li>从url_value_preprocessors中获取预处理方法，并执行这些方法</li>
+<li>从before_request_funcs中获取需要提前处理的方法，并执行这些方法</li>
+</ol>
+<p>我们希望app在处理之前调用某些处理方法，只需把这些方法加入before_request_funcs即可。</p>
+<p>再来看full_dispatch_request调用的另一个方法dispatch_request：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">request</span>
+    <span class="n">rule</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">url_rule</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">endpoint</span><span class="p">](</span><span class="o">**</span><span class="n">req</span><span class="o">.</span><span class="n">view_args</span><span class="p">)</span>
+</pre></div>
+
+
+<p>追踪到了我们的分界线，也就是说传递给view_function的参数到这里已经完全构建完毕了。
+最终传递给它的参数是req.view_args。</p>
+<p>这里需要关注一个变量<code>_request_ctx_stack</code>，可以看到view_functio的参数最终是从那个变量中得到的。</p>
+<p>在app.py文件的头部可以看到它的由来：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">.globals</span> <span class="kn">import</span> <span class="n">_request_ctx_stack</span>
+</pre></div>
+
+
+<p>查看globals.py：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">werkzeug.local</span> <span class="kn">import</span> <span class="n">LocalStack</span>
+<span class="o">...</span>
+<span class="n">_request_ctx_stack</span> <span class="o">=</span> <span class="n">LocalStack</span><span class="p">()</span>
+</pre></div>
+
+
+<p>这是一个LocalStack类型，这个类型来自werkzeug库。我们根据它的名字以及它的top属性，
+可以姑且认为这是一个栈的数据结构。</p>
+<p>但是搜索了app.py文件，发现对它只有取值，没有赋值，那么它的值是从哪里来的呢？</p>
+<p>结合上文提到的RequestContext类型，查看它所在的ctx.py，也能够发现_request_ctx_stack的身影：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">.globals</span> <span class="kn">import</span> <span class="n">_request_ctx_stack</span>
+
+<span class="k">class</span> <span class="nc">RequestContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+
+
+<p>原来RequestContext.push方法修改了_request_ctx_stack的值。那么刚才wsgi_app函数的代码：</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_context</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="o">...</span>
+</pre></div>
+
+
+<p>其作用也就很明显了。至于为何要采用这样的方式，而不是直接保存在Flask对象的成员里，还需要进一步研究。</p>
+<h4 id='res_gen'>追踪Response的形成</h4>
+
+<div class="codehilite"><pre><span></span>response = self.make_response(rv)
+</pre></div>
+
+
+<h4 id='sub'>总结</h4>
+
+<p>Flask类本身代表一个WSGI应用，可以用它的route装饰器来注册路由表。当有客户端请求传来时，它把客户端请求包装成RequestContext类型，并执行一系列的预处理函数；然后，Flask对象查找对应的路由表得到view函数，传递参数并获取view函数的结果，并把结果包装成Response对象返回给WSGI服务器。</p>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <h3>目录</h3>
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                    <li class="">
+                        <a href="#wsgi_callstack">浅析WSGI调用过程</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#rout_table">路由的注册</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#sr_debug">调试Flask源码</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#inout">输入与输出的分界线</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#req_gen">追踪request的构建</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#res_gen">追踪Response的形成</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#sub">总结</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>
