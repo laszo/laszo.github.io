@@ -1,7 +1,9 @@
 ---
-title: 'Python的正则表达式操作'
+title: '[]Python的正则表达式操作'
 ---
 
 本文暂不解释正则表达式的语法，着重介绍Python标准库中的正则表达式操作模块`re`。
 
+看这篇[Python正则表达式指南]即可。
 
+[Python正则表达式指南]: http://www.cnblogs.com/huxi/archive/2010/07/04/1771073.html
