@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>对socket.socket和select.select的进一步研究 - Lv Xiaoyu `Site</title>
+    <title>记录在socket编程中遇到的两个小问题 - Lv Xiaoyu `Site</title>
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
@@ -17,19 +17,10 @@
         </div>
 
         <div class="col-sm-9">
-            <h3 class="blog-post-title">对socket.socket和select.select的进一步研究</h3>
+            <h3 class="blog-post-title">记录在socket编程中遇到的两个小问题</h3>
 
             <div class="post-content">
-                <p>服务端accept会阻塞，直到客户端执行connect，成功连接后服务端的accept会返回一个pair。</p>
-<p>服务端select会阻塞，在客户端执行connect的时候，服务端的select会返回，此时执行accept会立即返回。</p>
-<p>然后recv会阻塞，在客户端执行send的时候，服务端的recv会返回。</p>
-<p>疑问：</p>
-<blockquote>
-<p>self.data = self.rfile.readline(65537) 不能够接收数据，会一直阻塞，
-而 self.data = self.request.recv(65537) 可以正常接收。</p>
-</blockquote>
-<h3>疑问二</h3>
-<p>如下代码可以正常运行，当做一个最简单的HTTP服务器来使用：</p>
+                <p>以如下代码当做一个最简单的HTTP服务器来使用：</p>
 <div class="codehilite"><pre><span></span><span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">HTTP/1.0 200 OK</span>
 
@@ -62,7 +53,8 @@
 </pre></div>
 
 
-<p>但是略做改动，如下代码就会报错：</p>
+<p>上述代码某些浏览器能正常打开，OS X下的Safari不能正常打开，因为<code>HTTP/1.0 200 OK</code>这一行应当紧跟<code>"""</code>字符串，才会被当做HTTP的首行、即状态行。</p>
+<p>如下代码使用浏览器不能正常打开：</p>
 <div class="codehilite"><pre><span></span><span class="n">G_response</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 200 OK&#39;</span>
 
 <span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -95,10 +87,27 @@
 </pre></div>
 
 
-<p>最稀奇的是：由于本人用的编辑器是 VS Code，如果我在当前代码文件下右键弹出菜单，
-选择<code>Run Python File in Terminal</code>，可以正常运行，两段代码效果一样。</p>
-<p>但是如果在 VS Code的终端窗口（呼出的快捷键是<code>Ctrl + '</code>）下，运行<code>python test.py</code>，
-运行的效果就不正常，浏览器会一直处于卡顿的状态。推测也许跟Windows下的socket机制有关。</p>
+<p>原因是调用了两次<code>c.send</code>，正确的做法是把<code>G_response</code>和<code>G_content</code>的内容连在一起一次性发送。</p>
+<p>随手记录socket makefile方法的文档：</p>
+<h4>socket.makefile([mode[, bufsize]])</h4>
+<p>Return a file object associated with the socket. (File objects are described in File Objects.) The file object does not close the socket explicitly when its close() method is called, but only removes its reference to the socket object, so that the socket will be closed if it is not referenced from anywhere else.</p>
+<p>The socket must be in blocking mode (it can not have a timeout). The optional mode and bufsize arguments are interpreted the same way as by the built-in file() function.</p>
+<p>Note On Windows, the file-like object created by makefile() cannot be used where a file object with a file descriptor is expected, such as the stream arguments of subprocess.Popen().</p>
+<h4>file(name[, mode[, buffering]])</h4>
+<p>Constructor function for the file type, described further in section File Objects. The constructor’s arguments are the same as those of the open() built-in function described below.</p>
+<p>When opening a file, it’s preferable to use open() instead of invoking this constructor directly. file is more suited to type testing (for example, writing isinstance(f, file)).</p>
+<hr />
+
+<h4>open(name[, mode[, buffering]])</h4>
+<p>Open a file, returning an object of the file type described in section File Objects. If the file cannot be opened, IOError is raised. When opening a file, it’s preferable to use open() instead of invoking the file constructor directly.</p>
+<p>The first two arguments are the same as for stdio‘s fopen(): name is the file name to be opened, and mode is a string indicating how the file is to be opened.</p>
+<p>The most commonly-used values of mode are 'r' for reading, 'w' for writing (truncating the file if it already exists), and 'a' for appending (which on some Unix systems means that all writes append to the end of the file regardless of the current seek position). If mode is omitted, it defaults to 'r'. The default is to use text mode, which may convert '\n' characters to a platform-specific representation on writing and back on reading. Thus, when opening a binary file, you should append 'b' to the mode value to open the file in binary mode, which will improve portability. (Appending 'b' is useful even on systems that don’t treat binary and text files differently, where it serves as documentation.) See below for more possible values of mode.</p>
+<p>The optional buffering argument specifies the file’s desired buffer size: 0 means unbuffered, 1 means line buffered, any other positive value means use a buffer of (approximately) that size (in bytes). A negative buffering means to use the system default, which is usually line buffered for tty devices and fully buffered for other files. If omitted, the system default is used. [2]</p>
+<p>Modes 'r+', 'w+' and 'a+' open the file for updating (reading and writing); note that 'w+' truncates the file. Append 'b' to the mode to open the file in binary mode, on systems that differentiate between binary and text files; on systems that don’t have this distinction, adding the 'b' has no effect.</p>
+<p>In addition to the standard fopen() values mode may be 'U' or 'rU'. Python is usually built with universal newlines support; supplying 'U' opens the file as a text file, but lines may be terminated by any of the following: the Unix end-of-line convention '\n', the Macintosh convention '\r', or the Windows convention '\r\n'. All of these external representations are seen as '\n' by the Python program. If Python is built without universal newlines support a mode with 'U' is the same as normal text mode. Note that file objects so opened also have an attribute called newlines which has a value of None (if no newlines have yet been seen), '\n', '\r', '\r\n', or a tuple containing all the newline types seen.</p>
+<p>Python enforces that the mode, after stripping 'U', begins with 'r', 'w' or 'a'.</p>
+<p>Python provides many file handling modules including fileinput, os, os.path, tempfile, and shutil.</p>
+<p>Changed in version 2.5: Restriction on first letter of mode string introduced.</p>
             </div>
         </div>
         <div class="col-md-3" role="complementary">
