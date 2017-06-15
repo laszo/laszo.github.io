@@ -20,13 +20,16 @@
             <h3 class="blog-post-title">理解Flask的BluePrint：子模块和框架糖</h3>
 
             <div class="post-content">
-                <p>BluePrint（下称蓝图）是Flask框架里的一个重要概念，BluePrint这个词在其他Python框架里没有见到过。
+                <p>BluePrint（下称蓝图）是Flask框架里的一个重要概念，本文先从使用的角度介绍蓝图，然后介绍使用蓝图时代码的组织方式，最后会从Flask源代码的角度分析蓝图的实现，最终总结出它的本质。</p>
+<p>BluePrint这个词在其他Python框架里没有见到过，
 由于用了这个词，初学者可能对它的含义有点模糊，初次接触可以笼统的把它看做是应用的子模块。基本上，
 如果你要写稍微复杂一点的网站，不可能把所有代码都放在一个py文件里，不可避免的要把网站的各种功能或组件模块化。类比于Django中的application，如果你开发了一个Web网站：</p>
 <ul>
 <li>Django把网站的整体称为project（项目），把project中的子模块称为application（应用）</li>
 <li>Flask把网站的整体称为application（应用），把application中的子模块称为blueprint（蓝图）</li>
 </ul>
+<h4 id='blue_basic'>蓝图的基本使用</h4>
+
 <p>还是先从使用的角度来看它，假设你已经知道了一个最简单的Flask的demo怎么写：</p>
 <div class="codehilite"><pre><span></span><span class="c1"># app.py</span>
 <span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
@@ -37,8 +40,6 @@
     <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
 </pre></div>
 
-
-<h4 id='blue_basic'>蓝图的基本使用</h4>
 
 <p>写一个蓝图与写一个应用差不多，区别是用到了flask.Blueprint，而非flask.Flask：</p>
 <div class="codehilite"><pre><span></span><span class="c1"># book.py</span>
