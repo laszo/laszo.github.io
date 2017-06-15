@@ -1,20 +1,251 @@
 ---
-title: '[]理解Flask的BluePrint'
+title: '理解Flask的BluePrint：子模块和框架糖'
 ---
 
->
-Flask uses a concept of blueprints for making application components and supporting common patterns within an application or across applications. Blueprints can greatly simplify how large applications work and provide a central means for Flask extensions to register operations on applications. A Blueprint object works similarly to a Flask application object, but it is not actually an application. Rather it is a blueprint of how to construct or extend an application.
+BluePrint（下称蓝图）是Flask框架里的一个重要概念，BluePrint这个词在其他Python框架里没有见到过。
+由于用了这个词，初学者可能对它的含义有点模糊，初次接触可以笼统的把它看做是应用的子模块。基本上，
+如果你要写稍微复杂一点的网站，不可能把所有代码都放在一个py文件里，不可避免的要把网站的各种功能或组件模块化。类比于Django中的application，如果你开发了一个Web网站：
 
-Blueprints in Flask are intended for these cases:
+* Django把网站的整体称为project（项目），把project中的子模块称为application（应用）
+* Flask把网站的整体称为application（应用），把application中的子模块称为blueprint（蓝图）
 
-* Factor an application into a set of blueprints. This is ideal for larger applications; a project could instantiate an application object, initialize several extensions, and register a collection of blueprints.
+还是先从使用的角度来看它，假设你已经知道了一个最简单的Flask的demo怎么写：
 
-* Register a blueprint on an application at a URL prefix and/or subdomain. Parameters in the URL prefix/subdomain become common view arguments (with defaults) across all view functions in the blueprint.
+    :::python
+    # app.py
+    from flask import Flask
+    app = Flask(__name__)
 
-* Register a blueprint multiple times on an application with different URL rules.
+    @app.route('/')
+    def hello_world():
+        return 'Hello, World!'
 
-* Provide template filters, static files, templates, and other utilities through blueprints. A blueprint does not have to implement applications or view functions.
+<h4 id='blue_basic'>蓝图的基本使用</h4>
 
-* Register a blueprint on an application for any of these cases when initializing a Flask extension.
+写一个蓝图与写一个应用差不多，区别是用到了flask.Blueprint，而非flask.Flask：
+
+    :::python
+    # book.py
+    from flask import Blueprint
+
+    book = Blueprint('book', __name__)
+
+    @book.route('/')
+    def show(page):
+        return 'This is Book page.'
+
+创建一个Flask的实例需要：
+
+    app = Flask(__name__)
+
+创建一个Blueprint的实例则需要：
+
+    book = Blueprint('book', __name__)
+
+为你的函数注册路由需要装饰器：
+
+    @app.route('/')
+
+在蓝图中为你的函数添加注册路由则需要：
+
+    @book.route('/')
+
+然后我们把book.py放在项目根目录的book文件夹中，在book文件夹下面新建`__init__.py`的空文件。
+目前项目的结构像下面这样：
+
+    .
+    ├── app.py
+    └── book
+        ├── __init__.py
+        └── book.py
+
+然后我们就可以在app.py中<span id='ref_book_blue'>注册book蓝图</span>了：
+
+    :::python
+    from flask import Flask
+    from book.book import book
+
+    app = Flask(__name__)
+    app.register_blueprint(book)
+
+    @app.route('/')
+    def hello_world():
+        return 'Hello, World!'
+
+    if __name__ == '__main__':
+        app.run()
+
+然后我们运行项目，用浏览器打开 [http://127.0.0.1:5000](http://127.0.0.1:5000) 会发现，
+浏览器上显示的是book函数返回的`This is Book page.`而非hello_world函数返回的`Hello, World!`。
+这说明：
+
+1. book蓝图的确注册到了我们的项目中
+2. 项目整体的路由配置有冲突，book的路由覆盖（截获）了hello_world的路由
+
+为了解决第二个问题，我们需要给register_blueprint传递url_prefix参数，将注册路由的代码修改为：
+
+    :::python
+    app.register_blueprint(book, url_prefix='/book')
+
+然后再次运行项目，可以发现得到了期望的结果：
+
+* 打开 [http://127.0.0.1:5000](http://127.0.0.1:5000) 得到Hello, World!
+* 打开 [http://127.0.0.1:5000/book](http://127.0.0.1:5000/book) 得到This is Book page.
+
+<h4 id='comp_blu'>在蓝图中使用其他Flask功能</h4>
+
+正常的项目当然不可能仅仅返回一个字符串，需要用到模板、静态文件等资源，你可以像在Flask应用级别中那样使用。下面是Flask项目源码中的例子[blueprintexample]的simple_page.py代码：
+
+    :::python
+    from flask import Blueprint, render_template, abort
+    from jinja2 import TemplateNotFound
+
+    simple_page = Blueprint('simple_page', __name__,
+                            template_folder='templates')
+
+    @simple_page.route('/', defaults={'page': 'index'})
+    @simple_page.route('/<page>')
+    def show(page):
+        try:
+            return render_template('pages/%s.html' % page)
+        except TemplateNotFound:
+            abort(404)
+
+基本上，除了把Flask类改为了Blueprint类，其余地方并无太大区别。
+
+<h4 id='code_stru'>如何组织代码</h4>
+
+[Explore Flask]一书中提到，对蓝图的代码组织，分为两种：
+
+* 功能式架构，Functional structure
+* 分区式架构，Divisional structure
+
+在功能式架构中，所有的模板、静态文件等资源放置在项目全局的文件夹内，仅蓝图中的函数代码本身放置在模块中。
+加入你的项目有admin、home、control_panel等模块，功能式架构的文件组织如下：
+
+    yourapp/
+        __init__.py
+        static/
+        templates/
+            home/
+            control_panel/
+            admin/
+        views/
+            __init__.py
+            home.py
+            control_panel.py
+            admin.py
+        models.py
+
+对应的，分区式架构中每一个蓝图都有自己的资源文件夹：
+
+    yourapp/
+        __init__.py
+        admin/
+            __init__.py
+            views.py
+            static/
+            templates/
+        home/
+            __init__.py
+            views.py
+            static/
+            templates/
+        control_panel/
+            __init__.py
+            views.py
+            static/
+            templates/
+        models.py
+
+具体采用哪种方式，主要看这些蓝图之间的关系是否独立。如果你的网站整体使用同一的风格，所有的模板文件都拓展自一个基础的模板文件，可以采用功能式架构。相反，如果你的网站的子模块的外观不太相似，比如网站前台使用一种风格，后台管理界面使用另一种风格，就可以采用分区式架构，把这些资源文件放在各自蓝图下的文件夹，便于分开维护。分区式架构架构显然也便于蓝图在不同应用间的复用。
+
+<h4 id='blu_src'>从源码看蓝图的实现</h4>
+
+简单来看flask.Flask类和flask.Blueprint类的API文档，发现它们的相似之处：
+
+* 两者的构造函数有很多同名的参数，比如import_name、static_folder、static_url_path、template_folder、root_path等
+
+* 两者有很多同名方法，比如：route、add_url_rule、before_request、after_request等等。
+
+下面来看[blueprints.py]的源码，从实现的角度去追踪：
+
+    :::python
+    class Blueprint(_PackageBoundObject):
+        def __init__(...):
+            ...
+            self.deferred_functions = []
+
+        def record(self, func):
+            if self._got_registered_once and self.warn_on_modifications:
+                from warnings import warn
+                warn(Warning('The blueprint was already registered once '
+                            'but is getting modified now.  These changes '
+                            'will not show up.'))
+            self.deferred_functions.append(func)
+
+        def record_once(self, func):
+            def wrapper(state):
+                if state.first_registration:
+                    func(state)
+            return self.record(update_wrapper(wrapper, func))
+
+record方法用于向deferred_functions成员中添加func，record_once确保这种添加只执行一次。
+
+我们看Blueprint类的大部分方法的源码，会发现它都调用了record_once：
+
+    :::python
+    class Blueprint(_PackageBoundObject):
+        ...
+        def before_request(self, f):
+            self.record_once(lambda s: s.app.before_request_funcs
+                .setdefault(self.name, []).append(f))
+            return f
+
+也就是说，在执行Blueprint.before_request(f)时，实际做的动作是调用了record_once，
+最终把参数`f`添加到了deferred_functions成员中。
+
+那么这个deferred_functions成员是干什么用的呢？
+
+    :::python
+    # blueprints.py
+    def register(self, app, options, first_registration=False):
+        ...
+        for deferred in self.deferred_functions:
+            deferred(state)
+
+可以看到，deferred_functions保存的这些func，会在register方法中得到执行。
+再看[app.py]的源码发现，register方法会在Flask.register_blueprint方法中被调用：
+
+    :::python
+    # app.py
+    class Flask(_PackageBoundObject):
+        ...
+        def register_blueprint(self, blueprint, **options):
+            ...
+            blueprint.register(self, options, first_registration)
+
+这里的register_blueprint方法就是我们在[注册book蓝图](#ref_book_blue)中看到的代码：
+
+    :::python
+    app.register_blueprint(book)
+
+<h4 id='blue_all'>总结</h4>
+
+到这里可以总结出：在执行Blueprint实例的某些方法时，该实例会把该方法保存起来，稍后在向Flask对象注册这个蓝图时，Flask对象会执行这些方法。一般来说这些方法都是用于注册某些前处理、后处理函数、或者传递某些配置项。
+
+也就是说，Blueprint类的大部分方法，本质上就是传递给了Flask类的同名方法，这就解释了为什么Blueprint对象用起来和Flask对象差不多。Blueprint实际上是对Flask类的一部分功能的再次包装，通过这些包装，
+既能够实现Web应用的模块化，又没有增加使用的难度。
+
+所以，从Web开发者的角度来看，蓝图就是Flask项目的子模块，从实现的角度来看，蓝图就是Flask为我们提供的框架糖。
 
 [Modular Applications with Blueprints]: file:///Users/laszo/book/flask_doc_html/blueprints.html
+
+
+[blueprintexample]: https://github.com/pallets/flask/tree/master/examples/blueprintexample
+
+[Explore Flask]: https://exploreflask.com/en/latest/blueprints.html
+
+[blueprints.py]: https://github.com/pallets/flask/blob/master/flask/blueprints.py
+
+[app.py]: https://github.com/pallets/flask/blob/master/flask/app.py
