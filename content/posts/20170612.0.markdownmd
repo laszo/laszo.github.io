@@ -15,13 +15,13 @@ title: '用Python从零开始一步一步构建Web Server，第五部分：使�
 
 启动WSGI服务器：
 
-    pwserver -w wsgi.app
+    pwserver -w wsgi:app
 
 在上面的命令中，`wsgi`是WSGI应用所在的模块，`app`是WSGI应用的名字。默认的地址为`127.0.0.1`，端口号为`8081`。
 
 使用`-a`参数制定地址，使用`-b`参数制定端口号：
 
-    pwserver -w wsgi.app -a '127.0.0.1' -p 8081
+    pwserver -w wsgi:app -a '127.0.0.1' -p 8081
 
 如果类比于`gunicorn`，使用gunicorn启动上面的WSGI应用的方式为：
 
@@ -29,7 +29,7 @@ title: '用Python从零开始一步一步构建Web Server，第五部分：使�
 
 如果想要同时启动WSGI服务器和静态文件服务：
 
-    pwserver static -w wsgi.app
+    pwserver static -w wsgi:app
 
 如果想要启动指定配置文件来替代默认路径的配置文件，采用如下命令：
 
@@ -64,8 +64,7 @@ Django应用已自带了服务器，如果在开发调试阶段，直接使用�
 4. 修改Django配置文件`setting.py`，将`STATIC_URL`的值修改为`http://yourdomain:8081/static`
 5. 启动服务：
 
-    pwserver static -w /django/path/wsgi.application
+    pwserver static -w /django/path/wsgi:application
 
-本文所述功能在当前版本尚未实现。
 
 [PyWebServer]: https://github.com/laszo/PyWebServer

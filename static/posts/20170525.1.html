@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>[]打包和分发你自己的Python包 - Lv Xiaoyu `Site</title>
+    <title>打包和分发你自己的Python包 - Lv Xiaoyu `Site</title>
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
     <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
     <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
@@ -17,29 +17,157 @@
         </div>
 
         <div class="col-sm-9">
-            <h3 class="blog-post-title">[]打包和分发你自己的Python包</h3>
+            <h3 class="blog-post-title">打包和分发你自己的Python包</h3>
 
             <div class="post-content">
-                <p>用virtualenv建立测试环境：</p>
-<div class="codehilite"><pre><span></span>virtualenv venv_pws
+                <p>简单来说有如下步骤：</p>
+<p>一，准备配置文件，主要是setup.py</p>
+<p>二，执行打包</p>
+<p>三，把你的包上传至PyPI</p>
+<h4 id='prep_config'>准备配置文件</h4>
+
+<p>最重要的是setup.py文件，以PWServer为例：</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+<span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;pwserver&#39;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s1">&#39;0.1&#39;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://github.com/laszo/PyWebServer/&quot;</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s2">&quot;laszo&quot;</span><span class="p">,</span>
+    <span class="n">author_email</span><span class="o">=</span><span class="s2">&quot;lasologo@gmail.com&quot;</span><span class="p">,</span>
+    <span class="n">license</span><span class="o">=</span><span class="s1">&#39;MIT&#39;</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="o">=</span><span class="s1">&#39;wsgi server framework&#39;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;PyWebServer is a full Web application stack, </span><span class="se">\</span>
+<span class="s1">        including HTTP server,WSGI server and Web framework.&#39;</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pwserver&#39;</span><span class="p">],</span>
+    <span class="n">install_requires</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;console_scripts&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;pwserver=launch:run&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">)</span>
 </pre></div>
 
 
-<p>进入测试环境：</p>
-<div class="codehilite"><pre><span></span>. venv_pws/bin/activate
+<p>name、version、url这些参数就不说了，就是纯粹的字符串或数字，下面几个是值得一提的参数：</p>
+<ul>
+<li>install_requires：你的项目有哪些依赖的库</li>
+<li>packages：需要包含哪些package</li>
+<li>entry_points：如果你的包可以在命令行下执行，这里就定义了命令的名字，以及它代表的入口。</li>
+</ul>
+<h4 id='exec_package'>执行打包</h4>
+
+<p>在根目录下执行：</p>
+<div class="codehilite"><pre><span></span>python setup.py sdist
 </pre></div>
 
 
-<p>在项目的根目录下建立setup.py。</p>
-<p>问题，数据文件打包以后，别人安装了你的包。以后别人用你的包时，（代码里）如何找到数据文件。</p>
-<p>https://stackoverflow.com/questions/20298729/pip-installing-data-files-to-the-wrong-place</p>
-<p>https://stackoverflow.com/questions/7934162/making-a-python-package-for-pip-with-some-data-files</p>
+<p>会得到文件<code>dist/pwserver-0.1.tar.gz</code></p>
+<h4 id='upload'>上传至pypi</h4>
+
+<p>首先需要在<a href="https://pypi.python.org/pypi?%3Aaction=register_form">Manual user registration</a>进行注册，然后在你的用户主目录新建<code>~/.pypirc</code>文件，
+填写你的用户名和密码：</p>
+<div class="codehilite"><pre><span></span><span class="k">[pypi]</span>
+<span class="na">username</span> <span class="o">=</span> <span class="s">&lt;username&gt;</span>
+<span class="na">password</span> <span class="o">=</span> <span class="s">&lt;password&gt;</span>
+</pre></div>
+
+
+<p>然后使用<code>twine</code>上传：</p>
+<div class="codehilite"><pre><span></span>twine upload dist/*
+</pre></div>
+
+
+<h4 id='not_upload'>如果你不想上传至pypi</h4>
+
+<p>如果你暂时还不想上传至pypi，比如我的项目，我觉得还没到可以公开发布的程度，
+但是又想在互联网上小范围的分发一下，这时候仍然需要执行前两步、配置和打包，
+然后把你打的包放在互联网上某个能够访问的URL上，比如 []</p>
+<p>详细的文档参见<a href="https://packaging.python.org/tutorials/distributing-packages/">Packaging and Distributing Projects</a>。</p>
             </div>
         </div>
         <div class="col-md-3" role="complementary">
             <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
                 
+                <h3>目录</h3>
+                
                 <ul class="nav bs-docs-sidenav">
+                    
+                    <li class="">
+                        <a href="#prep_config">准备配置文件</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#exec_package">执行打包</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#upload">上传至pypi</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#not_upload">如果你不想上传至pypi</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
                     
                 </ul>              
             </nav>

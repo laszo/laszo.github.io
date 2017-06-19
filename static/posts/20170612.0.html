@@ -30,13 +30,13 @@
 
 
 <p>启动WSGI服务器：</p>
-<div class="codehilite"><pre><span></span>pwserver -w wsgi.app
+<div class="codehilite"><pre><span></span>pwserver -w wsgi:app
 </pre></div>
 
 
 <p>在上面的命令中，<code>wsgi</code>是WSGI应用所在的模块，<code>app</code>是WSGI应用的名字。默认的地址为<code>127.0.0.1</code>，端口号为<code>8081</code>。</p>
 <p>使用<code>-a</code>参数制定地址，使用<code>-b</code>参数制定端口号：</p>
-<div class="codehilite"><pre><span></span>pwserver -w wsgi.app -a &#39;127.0.0.1&#39; -p 8081
+<div class="codehilite"><pre><span></span>pwserver -w wsgi:app -a &#39;127.0.0.1&#39; -p 8081
 </pre></div>
 
 
@@ -46,7 +46,7 @@
 
 
 <p>如果想要同时启动WSGI服务器和静态文件服务：</p>
-<div class="codehilite"><pre><span></span>pwserver static -w wsgi.app
+<div class="codehilite"><pre><span></span>pwserver static -w wsgi:app
 </pre></div>
 
 
@@ -87,10 +87,9 @@
 <li>修改Django配置文件<code>setting.py</code>，将<code>STATIC_URL</code>的值修改为<code>http://yourdomain:8081/static</code></li>
 <li>
 <p>启动服务：</p>
-<p>pwserver static -w /django/path/wsgi.application</p>
+<p>pwserver static -w /django/path/wsgi:application</p>
 </li>
 </ol>
-<p>本文所述功能在当前版本尚未实现。</p>
             </div>
         </div>
         <div class="col-md-3" role="complementary">

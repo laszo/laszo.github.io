@@ -1,25 +1,81 @@
 ---
-title: '[]打包和分发你自己的Python包'
+title: '打包和分发你自己的Python包'
 ---
 
-用virtualenv建立测试环境：
+简单来说有如下步骤：
 
-    virtualenv venv_pws
+一，准备配置文件，主要是setup.py
 
-进入测试环境：
+二，执行打包
 
-    . venv_pws/bin/activate
+三，把你的包上传至PyPI
 
-在项目的根目录下建立setup.py。
+<h4 id='prep_config'>准备配置文件</h4>
+
+最重要的是setup.py文件，以PWServer为例：
+
+    :::python
+    from distutils.core import setup
+    setup(
+        name='pwserver',
+        version='0.1',
+        url="https://github.com/laszo/PyWebServer/",
+        author="laszo",
+        author_email="lasologo@gmail.com",
+        license='MIT',
+        keywords='wsgi server framework',
+        description='PyWebServer is a full Web application stack, \
+            including HTTP server,WSGI server and Web framework.',
+        packages=['pwserver'],
+        install_requires=[],
+        entry_points={
+            'console_scripts': [
+                'pwserver=launch:run',
+            ],
+        },
+    )
+
+name、version、url这些参数就不说了，就是纯粹的字符串或数字，下面几个是值得一提的参数：
+
+* install_requires：你的项目有哪些依赖的库
+* packages：需要包含哪些package
+* entry_points：如果你的包可以在命令行下执行，这里就定义了命令的名字，以及它代表的入口。
+
+<h4 id='exec_package'>执行打包</h4>
+
+在根目录下执行：
+
+    python setup.py sdist
+
+会得到文件`dist/pwserver-0.1.tar.gz`
+
+<h4 id='upload'>上传至pypi</h4>
+
+首先需要在[Manual user registration]进行注册，然后在你的用户主目录新建`~/.pypirc`文件，
+填写你的用户名和密码：
+
+    [pypi]
+    username = <username>
+    password = <password>
+
+然后使用`twine`上传：
+
+    twine upload dist/*
+
+
+<h4 id='not_upload'>如果你不想上传至pypi</h4>
+
+如果你暂时还不想上传至pypi，比如我的项目，我觉得还没到可以公开发布的程度，
+但是又想在互联网上小范围的分发一下，这时候仍然需要执行前两步、配置和打包，
+然后把你打的包放在互联网上某个能够访问的URL上，比如 []
 
 
 
-问题，数据文件打包以后，别人安装了你的包。以后别人用你的包时，（代码里）如何找到数据文件。
 
-https://stackoverflow.com/questions/20298729/pip-installing-data-files-to-the-wrong-place
+详细的文档参见[Packaging and Distributing Projects]。
 
-https://stackoverflow.com/questions/7934162/making-a-python-package-for-pip-with-some-data-files
+[Manual user registration]: https://pypi.python.org/pypi?%3Aaction=register_form
 
-[Packaging and Distributing Projects — Python Packaging User Guide]: https://packaging.python.org/tutorials/distributing-packages/
+[Packaging and Distributing Projects]: https://packaging.python.org/tutorials/distributing-packages/
 
 
