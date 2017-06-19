@@ -15,8 +15,8 @@ def get_anchors(text):
     index = list()
     soup = Bs(text, "html.parser")
     tag_ul = soup.new_tag("ul")
-    tag_ul['class'] = 'dropdown-menu'
-    tag_ul['style'] = 'max-height: 400px; overflow:auto;'
+    tag_ul['class'] = 'dropdown-menu the-index'
+    tag_ul['style'] = 'height: 400px; overflow:auto;'
     lev_1_num = 0
     lev_2_num = 0
     lev_3_num = 0
@@ -38,7 +38,9 @@ def get_anchors(text):
             sep = soup.new_tag('li')
             sep['class'] = 'divider'
             sep['role'] = 'separator'
-            tag_ul.append(sep)
+            if lev_1_num > 0:
+                tag_ul.append(sep)
+
             lev_1_num += 1
             lev_2_num = 0
             tag_a.string = '%d. %s' % (lev_1_num, tag_h.string)

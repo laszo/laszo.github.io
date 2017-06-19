@@ -30,8 +30,7 @@
                 <div class="navbar-fixed-top">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Menu <span class="caret"></span>
-                     </button>
-                     {{ index }}
+                     </button> {{ index }}
                 </div>
             </div>
             <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
@@ -41,6 +40,12 @@
     </div>
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        var h = window.innerHeight
+            || document.documentElement.clientHeight
+            || document.body.clientHeight;
+        $(".the-index").css('height', h * 0.9);
+    </script>
 </body>
 
 </html>

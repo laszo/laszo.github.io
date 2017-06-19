@@ -1,0 +1,8 @@
+---
+title: 'Read The System Design Primer'
+---
+
+[system-design-primer]是一个收集Web系统设机方面的知识和文章的项目，对于我们服务端工程师来说是一个不错的资料列表。由于GitHub有一个特性，能够在项目主页显示`README.md`文件的内容，所以像这样偏重于知识分享类的项目，
+
+[system-design-primer]: https://github.com/donnemartin/system-design-primer
+[system-design-primer-reader]: system-design-primer-reader/index.html
