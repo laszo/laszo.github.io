@@ -1,0 +1,229 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>常见数据结构和算法的简介描述 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">常见数据结构和算法的简介描述</h3>
+
+            <div class="post-content">
+                <h4 id='def'>规定</h4>
+
+<ul>
+<li>列表的长度称为<code>N</code>，</li>
+<li>列表中元素的位置从0开始算起，所以最后一个元素是第N-1个。</li>
+<li>列表排序均排至左小右大的状态，</li>
+<li>列表的遍历均从左向右进行，遍历的当前次数称为<code>n</code></li>
+<li>为了文字方便，当说到<code>大于</code>的时候指的是<code>大于或等于</code>，即<code>不小于</code></li>
+</ul>
+<h4 id='bubble'>冒泡排序</h4>
+
+<p>对列表进行N次扫描，每次扫描中：每个元素与右边比较大小，比右边大则互换。</p>
+<p>虽然每次循环理论上都要进行N次比较，但是：
+1. 在第一次循环时比较了N-1次，即最左边的元素与其余N-1个元素比较，这时最大值已经被交换到了最右边，
+2. 由于最大值已被交换到了最右边，第二次循环其实无需比较最右边的值，也就是说只需要比较N-2次
+2. 第三次循环时，最右边的两个值已经是最大，不必与最右边的最大的两个值进行比较，所以只比较了N-3次</p>
+<p>所以，比较次数是<code>(N-1) + (N-2) + (N-3) + ... + 1</code>。</p>
+<h4 id='sel_sort'>选择排序</h4>
+
+<p>对列表进行N次遍历，每次遍历n中：把列表扫描一次，寻找第n大的元素，放在右边数第n个位置上。</p>
+<p>类似于冒泡排序，但是每次扫描并不进行冒泡，而是交换一次。虽然选择排序也进行了N*N次遍历，但是只进行了N次交换。</p>
+<h4 id='insert_sort'>插入排序</h4>
+
+<p>从左向右遍历列表中的每个元素：把这个元素插入到合适的位置。</p>
+<p>设定一个游标，从1一直增长到列表的长度：
+    1. 把列表的第一个元素看做以排好序的列表，只有一个元素
+    2. 从第二个开始，把每个元素插入前面的列表的合适的位置：
+        1. 第二个元素与第一个元素比较，大则保留，小则互换，使得左小右大，于是前两个元素可以看做是排好序的列表
+        2. 把第n个元素插入到前n-1个元素组成的有序列表中
+        3. 最终整个列表变成有序的</p>
+<p>在实际实现时，所谓的插入仍然需要这个元素跟前面的有序列表中的元素去比较，但由于是有序列表，要插入的元素在比较到比它小的元素时就停止，无需比较所有元素。</p>
+<h4 id='merge_sort'>归并排序</h4>
+
+<p>这是一种分治策略，进行如下递归：
+    1. 如果当前列表只有一个元素则返回列表
+    1. 把当前列表分成两个
+    2. 分别对两个列表进行归并排序
+    3. 合并两个列表</p>
+<p>归并排序的时间复杂度为<code>O(N*logN)</code>，但是需要额外的空间来保存临时列表。</p>
+<h4 id='quick_sort'>快速排序</h4>
+
+<p>快速排序也是使用分治策略，基于如下思路：一个有序的列表中任意位置的元素，其右边的元素应不小于它，左边的元素应不大于它。</p>
+<p>进行如下递归：</p>
+<div class="codehilite"><pre><span></span>1. 把当位置设置为中轴（pivot）
+2. 进行如下两个扫描：
+    1. 从左向右扫描，发现一个比中轴位置大的元素
+    2. 从右向左扫描，返现一个比中轴位置小的元素
+    3. 交换这两个元素
+    4. 继续扫描，知道左右扫描相遇为止
+2. 以中轴为界把当前列表分为左列表和右列表，由于前面进行过扫描，左列表目前的元素都比中轴元素小，右列表目前的元素都比中轴元素大。但左右列表自身并不保证有序。
+2. 分别对左右列表进行快速排序
+5. 如果列表只有一个元素，则认为是有序的。
+</pre></div>
+
+
+<h4 id='shell_sort'>Shell排序</h4>
+
+<h4 id=''></h4>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <h3>目录</h3>
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                    <li class="">
+                        <a href="#def">规定</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#bubble">冒泡排序</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#sel_sort">选择排序</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#insert_sort">插入排序</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#merge_sort">归并排序</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#quick_sort">快速排序</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                    <li class="">
+                        <a href="#shell_sort">Shell排序</a>
+                    </li>
+                    <!--<li class="">
+                        <a href="#download">下载</a>
+                    </li>
+                    <li class="">
+                        <a href="#third-parties">对第三方组件的支持</a>
+                    </li>
+                    <li class="active">
+                        <a href="#accessibility">可访问性</a>
+                    </li>
+                    <li>
+                        <a href="#license-faqs">许可证 FAQ</a>
+                    </li>
+                    <li>
+                        <a href="#translations">文档翻译</a>
+                    </li>-->
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>
