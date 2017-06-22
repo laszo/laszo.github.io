@@ -1,0 +1,261 @@
+---
+title: 'Search yahoo of python interview'
+---
+
+### [15 Essential Python Interview Questions]
+
+#### Python究竟是什么东西？
+
+* 解释型语言
+* 动态类型
+* 支持面向对象的编程
+* 函数是一等对象，可以作为值传递
+* 写代码块，运行稍慢，但是可以包含C扩展
+* 用途广泛：Web、大数据、科研等等，还可以作为胶水语言
+
+#### 自己写一个os.walk
+
+#### 写出如下A0到A6的值：
+
+    :::python
+    A0 = dict(zip(('a','b','c','d','e'),(1,2,3,4,5))) # {a:1,b:2}
+    A1 = range(10) # [0,1,...,9]
+    A2 = sorted([i for i in A1 if i in A0]) # []
+    A3 = sorted([A0[s] for s in A0]) # [1, 2, 3, 4, 5]
+    A4 = [i for i in A1 if i in A3] # [1, 2, 3, 4, 5]
+    A5 = {i:i*i for i in A1} # [0:0, 1:1, 2:4, 3:9, ..., 9:81]
+    A6 = [[i,i*i] for i in A1] # [[0,0], [1,1], [2,4], ..., [9,81]]
+
+考察了一下知识点：
+
+* zip
+* dict
+* range
+* sorted
+* 列表推导
+* 字典的构建
+* 列表的构建
+
+#### Python中用多线程好吗？列出几种让代码并行运行的方式。
+
+GIL（全局解释器锁）机制，Python在一个进程里面实际上同时只能运行一个线程，当前线程获得锁，
+运行一小段时间，然后把锁传递给下一个线程。
+
+由于GIL的存在，CPU密集型的运算使用多线程并不能提高运算速度。I/O密集型的代码使用多线程一般能够明显提高运行速度，因为I/O经常非常慢，并且阻塞。
+
+#### 你如何跟踪你代码的多个版本？
+
+用版本控制，比如Git。
+
+#### 看如下代码的输出
+
+    def f(x,l=[]):
+        for i in range(x):
+            l.append(i*i)
+        print(l) 
+
+    f(2)
+    f(3,[3,2,1])
+    f(3)
+
+注意第三个。
+
+#### Monkey patching是什么玩意？这东西是个好主意吗？
+
+Monkey patching指的是改变现有对象或函数的行为。一般来说不好，但是用在测试中也许可以，
+比如[mock](https://pypi.python.org/pypi/mock)包。
+
+#### *args 和 **kwargs 是什么东西？为何要使用他们？
+
+* *args 代表可变长度参数，即一系列个数不定的参数，代表一个列表或tuple
+* **kwargs 代表命名的参数，代表一个字典
+
+一般来说，当你不知道要传递多少参数给一个函数时用*args，不知道要传递多少命名参数时用**kwargs。
+
+#### @classmethod、@staticmethod、@property分别是什么意思？
+
+首先`@`开头的东西代表一个装饰器，也就是调用它所装饰的函数的函数。
+
+* @staticmethod 就是一个普通函数，只是放在了类里面。
+* @classmethod 是类函数，调用它的时候解释器会自动把这个类作为一个参数传递，然后才传递其余的参数。
+* @property 表明这个函数可以作为对象的属性来用，在调用`o.some_property`的时候会返回这个方法的返回值，所以不需要再像这样加括号`o.some_property()`。
+
+#### 下面代码输出什么？
+
+    class A(object):
+        def go(self):
+            print("go A go!")
+        def stop(self):
+            print("stop A stop!")
+        def pause(self):
+            raise Exception("Not Implemented")
+
+    class B(A):
+        def go(self):
+            super(B, self).go()
+            print("go B go!")
+
+    class C(A):
+        def go(self):
+            super(C, self).go()
+            print("go C go!")
+        def stop(self):
+            super(C, self).stop()
+            print("stop C stop!")
+
+    class D(B,C):
+        def go(self):
+            super(D, self).go()
+            print("go D go!")
+        def stop(self):
+            super(D, self).stop()
+            print("stop D stop!")
+        def pause(self):
+            print("wait D wait!")
+
+    class E(B,C): pass
+
+    a = A()
+    b = B()
+    c = C()
+    d = D()
+    e = E()
+
+    a.go()
+    b.go()
+    c.go()
+    d.go()
+    e.go()
+
+    a.stop()
+    b.stop()
+    c.stop()
+    d.stop()
+    e.stop()
+
+    a.pause()
+    b.pause()
+    c.pause()
+    d.pause()
+    e.pause()
+
+这里的知识点：
+
+* 类的继承，以及多重继承下调用super的顺序
+* `super`函数
+
+#### 下列代码的输出：
+
+    class Node(object):
+        def __init__(self,sName):
+            self._lChildren = []
+            self.sName = sName
+        def __repr__(self):
+            return "<Node '{}'>".format(self.sName)
+        def append(self,*args,**kwargs):
+            self._lChildren.append(*args,**kwargs)
+        def print_all_1(self):
+            print(self)
+            for oChild in self._lChildren:
+                oChild.print_all_1()
+        def print_all_2(self):
+            def gen(o):
+                lAll = [o,]
+                while lAll:
+                    oNext = lAll.pop(0)
+                    lAll.extend(oNext._lChildren)
+                    yield oNext
+            for oNode in gen(self):
+                print(oNode)
+
+    oRoot = Node("root")
+    oChild1 = Node("child1")
+    oChild2 = Node("child2")
+    oChild3 = Node("child3")
+    oChild4 = Node("child4")
+    oChild5 = Node("child5")
+    oChild6 = Node("child6")
+    oChild7 = Node("child7")
+    oChild8 = Node("child8")
+    oChild9 = Node("child9")
+    oChild10 = Node("child10")
+
+    oRoot.append(oChild1)
+    oRoot.append(oChild2)
+    oRoot.append(oChild3)
+    oChild1.append(oChild4)
+    oChild1.append(oChild5)
+    oChild2.append(oChild6)
+    oChild4.append(oChild7)
+    oChild3.append(oChild8)
+    oChild3.append(oChild9)
+    oChild6.append(oChild10)
+
+    oRoot.print_all_1()
+    oRoot.print_all_2()
+
+主要考察递归和`yield`的基本使用，实际上第一个print是深度优先，第二个是广度优先。
+
+#### 描述python的垃圾回收机制（garbage collection）
+
+* python维护一个所有内存中对象的引用计数器，如果一个对象的引用数为0，就可以进行垃圾回收了
+* 有时候会发生`循环引用`的情况，比如`o1.x == o2` 和 `o2.x == o1`，这时候两个对象都不会被回收
+* 越晚创建的对象越有可能被回收
+
+#### 下列函数哪个效率高
+
+    def f1(lIn):
+        l1 = sorted(lIn)
+        l2 = [i for i in l1 if i<0.5]
+        return [i*i for i in l2]
+
+    def f2(lIn):
+        l1 = [i for i in lIn if i<0.5]
+        l2 = sorted(l1)
+        return [i*i for i in l2]
+
+    def f3(lIn):
+        l1 = [i*i for i in lIn]
+        l2 = sorted(l1)
+        return [i for i in l1 if i<(0.5*0.5)]
+
+显然先过滤后计算比较好。
+
+#### 你在哪些方面失败？
+
+* 承认自己会犯错误
+* 承担责任
+* 从错误中学习
+
+#### 你有哪些个人项目？
+
+* 最好有。
+
+[15 Essential Python Interview Questions]: https://www.codementor.io/sheena/essential-python-interview-questions-du107ozr6
+
+[Python Interview Questions]: https://www.tutorialspoint.com/python/python_interview_questions.htm
+
+[Top Python Interview Questions And Answers]: https://intellipaat.com/interview-question/python-interview-questions/
+
+[Python Interview Questions]: https://www.interviewcake.com/python-interview-questions
+
+[Top 40 Python Interview Questions & Answers]: https://career.guru99.com/top-25-python-interview-questions/
+
+[Python Tutorial: Interview Questions - 2017]: http://www.bogotobogo.com/python/python_interview_questions.php
+
+[30 Essential Python Interview Questions You Should Know]: http://www.techbeamers.com/python-interview-questions-programmers/
+
+[What are good Python interview questions?]: https://www.quora.com/What-are-good-Python-interview-questions
+
+[donnemartin/interactive-coding-challenges]: https://github.com/donnemartin/interactive-coding-challenges
+
+[8 Essential Python Interview Questions*]: https://www.toptal.com/python/interview-questions
+
+[Python interview questions and answers - freshers, experienced]: http://www.careerride.com/python-interview-questions.aspx
+
+[Python Interview Questions]: http://www.geekinterview.com/Interview-Questions/Programming/Python
+
+[Python interview questions]: https://www.reddit.com/r/Python/comments/1knw7z/python_interview_questions/
+
+[PYTHON INTERVIEW QUESTIONS]: https://mindmajix.com/python-interview-questions
+

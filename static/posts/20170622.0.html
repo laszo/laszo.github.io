@@ -1,0 +1,255 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Search yahoo of python interview - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Search yahoo of python interview</h3>
+
+            <div class="post-content">
+                <h3><a href="https://www.codementor.io/sheena/essential-python-interview-questions-du107ozr6">15 Essential Python Interview Questions</a></h3>
+<h4>Python究竟是什么东西？</h4>
+<ul>
+<li>解释型语言</li>
+<li>动态类型</li>
+<li>支持面向对象的编程</li>
+<li>函数是一等对象，可以作为值传递</li>
+<li>写代码块，运行稍慢，但是可以包含C扩展</li>
+<li>用途广泛：Web、大数据、科研等等，还可以作为胶水语言</li>
+</ul>
+<h4>自己写一个os.walk</h4>
+<h4>写出如下A0到A6的值：</h4>
+<div class="codehilite"><pre><span></span><span class="n">A0</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">((</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)))</span> <span class="c1"># {a:1,b:2}</span>
+<span class="n">A1</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># [0,1,...,9]</span>
+<span class="n">A2</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A1</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A0</span><span class="p">])</span> <span class="c1"># []</span>
+<span class="n">A3</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">A0</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">A0</span><span class="p">])</span> <span class="c1"># [1, 2, 3, 4, 5]</span>
+<span class="n">A4</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A1</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A3</span><span class="p">]</span> <span class="c1"># [1, 2, 3, 4, 5]</span>
+<span class="n">A5</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">*</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A1</span><span class="p">}</span> <span class="c1"># [0:0, 1:1, 2:4, 3:9, ..., 9:81]</span>
+<span class="n">A6</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">*</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A1</span><span class="p">]</span> <span class="c1"># [[0,0], [1,1], [2,4], ..., [9,81]]</span>
+</pre></div>
+
+
+<p>考察了一下知识点：</p>
+<ul>
+<li>zip</li>
+<li>dict</li>
+<li>range</li>
+<li>sorted</li>
+<li>列表推导</li>
+<li>字典的构建</li>
+<li>列表的构建</li>
+</ul>
+<h4>Python中用多线程好吗？列出几种让代码并行运行的方式。</h4>
+<p>GIL（全局解释器锁）机制，Python在一个进程里面实际上同时只能运行一个线程，当前线程获得锁，
+运行一小段时间，然后把锁传递给下一个线程。</p>
+<p>由于GIL的存在，CPU密集型的运算使用多线程并不能提高运算速度。I/O密集型的代码使用多线程一般能够明显提高运行速度，因为I/O经常非常慢，并且阻塞。</p>
+<h4>你如何跟踪你代码的多个版本？</h4>
+<p>用版本控制，比如Git。</p>
+<h4>看如下代码的输出</h4>
+<div class="codehilite"><pre><span></span>def f(x,l=[]):
+    for i in range(x):
+        l.append(i*i)
+    print(l)
+
+f(2)
+f(3,[3,2,1])
+f(3)
+</pre></div>
+
+
+<p>注意第三个。</p>
+<h4>Monkey patching是什么玩意？这东西是个好主意吗？</h4>
+<p>Monkey patching指的是改变现有对象或函数的行为。一般来说不好，但是用在测试中也许可以，
+比如<a href="https://pypi.python.org/pypi/mock">mock</a>包。</p>
+<h4><em>args 和 </em>*kwargs 是什么东西？为何要使用他们？</h4>
+<ul>
+<li>*args 代表可变长度参数，即一系列个数不定的参数，代表一个列表或tuple</li>
+<li>**kwargs 代表命名的参数，代表一个字典</li>
+</ul>
+<p>一般来说，当你不知道要传递多少参数给一个函数时用<em>args，不知道要传递多少命名参数时用</em>*kwargs。</p>
+<h4>@classmethod、@staticmethod、@property分别是什么意思？</h4>
+<p>首先<code>@</code>开头的东西代表一个装饰器，也就是调用它所装饰的函数的函数。</p>
+<ul>
+<li>@staticmethod 就是一个普通函数，只是放在了类里面。</li>
+<li>@classmethod 是类函数，调用它的时候解释器会自动把这个类作为一个参数传递，然后才传递其余的参数。</li>
+<li>@property 表明这个函数可以作为对象的属性来用，在调用<code>o.some_property</code>的时候会返回这个方法的返回值，所以不需要再像这样加括号<code>o.some_property()</code>。</li>
+</ul>
+<h4>下面代码输出什么？</h4>
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">A</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">go</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;go A go!&quot;</span><span class="p">)</span>
+    <span class="nx">def</span> <span class="nx">stop</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;stop A stop!&quot;</span><span class="p">)</span>
+    <span class="nx">def</span> <span class="nx">pause</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">raise</span> <span class="nx">Exception</span><span class="p">(</span><span class="s2">&quot;Not Implemented&quot;</span><span class="p">)</span>
+
+<span class="kr">class</span> <span class="nx">B</span><span class="p">(</span><span class="nx">A</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">go</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="kr">super</span><span class="p">(</span><span class="nx">B</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">go</span><span class="p">()</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;go B go!&quot;</span><span class="p">)</span>
+
+<span class="kr">class</span> <span class="nx">C</span><span class="p">(</span><span class="nx">A</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">go</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="kr">super</span><span class="p">(</span><span class="nx">C</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">go</span><span class="p">()</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;go C go!&quot;</span><span class="p">)</span>
+    <span class="nx">def</span> <span class="nx">stop</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="kr">super</span><span class="p">(</span><span class="nx">C</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">stop</span><span class="p">()</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;stop C stop!&quot;</span><span class="p">)</span>
+
+<span class="kr">class</span> <span class="nx">D</span><span class="p">(</span><span class="nx">B</span><span class="p">,</span><span class="nx">C</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">go</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="kr">super</span><span class="p">(</span><span class="nx">D</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">go</span><span class="p">()</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;go D go!&quot;</span><span class="p">)</span>
+    <span class="nx">def</span> <span class="nx">stop</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="kr">super</span><span class="p">(</span><span class="nx">D</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">stop</span><span class="p">()</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;stop D stop!&quot;</span><span class="p">)</span>
+    <span class="nx">def</span> <span class="nx">pause</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;wait D wait!&quot;</span><span class="p">)</span>
+
+<span class="kr">class</span> <span class="nx">E</span><span class="p">(</span><span class="nx">B</span><span class="p">,</span><span class="nx">C</span><span class="p">)</span><span class="o">:</span> <span class="nx">pass</span>
+
+<span class="nx">a</span> <span class="o">=</span> <span class="nx">A</span><span class="p">()</span>
+<span class="nx">b</span> <span class="o">=</span> <span class="nx">B</span><span class="p">()</span>
+<span class="nx">c</span> <span class="o">=</span> <span class="nx">C</span><span class="p">()</span>
+<span class="nx">d</span> <span class="o">=</span> <span class="nx">D</span><span class="p">()</span>
+<span class="nx">e</span> <span class="o">=</span> <span class="nx">E</span><span class="p">()</span>
+
+<span class="nx">a</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
+<span class="nx">d</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
+<span class="nx">e</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
+
+<span class="nx">a</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
+<span class="nx">d</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
+<span class="nx">e</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
+
+<span class="nx">a</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
+<span class="nx">d</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
+<span class="nx">e</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
+</pre></div>
+
+
+<p>这里的知识点：</p>
+<ul>
+<li>类的继承，以及多重继承下调用super的顺序</li>
+<li><code>super</code>函数</li>
+</ul>
+<h4>下列代码的输出：</h4>
+<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">Node</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">sName</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">_lChildren</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">sName</span> <span class="o">=</span> <span class="nx">sName</span>
+    <span class="nx">def</span> <span class="nx">__repr__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Node &#39;{}&#39;&gt;&quot;</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">sName</span><span class="p">)</span>
+    <span class="nx">def</span> <span class="nx">append</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="o">*</span><span class="nx">args</span><span class="p">,</span><span class="o">**</span><span class="nx">kwargs</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">_lChildren</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="o">*</span><span class="nx">args</span><span class="p">,</span><span class="o">**</span><span class="nx">kwargs</span><span class="p">)</span>
+    <span class="nx">def</span> <span class="nx">print_all_1</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">print</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="nx">oChild</span> <span class="k">in</span> <span class="nx">self._lChildren</span>:
+            <span class="kt">oChild.print_all_1</span><span class="p">()</span>
+    <span class="nx">def</span> <span class="nx">print_all_2</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">def</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span><span class="o">:</span>
+            <span class="nx">lAll</span> <span class="o">=</span> <span class="p">[</span><span class="nx">o</span><span class="p">,]</span>
+            <span class="k">while</span> <span class="nx">lAll</span>:
+                <span class="kt">oNext</span> <span class="o">=</span> <span class="nx">lAll</span><span class="p">.</span><span class="nx">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="nx">lAll</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">oNext</span><span class="p">.</span><span class="nx">_lChildren</span><span class="p">)</span>
+                <span class="nx">yield</span> <span class="nx">oNext</span>
+        <span class="k">for</span> <span class="nx">oNode</span> <span class="k">in</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+            <span class="nx">print</span><span class="p">(</span><span class="nx">oNode</span><span class="p">)</span>
+
+<span class="nx">oRoot</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+<span class="nx">oChild1</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child1&quot;</span><span class="p">)</span>
+<span class="nx">oChild2</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child2&quot;</span><span class="p">)</span>
+<span class="nx">oChild3</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child3&quot;</span><span class="p">)</span>
+<span class="nx">oChild4</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child4&quot;</span><span class="p">)</span>
+<span class="nx">oChild5</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child5&quot;</span><span class="p">)</span>
+<span class="nx">oChild6</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child6&quot;</span><span class="p">)</span>
+<span class="nx">oChild7</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child7&quot;</span><span class="p">)</span>
+<span class="nx">oChild8</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child8&quot;</span><span class="p">)</span>
+<span class="nx">oChild9</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child9&quot;</span><span class="p">)</span>
+<span class="nx">oChild10</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child10&quot;</span><span class="p">)</span>
+
+<span class="nx">oRoot</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild1</span><span class="p">)</span>
+<span class="nx">oRoot</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild2</span><span class="p">)</span>
+<span class="nx">oRoot</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild3</span><span class="p">)</span>
+<span class="nx">oChild1</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild4</span><span class="p">)</span>
+<span class="nx">oChild1</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild5</span><span class="p">)</span>
+<span class="nx">oChild2</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild6</span><span class="p">)</span>
+<span class="nx">oChild4</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild7</span><span class="p">)</span>
+<span class="nx">oChild3</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild8</span><span class="p">)</span>
+<span class="nx">oChild3</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild9</span><span class="p">)</span>
+<span class="nx">oChild6</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild10</span><span class="p">)</span>
+
+<span class="nx">oRoot</span><span class="p">.</span><span class="nx">print_all_1</span><span class="p">()</span>
+<span class="nx">oRoot</span><span class="p">.</span><span class="nx">print_all_2</span><span class="p">()</span>
+</pre></div>
+
+
+<p>主要考察递归和<code>yield</code>的基本使用，实际上第一个print是深度优先，第二个是广度优先。</p>
+<h4>描述python的垃圾回收机制（garbage collection）</h4>
+<ul>
+<li>python维护一个所有内存中对象的引用计数器，如果一个对象的引用数为0，就可以进行垃圾回收了</li>
+<li>有时候会发生<code>循环引用</code>的情况，比如<code>o1.x == o2</code> 和 <code>o2.x == o1</code>，这时候两个对象都不会被回收</li>
+<li>越晚创建的对象越有可能被回收</li>
+</ul>
+<h4>下列函数哪个效率高</h4>
+<div class="codehilite"><pre><span></span>def f1(lIn):
+    l1 = sorted(lIn)
+    l2 = [i for i in l1 if i&lt;0.5]
+    return [i*i for i in l2]
+
+def f2(lIn):
+    l1 = [i for i in lIn if i&lt;0.5]
+    l2 = sorted(l1)
+    return [i*i for i in l2]
+
+def f3(lIn):
+    l1 = [i*i for i in lIn]
+    l2 = sorted(l1)
+    return [i for i in l1 if i&lt;(0.5*0.5)]
+</pre></div>
+
+
+<p>显然先过滤后计算比较好。</p>
+<h4>你在哪些方面失败？</h4>
+<ul>
+<li>承认自己会犯错误</li>
+<li>承担责任</li>
+<li>从错误中学习</li>
+</ul>
+<h4>你有哪些个人项目？</h4>
+<ul>
+<li>最好有。</li>
+</ul>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>
