@@ -1,0 +1,71 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Flutter APP列表页的最简代码 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Flutter APP列表页的最简代码</h3>
+
+            <div class="post-content">
+                <p><code>main.dart</code></p>
+<pre class="codehilite"><code>import 'package:flutter/material.dart';
+
+void main() =&gt; runApp(new MyApp());
+
+class MyApp extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) =&gt; new MaterialApp(
+            title: 'Flutter Demo',
+            home: new MyHomePage(),
+    );
+}
+
+class MyHomePage extends StatefulWidget {
+    @override
+    _MyHomePageState createState() =&gt; new _MyHomePageState();
+}
+
+class _MyHomePageState extends State&lt;MyHomePage&gt; {
+    @override
+    Widget build(BuildContext context) {
+        return new Scaffold(
+        body: new GridView.extent(
+            maxCrossAxisExtent: 600.0,
+            children: new List&lt;Container&gt;.generate(
+                12,
+                _getCell),
+        ),
+        );
+    }
+
+    Container _getCell(int index) {
+        return new Container(child: new Icon(Icons.account_balance));
+    }
+}</code></pre>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>
