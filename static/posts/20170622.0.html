@@ -32,14 +32,13 @@
 </ul>
 <h4>自己写一个os.walk</h4>
 <h4>写出如下A0到A6的值：</h4>
-<div class="codehilite"><pre><span></span><span class="n">A0</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">((</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)))</span> <span class="c1"># {a:1,b:2}</span>
-<span class="n">A1</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># [0,1,...,9]</span>
-<span class="n">A2</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A1</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A0</span><span class="p">])</span> <span class="c1"># []</span>
-<span class="n">A3</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">A0</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">A0</span><span class="p">])</span> <span class="c1"># [1, 2, 3, 4, 5]</span>
-<span class="n">A4</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A1</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A3</span><span class="p">]</span> <span class="c1"># [1, 2, 3, 4, 5]</span>
-<span class="n">A5</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">*</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A1</span><span class="p">}</span> <span class="c1"># [0:0, 1:1, 2:4, 3:9, ..., 9:81]</span>
-<span class="n">A6</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">*</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">A1</span><span class="p">]</span> <span class="c1"># [[0,0], [1,1], [2,4], ..., [9,81]]</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">A0 = dict(zip(('a','b','c','d','e'),(1,2,3,4,5))) # {a:1,b:2}
+A1 = range(10) # [0,1,...,9]
+A2 = sorted([i for i in A1 if i in A0]) # []
+A3 = sorted([A0[s] for s in A0]) # [1, 2, 3, 4, 5]
+A4 = [i for i in A1 if i in A3] # [1, 2, 3, 4, 5]
+A5 = {i:i*i for i in A1} # [0:0, 1:1, 2:4, 3:9, ..., 9:81]
+A6 = [[i,i*i] for i in A1] # [[0,0], [1,1], [2,4], ..., [9,81]]</code></pre>
 
 
 <p>考察了一下知识点：</p>
@@ -59,15 +58,14 @@
 <h4>你如何跟踪你代码的多个版本？</h4>
 <p>用版本控制，比如Git。</p>
 <h4>看如下代码的输出</h4>
-<div class="codehilite"><pre><span></span>def f(x,l=[]):
+<pre class="codehilite"><code>def f(x,l=[]):
     for i in range(x):
         l.append(i*i)
     print(l)
 
 f(2)
 f(3,[3,2,1])
-f(3)
-</pre></div>
+f(3)</code></pre>
 
 
 <p>注意第三个。</p>
@@ -88,63 +86,62 @@ f(3)
 <li>@property 表明这个函数可以作为对象的属性来用，在调用<code>o.some_property</code>的时候会返回这个方法的返回值，所以不需要再像这样加括号<code>o.some_property()</code>。</li>
 </ul>
 <h4>下面代码输出什么？</h4>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">A</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
-    <span class="nx">def</span> <span class="nx">go</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;go A go!&quot;</span><span class="p">)</span>
-    <span class="nx">def</span> <span class="nx">stop</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;stop A stop!&quot;</span><span class="p">)</span>
-    <span class="nx">def</span> <span class="nx">pause</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">raise</span> <span class="nx">Exception</span><span class="p">(</span><span class="s2">&quot;Not Implemented&quot;</span><span class="p">)</span>
+<pre class="codehilite"><code>class A(object):
+    def go(self):
+        print(&quot;go A go!&quot;)
+    def stop(self):
+        print(&quot;stop A stop!&quot;)
+    def pause(self):
+        raise Exception(&quot;Not Implemented&quot;)
 
-<span class="kr">class</span> <span class="nx">B</span><span class="p">(</span><span class="nx">A</span><span class="p">)</span><span class="o">:</span>
-    <span class="nx">def</span> <span class="nx">go</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="kr">super</span><span class="p">(</span><span class="nx">B</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">go</span><span class="p">()</span>
-        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;go B go!&quot;</span><span class="p">)</span>
+class B(A):
+    def go(self):
+        super(B, self).go()
+        print(&quot;go B go!&quot;)
 
-<span class="kr">class</span> <span class="nx">C</span><span class="p">(</span><span class="nx">A</span><span class="p">)</span><span class="o">:</span>
-    <span class="nx">def</span> <span class="nx">go</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="kr">super</span><span class="p">(</span><span class="nx">C</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">go</span><span class="p">()</span>
-        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;go C go!&quot;</span><span class="p">)</span>
-    <span class="nx">def</span> <span class="nx">stop</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="kr">super</span><span class="p">(</span><span class="nx">C</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">stop</span><span class="p">()</span>
-        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;stop C stop!&quot;</span><span class="p">)</span>
+class C(A):
+    def go(self):
+        super(C, self).go()
+        print(&quot;go C go!&quot;)
+    def stop(self):
+        super(C, self).stop()
+        print(&quot;stop C stop!&quot;)
 
-<span class="kr">class</span> <span class="nx">D</span><span class="p">(</span><span class="nx">B</span><span class="p">,</span><span class="nx">C</span><span class="p">)</span><span class="o">:</span>
-    <span class="nx">def</span> <span class="nx">go</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="kr">super</span><span class="p">(</span><span class="nx">D</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">go</span><span class="p">()</span>
-        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;go D go!&quot;</span><span class="p">)</span>
-    <span class="nx">def</span> <span class="nx">stop</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="kr">super</span><span class="p">(</span><span class="nx">D</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">stop</span><span class="p">()</span>
-        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;stop D stop!&quot;</span><span class="p">)</span>
-    <span class="nx">def</span> <span class="nx">pause</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;wait D wait!&quot;</span><span class="p">)</span>
+class D(B,C):
+    def go(self):
+        super(D, self).go()
+        print(&quot;go D go!&quot;)
+    def stop(self):
+        super(D, self).stop()
+        print(&quot;stop D stop!&quot;)
+    def pause(self):
+        print(&quot;wait D wait!&quot;)
 
-<span class="kr">class</span> <span class="nx">E</span><span class="p">(</span><span class="nx">B</span><span class="p">,</span><span class="nx">C</span><span class="p">)</span><span class="o">:</span> <span class="nx">pass</span>
+class E(B,C): pass
 
-<span class="nx">a</span> <span class="o">=</span> <span class="nx">A</span><span class="p">()</span>
-<span class="nx">b</span> <span class="o">=</span> <span class="nx">B</span><span class="p">()</span>
-<span class="nx">c</span> <span class="o">=</span> <span class="nx">C</span><span class="p">()</span>
-<span class="nx">d</span> <span class="o">=</span> <span class="nx">D</span><span class="p">()</span>
-<span class="nx">e</span> <span class="o">=</span> <span class="nx">E</span><span class="p">()</span>
+a = A()
+b = B()
+c = C()
+d = D()
+e = E()
 
-<span class="nx">a</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
-<span class="nx">b</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
-<span class="nx">c</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
-<span class="nx">d</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
-<span class="nx">e</span><span class="p">.</span><span class="nx">go</span><span class="p">()</span>
+a.go()
+b.go()
+c.go()
+d.go()
+e.go()
 
-<span class="nx">a</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
-<span class="nx">b</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
-<span class="nx">c</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
-<span class="nx">d</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
-<span class="nx">e</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
+a.stop()
+b.stop()
+c.stop()
+d.stop()
+e.stop()
 
-<span class="nx">a</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
-<span class="nx">b</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
-<span class="nx">c</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
-<span class="nx">d</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
-<span class="nx">e</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
-</pre></div>
+a.pause()
+b.pause()
+c.pause()
+d.pause()
+e.pause()</code></pre>
 
 
 <p>这里的知识点：</p>
@@ -153,54 +150,53 @@ f(3)
 <li><code>super</code>函数</li>
 </ul>
 <h4>下列代码的输出：</h4>
-<div class="codehilite"><pre><span></span><span class="kr">class</span> <span class="nx">Node</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
-    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">sName</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">_lChildren</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">sName</span> <span class="o">=</span> <span class="nx">sName</span>
-    <span class="nx">def</span> <span class="nx">__repr__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;Node &#39;{}&#39;&gt;&quot;</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">sName</span><span class="p">)</span>
-    <span class="nx">def</span> <span class="nx">append</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="o">*</span><span class="nx">args</span><span class="p">,</span><span class="o">**</span><span class="nx">kwargs</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">_lChildren</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="o">*</span><span class="nx">args</span><span class="p">,</span><span class="o">**</span><span class="nx">kwargs</span><span class="p">)</span>
-    <span class="nx">def</span> <span class="nx">print_all_1</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">print</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span>
-        <span class="k">for</span> <span class="nx">oChild</span> <span class="k">in</span> <span class="nx">self._lChildren</span>:
-            <span class="kt">oChild.print_all_1</span><span class="p">()</span>
-    <span class="nx">def</span> <span class="nx">print_all_2</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">def</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span><span class="o">:</span>
-            <span class="nx">lAll</span> <span class="o">=</span> <span class="p">[</span><span class="nx">o</span><span class="p">,]</span>
-            <span class="k">while</span> <span class="nx">lAll</span>:
-                <span class="kt">oNext</span> <span class="o">=</span> <span class="nx">lAll</span><span class="p">.</span><span class="nx">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="nx">lAll</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">oNext</span><span class="p">.</span><span class="nx">_lChildren</span><span class="p">)</span>
-                <span class="nx">yield</span> <span class="nx">oNext</span>
-        <span class="k">for</span> <span class="nx">oNode</span> <span class="k">in</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
-            <span class="nx">print</span><span class="p">(</span><span class="nx">oNode</span><span class="p">)</span>
+<pre class="codehilite"><code>class Node(object):
+    def __init__(self,sName):
+        self._lChildren = []
+        self.sName = sName
+    def __repr__(self):
+        return &quot;&lt;Node '{}'&gt;&quot;.format(self.sName)
+    def append(self,*args,**kwargs):
+        self._lChildren.append(*args,**kwargs)
+    def print_all_1(self):
+        print(self)
+        for oChild in self._lChildren:
+            oChild.print_all_1()
+    def print_all_2(self):
+        def gen(o):
+            lAll = [o,]
+            while lAll:
+                oNext = lAll.pop(0)
+                lAll.extend(oNext._lChildren)
+                yield oNext
+        for oNode in gen(self):
+            print(oNode)
 
-<span class="nx">oRoot</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
-<span class="nx">oChild1</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child1&quot;</span><span class="p">)</span>
-<span class="nx">oChild2</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child2&quot;</span><span class="p">)</span>
-<span class="nx">oChild3</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child3&quot;</span><span class="p">)</span>
-<span class="nx">oChild4</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child4&quot;</span><span class="p">)</span>
-<span class="nx">oChild5</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child5&quot;</span><span class="p">)</span>
-<span class="nx">oChild6</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child6&quot;</span><span class="p">)</span>
-<span class="nx">oChild7</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child7&quot;</span><span class="p">)</span>
-<span class="nx">oChild8</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child8&quot;</span><span class="p">)</span>
-<span class="nx">oChild9</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child9&quot;</span><span class="p">)</span>
-<span class="nx">oChild10</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">(</span><span class="s2">&quot;child10&quot;</span><span class="p">)</span>
+oRoot = Node(&quot;root&quot;)
+oChild1 = Node(&quot;child1&quot;)
+oChild2 = Node(&quot;child2&quot;)
+oChild3 = Node(&quot;child3&quot;)
+oChild4 = Node(&quot;child4&quot;)
+oChild5 = Node(&quot;child5&quot;)
+oChild6 = Node(&quot;child6&quot;)
+oChild7 = Node(&quot;child7&quot;)
+oChild8 = Node(&quot;child8&quot;)
+oChild9 = Node(&quot;child9&quot;)
+oChild10 = Node(&quot;child10&quot;)
 
-<span class="nx">oRoot</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild1</span><span class="p">)</span>
-<span class="nx">oRoot</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild2</span><span class="p">)</span>
-<span class="nx">oRoot</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild3</span><span class="p">)</span>
-<span class="nx">oChild1</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild4</span><span class="p">)</span>
-<span class="nx">oChild1</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild5</span><span class="p">)</span>
-<span class="nx">oChild2</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild6</span><span class="p">)</span>
-<span class="nx">oChild4</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild7</span><span class="p">)</span>
-<span class="nx">oChild3</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild8</span><span class="p">)</span>
-<span class="nx">oChild3</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild9</span><span class="p">)</span>
-<span class="nx">oChild6</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">oChild10</span><span class="p">)</span>
+oRoot.append(oChild1)
+oRoot.append(oChild2)
+oRoot.append(oChild3)
+oChild1.append(oChild4)
+oChild1.append(oChild5)
+oChild2.append(oChild6)
+oChild4.append(oChild7)
+oChild3.append(oChild8)
+oChild3.append(oChild9)
+oChild6.append(oChild10)
 
-<span class="nx">oRoot</span><span class="p">.</span><span class="nx">print_all_1</span><span class="p">()</span>
-<span class="nx">oRoot</span><span class="p">.</span><span class="nx">print_all_2</span><span class="p">()</span>
-</pre></div>
+oRoot.print_all_1()
+oRoot.print_all_2()</code></pre>
 
 
 <p>主要考察递归和<code>yield</code>的基本使用，实际上第一个print是深度优先，第二个是广度优先。</p>
@@ -211,7 +207,7 @@ f(3)
 <li>越晚创建的对象越有可能被回收</li>
 </ul>
 <h4>下列函数哪个效率高</h4>
-<div class="codehilite"><pre><span></span>def f1(lIn):
+<pre class="codehilite"><code>def f1(lIn):
     l1 = sorted(lIn)
     l2 = [i for i in l1 if i&lt;0.5]
     return [i*i for i in l2]
@@ -224,8 +220,7 @@ def f2(lIn):
 def f3(lIn):
     l1 = [i*i for i in lIn]
     l2 = sorted(l1)
-    return [i for i in l1 if i&lt;(0.5*0.5)]
-</pre></div>
+    return [i for i in l1 if i&lt;(0.5*0.5)]</code></pre>
 
 
 <p>显然先过滤后计算比较好。</p>

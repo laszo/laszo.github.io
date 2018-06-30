@@ -21,20 +21,18 @@
 
             <div class="post-content">
                 <p>以官网的demo开始：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<pre class="codehilite"><code class="language-python">from flask import Flask
+app = Flask(__name__)
 
-<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
-</pre></div>
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'</code></pre>
 
 
 <p>运行：</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">FLASK_APP</span><span class="o">=</span>hello.py
+<pre class="codehilite"><code>$ export FLASK_APP=hello.py
 $ flask run
-* Running on http://127.0.0.1:5000/
-</pre></div>
+* Running on http://127.0.0.1:5000/</code></pre>
 
 
 <p>Flask类是Flask框架的核心，它持有路由表和其他全局配置项，并且它自身就是符合标准的WSGI应用，
@@ -42,88 +40,81 @@ $ flask run
 <h4 id='wsgi_callstack'>浅析WSGI调用过程</h4>
 
 <p>由于它自身就是WSGI应用，也即是说它必须是一个callable，看它的<code>__call__</code>方法：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+<pre class="codehilite"><code class="language-python">def __call__(self, environ, start_response):
+    return self.wsgi_app(environ, start_response)
 
-<span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_dispatch_request</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="n">e</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
-</pre></div>
+def wsgi_app(self, environ, start_response):
+    try:
+        response = self.full_dispatch_request()
+    except Exception as e:
+        error = e
+        response = self.handle_exception(e)
+    return response(environ, start_response)</code></pre>
 
 
 <p><code>__call__</code>调用<code>wsgi_app</code>，后者通过full_dispatch_request获取response对象并调用：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">full_dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_request</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">rv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatch_request</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_user_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">finalize_request</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">def full_dispatch_request(self):
+    try:
+        rv = self.preprocess_request()
+        if rv is None:
+            rv = self.dispatch_request()
+    except Exception as e:
+        rv = self.handle_user_exception(e)
+    return self.finalize_request(rv)</code></pre>
 
 
 <p>full_dispatch_request对客户端请求进行了事前事后的处理，但核心的一步是dispatch_request：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">req</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">request</span>
-    <span class="n">rule</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">url_rule</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">endpoint</span><span class="p">](</span><span class="o">**</span><span class="n">req</span><span class="o">.</span><span class="n">view_args</span><span class="p">)</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">def dispatch_request(self):
+    req = _request_ctx_stack.top.request
+    rule = req.url_rule
+    return self.view_functions[rule.endpoint](**req.view_args)</code></pre>
 
 
 <p>dispatch_request获取所需的request，根据request的rule从view_functions获取所需的view_function。</p>
 <h4 id='rout_table'>路由的注册</h4>
 
 <p>根据名字和上下文代码可以推测，view_functions是一个路由表。demo代码的下列语句添加了一项路由：</p>
-<div class="codehilite"><pre><span></span>@app.route(&#39;/&#39;)
-</pre></div>
+<pre class="codehilite"><code>@app.route('/')</code></pre>
 
 
 <p>Flask的route函数是一个装饰器，把要装饰的函数添加到路由表中：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;endpoint&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">f</span>
-    <span class="k">return</span> <span class="n">decorator</span>
+<pre class="codehilite"><code class="language-python">def route(self, rule, **options):
+    def decorator(f):
+        endpoint = options.pop('endpoint', None)
+        self.add_url_rule(rule, endpoint, f, **options)
+        return f
+    return decorator
 
-<span class="nd">@setupmethod</span>
-<span class="k">def</span> <span class="nf">add_url_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">_endpoint_from_view_func</span><span class="p">(</span><span class="n">view_func</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">url_map</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">view_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">view_func</span>
-</pre></div>
+@setupmethod
+def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
+    if endpoint is None:
+        endpoint = _endpoint_from_view_func(view_func)
+    self.url_map.add(rule)
+    if view_func is not None:
+        self.view_functions[endpoint] = view_func</code></pre>
 
 
 <p>上面的代码证实了我们的推测。</p>
 <h4 id='sr_debug'>调试Flask源码</h4>
 
 <p>为了进一步研究，我们调试它的源码，首先需要下载：</p>
-<div class="codehilite"><pre><span></span>git clone git@github.com:pallets/flask.git
-</pre></div>
+<pre class="codehilite"><code>git clone git@github.com:pallets/flask.git</code></pre>
 
 
 <p>由于我们调试的是项目源码，不是使用pip安装好的包，所以不能使用<code>flask run</code>这样的命令启动。
 可以使用Python标准库wsgiref，写这样一段代码：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<pre class="codehilite"><code class="language-python">from flask import Flask
+app = Flask(__name__)
 
 
-<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
 
-<span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+from wsgiref.simple_server import make_server
 
-<span class="n">s</span> <span class="o">=</span> <span class="n">make_server</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8180</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
-<span class="n">s</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
-</pre></div>
+s = make_server('', 8180, app)
+s.serve_forever()</code></pre>
 
 
 <p>命名为hello.py，保存在从GitHub上clone下来的flask项目根目录。使用PyCharm或者你喜欢的什么IDE调试这个hello.py。</p>
@@ -132,61 +123,56 @@ $ flask run
 <p>每一次客户端发来请求，Flask对象的<code>__call__</code>都会被调用，当然后面的所有调用关系都会被调用。
 一个函数，无非就是输入和输出，对于WSGI应用来说，输入就是HTTP请求，输出就是HTTP响应。
 我们来追踪输入是如何构建的，输出是如何形成的。以我们的demo app代码为例，我们定义的函数：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">def hello_world():
+    return 'Hello, World!'</code></pre>
 
 
 <p>实际上是被Flask对象的的方法dispatch_request的如下代码所调用：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">endpoint</span><span class="p">](</span><span class="o">**</span><span class="n">req</span><span class="o">.</span><span class="n">view_args</span><span class="p">)</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">def dispatch_request(self):
+    ...
+    return self.view_functions[rule.endpoint](**req.view_args)</code></pre>
 
 
 <p>可以把行代码作为分界线，在此之前的所有处理过程是对请求的包装和预处理，在此之后所有的处理过程是对输出的包装。</p>
 <h4 id='req_gen'>追踪request的构建</h4>
 
 <p>下面顺序列出涉及到request的代码：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-    <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_context</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
-    <span class="n">ctx</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_dispatch_request</span><span class="p">()</span>
-        <span class="o">...</span>
+<pre class="codehilite"><code class="language-python">def wsgi_app(self, environ, start_response):
+    ctx = self.request_context(environ)
+    ctx.push()
+    try:
+        response = self.full_dispatch_request()
+        ...
 
-<span class="k">def</span> <span class="nf">request_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">RequestContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">)</span>
-</pre></div>
+def request_context(self, environ):
+    return RequestContext(self, environ)</code></pre>
 
 
 <p>request_context把WSGI的environ进行包装，生成了一个RequestContext类型，调用push方法。</p>
 <p>wsgi_app然后调用了full_dispatch_request：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">full_dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_request</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">rv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatch_request</span><span class="p">()</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">def full_dispatch_request(self):
+    rv = self.preprocess_request()
+    if rv is None:
+        rv = self.dispatch_request()</code></pre>
 
 
 <p>在full_dispatch_request中，调用了preprocess_request:</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">preprocess_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">bp</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">blueprint</span>
+<pre class="codehilite"><code class="language-python">def preprocess_request(self):
+    bp = _request_ctx_stack.top.request.blueprint
 
-    <span class="n">funcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_value_preprocessors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="p">())</span>
-    <span class="k">if</span> <span class="n">bp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_value_preprocessors</span><span class="p">:</span>
-        <span class="n">funcs</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">funcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_value_preprocessors</span><span class="p">[</span><span class="n">bp</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
-        <span class="n">func</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">view_args</span><span class="p">)</span>
+    funcs = self.url_value_preprocessors.get(None, ())
+    if bp is not None and bp in self.url_value_preprocessors:
+        funcs = chain(funcs, self.url_value_preprocessors[bp])
+    for func in funcs:
+        func(request.endpoint, request.view_args)
 
-    <span class="n">funcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_request_funcs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="p">())</span>
-    <span class="k">if</span> <span class="n">bp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_request_funcs</span><span class="p">:</span>
-        <span class="n">funcs</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">funcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_request_funcs</span><span class="p">[</span><span class="n">bp</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
-        <span class="n">rv</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">rv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">rv</span>
-</pre></div>
+    funcs = self.before_request_funcs.get(None, ())
+    if bp is not None and bp in self.before_request_funcs:
+        funcs = chain(funcs, self.before_request_funcs[bp])
+    for func in funcs:
+        rv = func()
+        if rv is not None:
+            return rv</code></pre>
 
 
 <p>preprocess_request做了很多预处理的工作，主要有：</p>
@@ -196,55 +182,49 @@ $ flask run
 </ol>
 <p>我们希望app在处理之前调用某些处理方法，只需把这些方法加入before_request_funcs即可。</p>
 <p>再来看full_dispatch_request调用的另一个方法dispatch_request：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">req</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">request</span>
-    <span class="n">rule</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">url_rule</span>
+<pre class="codehilite"><code class="language-python">def dispatch_request(self):
+    req = _request_ctx_stack.top.request
+    rule = req.url_rule
 
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">endpoint</span><span class="p">](</span><span class="o">**</span><span class="n">req</span><span class="o">.</span><span class="n">view_args</span><span class="p">)</span>
-</pre></div>
+    return self.view_functions[rule.endpoint](**req.view_args)</code></pre>
 
 
 <p>追踪到了我们的分界线，也就是说传递给view_function的参数到这里已经完全构建完毕了。
 最终传递给它的参数是req.view_args。</p>
 <p>这里需要关注一个变量<code>_request_ctx_stack</code>，可以看到view_functio的参数最终是从那个变量中得到的。</p>
 <p>在app.py文件的头部可以看到它的由来：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">.globals</span> <span class="kn">import</span> <span class="n">_request_ctx_stack</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">from .globals import _request_ctx_stack</code></pre>
 
 
 <p>查看globals.py：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">werkzeug.local</span> <span class="kn">import</span> <span class="n">LocalStack</span>
-<span class="o">...</span>
-<span class="n">_request_ctx_stack</span> <span class="o">=</span> <span class="n">LocalStack</span><span class="p">()</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">from werkzeug.local import LocalStack
+...
+_request_ctx_stack = LocalStack()</code></pre>
 
 
 <p>这是一个LocalStack类型，这个类型来自werkzeug库。我们根据它的名字以及它的top属性，
 可以姑且认为这是一个栈的数据结构。</p>
 <p>但是搜索了app.py文件，发现对它只有取值，没有赋值，那么它的值是从哪里来的呢？</p>
 <p>结合上文提到的RequestContext类型，查看它所在的ctx.py，也能够发现_request_ctx_stack的身影：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">.globals</span> <span class="kn">import</span> <span class="n">_request_ctx_stack</span>
+<pre class="codehilite"><code class="language-python">from .globals import _request_ctx_stack
 
-<span class="k">class</span> <span class="nc">RequestContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="o">...</span>
-        <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</pre></div>
+class RequestContext(object):
+    def push(self):
+        ...
+        _request_ctx_stack.push(self)</code></pre>
 
 
 <p>原来RequestContext.push方法修改了_request_ctx_stack的值。那么刚才wsgi_app函数的代码：</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-    <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_context</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
-    <span class="n">ctx</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
-    <span class="o">...</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">def wsgi_app(self, environ, start_response):
+    ctx = self.request_context(environ)
+    ctx.push()
+    ...</code></pre>
 
 
 <p>其作用也就很明显了。至于为何要采用这样的方式，而不是直接保存在Flask对象的成员里，还需要进一步研究。</p>
 <h4 id='res_gen'>追踪Response的形成</h4>
 
-<div class="codehilite"><pre><span></span>response = self.make_response(rv)
-</pre></div>
+<pre class="codehilite"><code>response = self.make_response(rv)</code></pre>
 
 
 <h4 id='sub'>总结</h4>

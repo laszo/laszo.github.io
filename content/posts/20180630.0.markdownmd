@@ -1,0 +1,48 @@
+---
+title: 'Flutter Table界面APP的最简代码'
+---
+
+`main.dart`
+
+    import 'package:flutter/material.dart';
+
+    void main() => runApp(new MyApp());
+
+    class MyApp extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+        return new MaterialApp(
+    //      title: 'Flutter Demo',
+        home: new TabPage(),
+        );
+    }
+    }
+
+    class TabPage extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+        return new DefaultTabController(
+        length: 4,
+        child: new Scaffold(
+            bottomNavigationBar: new TabBar(
+            tabs: [
+                new Tab(icon: new Icon(Icons.account_balance)),
+                new Tab(icon: new Icon(Icons.map)),
+                new Tab(icon: new Icon(Icons.favorite)),
+                new Tab(icon: new Icon(Icons.people)),
+            ],
+            labelColor: Colors.red,
+            ),
+            body: new TabBarView(
+            children: [
+                new Tab(icon: new Icon(Icons.account_balance)),
+                new Tab(icon: new Icon(Icons.map)),
+                new Tab(icon: new Icon(Icons.favorite)),
+                new Tab(icon: new Icon(Icons.people)),
+            ],
+            ),
+        ),
+        );
+    }
+    }
+

@@ -21,13 +21,11 @@
 
             <div class="post-content">
                 <p>默认情况下，VS Code只能识别系统级别的Python库，我们在virtualenv环境下安装的库是不被VS Code识别的，最简单的办法是在<code>settings.json</code>文件中配置：</p>
-<div class="codehilite"><pre><span></span>&quot;python.pythonPath&quot;: &quot;<span class="cp">${</span><span class="n">workspaceRoot</span><span class="cp">}</span>/venv/bin/python&quot;
-</pre></div>
+<pre class="codehilite"><code>&quot;python.pythonPath&quot;: &quot;${workspaceRoot}/venv/bin/python&quot;</code></pre>
 
 
 <p>以后我们在使用virtualenv创建虚拟环境时，一定要把<code>DEST_DIR</code>参数指定为<code>venv</code>，即：</p>
-<div class="codehilite"><pre><span></span>virtualenv venv
-</pre></div>
+<pre class="codehilite"><code>virtualenv venv</code></pre>
 
 
 <p>如果pylint出现问题，可以参看<a href="https://github.com/DonJayamanne/pythonVSCode/wiki/Troubleshooting-Linting">Troubleshooting Linting</a>。</p>

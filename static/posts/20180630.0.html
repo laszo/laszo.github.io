@@ -1,0 +1,78 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Flutter Table界面APP的最简代码 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Flutter Table界面APP的最简代码</h3>
+
+            <div class="post-content">
+                <p><code>main.dart</code></p>
+<pre class="codehilite"><code>import 'package:flutter/material.dart';
+
+void main() =&gt; runApp(new MyApp());
+
+class MyApp extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+    return new MaterialApp(
+//      title: 'Flutter Demo',
+    home: new TabPage(),
+    );
+}
+}
+
+class TabPage extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+    return new DefaultTabController(
+    length: 4,
+    child: new Scaffold(
+        bottomNavigationBar: new TabBar(
+        tabs: [
+            new Tab(icon: new Icon(Icons.account_balance)),
+            new Tab(icon: new Icon(Icons.map)),
+            new Tab(icon: new Icon(Icons.favorite)),
+            new Tab(icon: new Icon(Icons.people)),
+        ],
+        labelColor: Colors.red,
+        ),
+        body: new TabBarView(
+        children: [
+            new Tab(icon: new Icon(Icons.account_balance)),
+            new Tab(icon: new Icon(Icons.map)),
+            new Tab(icon: new Icon(Icons.favorite)),
+            new Tab(icon: new Icon(Icons.people)),
+        ],
+        ),
+    ),
+    );
+}
+}</code></pre>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>

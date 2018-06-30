@@ -45,52 +45,47 @@
 </li>
 </ul>
 <p>来看一段代码：</p>
-<div class="codehilite"><pre><span></span>def simple_generator(start, end):
+<pre class="codehilite"><code>def simple_generator(start, end):
     for i in range(start, end):
-        yield i
-</pre></div>
+        yield i</code></pre>
 
 
 <p>上面的函数<code>simple_generator</code>就是一个generator，对它进行简单测试：</p>
-<div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="kn">from</span> <span class="nn">t1</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ge</span> <span class="o">=</span> <span class="n">simple_generator</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ge</span><span class="p">:</span>
-<span class="o">...</span>     <span class="k">print</span> <span class="n">i</span>
-<span class="o">...</span>
-<span class="mi">0</span>
-<span class="mi">1</span>
-<span class="mi">2</span>
-<span class="mi">3</span>
-<span class="mi">4</span>
-<span class="o">&gt;&gt;&gt;</span>
-</pre></div>
+<pre class="codehilite"><code>&gt;&gt; from t1 import *
+&gt;&gt;&gt; ge = simple_generator(0, 5)
+&gt;&gt;&gt; for i in ge:
+...     print i
+...
+0
+1
+2
+3
+4
+&gt;&gt;&gt;</code></pre>
 
 
 <p>对生成器it使用type函数可得到：</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; type(ge)
-&lt;type &#39;generator&#39;&gt;
-</pre></div>
+<pre class="codehilite"><code>&gt;&gt;&gt; type(ge)
+&lt;type 'generator'&gt;</code></pre>
 
 
 <p>使用dir函数可得到：</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; dir(ge)
-[&#39;__class__&#39;, &#39;__delattr__&#39;, &#39;__doc__&#39;, &#39;__format__&#39;, &#39;__getattribute__&#39;, &#39;__hash__&#39;,
-&#39;__init__&#39;, &#39;__iter__&#39;, &#39;__name__&#39;, &#39;__new__&#39;, &#39;__reduce__&#39;, &#39;__reduce_ex__&#39;, &#39;__rep
-r__&#39;, &#39;__setattr__&#39;, &#39;__sizeof__&#39;, &#39;__str__&#39;, &#39;__subclasshook__&#39;, &#39;close&#39;, &#39;gi_code&#39;,
-&#39;gi_frame&#39;, &#39;gi_running&#39;, &#39;next&#39;, &#39;send&#39;, &#39;throw&#39;]
-</pre></div>
+<pre class="codehilite"><code>&gt;&gt;&gt; dir(ge)
+['__class__', '__delattr__', '__doc__', '__format__', '__getattribute__', '__hash__',
+'__init__', '__iter__', '__name__', '__new__', '__reduce__', '__reduce_ex__', '__rep
+r__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'close', 'gi_code',
+'gi_frame', 'gi_running', 'next', 'send', 'throw']</code></pre>
 
 
 <p>可以看到，it对象有<code>__iter__</code>方法和<code>next</code>方法，也就可以看作是一个iterator，所以它能够在for语句中使用。细心的话可以看到它还有一个<code>send</code>方法，后面我们会讨论。</p>
 <p>这里我们不禁想到，如果只是为了得到iterator，即便我们不用yield关键字，使用普通的函数似乎同样可以办到：</p>
-<div class="codehilite"><pre><span></span>def my_iterator(start, end):
+<pre class="codehilite"><code>def my_iterator(start, end):
     foo = range(start, end)
-    return iter(foo)
-</pre></div>
+    return iter(foo)</code></pre>
 
 
 <p>测试my_iterator:</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; it = my_iterator(0, 5)
+<pre class="codehilite"><code>&gt;&gt;&gt; it = my_iterator(0, 5)
 &gt;&gt;&gt; for i in it:
 ...     print i
 ...
@@ -99,39 +94,36 @@ r__&#39;, &#39;__setattr__&#39;, &#39;__sizeof__&#39;, &#39;__str__&#39;, &#39;_
 2
 3
 4
-&gt;&gt;&gt;
-</pre></div>
+&gt;&gt;&gt;</code></pre>
 
 
 <p>效果是一模一样的，同样使用内置函数type和dir来查看它的类型和属性：</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; type(it)
-&lt;type &#39;listiterator&#39;&gt;
+<pre class="codehilite"><code>&gt;&gt;&gt; type(it)
+&lt;type 'listiterator'&gt;
 &gt;&gt;&gt;
 &gt;&gt;&gt; dir(it)
-[&#39;__class__&#39;, &#39;__delattr__&#39;, &#39;__doc__&#39;, &#39;__format__&#39;, &#39;__getattribute__&#39;, &#39;__hash__&#39;,
-&#39;__init__&#39;, &#39;__iter__&#39;, &#39;__length_hint__&#39;, &#39;__new__&#39;, &#39;__reduce__&#39;, &#39;__reduce_ex__&#39;,
-&#39;__repr__&#39;, &#39;__setattr__&#39;, &#39;__sizeof__&#39;, &#39;__str__&#39;, &#39;__subclasshook__&#39;, &#39;next&#39;]
-&gt;&gt;&gt;
-</pre></div>
+['__class__', '__delattr__', '__doc__', '__format__', '__getattribute__', '__hash__',
+'__init__', '__iter__', '__length_hint__', '__new__', '__reduce__', '__reduce_ex__',
+'__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'next']
+&gt;&gt;&gt;</code></pre>
 
 
 <p>是一个<code>listiterator</code>类型，同样毫不意外的也有<code>__iter__</code>和<code>next</code>方法。</p>
 <p>那么generator究竟还能干嘛呢？为了探究这一点，我们把<code>simple_generator</code>函数改写成如下的样子：</p>
-<div class="codehilite"><pre><span></span>def simple_generator(start, end):
+<pre class="codehilite"><code>def simple_generator(start, end):
     for i in range(start, end):
-        print &#39;i: %d, before yield&#39; % i
+        print 'i: %d, before yield' % i
         yield i
-        print &#39;i: %d, after yield&#39; % i
+        print 'i: %d, after yield' % i
 
 def test_generator():
     ge = simple_generator(0, 5)
     for i in ge:
-        print &#39;i: %d, I am in test_generator&#39; % i
-</pre></div>
+        print 'i: %d, I am in test_generator' % i</code></pre>
 
 
 <p>这里在<code>simple_generator</code>函数的<code>yield i</code>语句之前和之后分别加上了print输出，增加了<code>test_generator</code>函数用来测试，也加上了print输出，我们来运行一下，重点观察各个print语句输出的顺序，这也代表了程序的执行顺序：</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; test_generator()
+<pre class="codehilite"><code>&gt;&gt;&gt; test_generator()
 begin test_generator:
 i: 0, before yield
 i: 0, I am in test_generator
@@ -148,39 +140,33 @@ i: 3, after yield
 i: 4, before yield
 i: 4, I am in test_generator
 i: 4, after yield
-end test_generator
-</pre></div>
+end test_generator</code></pre>
 
 
 <p>如果你之前没有接触过generator类似的概念，会觉得这里发生了“神奇”的事情，<code>simple_generator</code>函数和<code>test_generator</code>函数中的print语句居然是交替执行的。输出的第一行是：</p>
-<div class="codehilite"><pre><span></span>begin test_generator:
-</pre></div>
+<pre class="codehilite"><code>begin test_generator:</code></pre>
 
 
 <p>说明程序的确是从<code>test_generator</code>开始执行，然后输出的下一行是：</p>
-<div class="codehilite"><pre><span></span><span class="n">i</span><span class="o">:</span> <span class="mi">0</span><span class="o">,</span> <span class="n">before</span> <span class="n">yield</span>
-</pre></div>
+<pre class="codehilite"><code>i: 0, before yield</code></pre>
 
 
 <p>说明这时跳转到了<code>simple_generator</code>函数中去，再然后下一行是：</p>
-<div class="codehilite"><pre><span></span><span class="n">i</span><span class="o">:</span> <span class="mi">0</span><span class="o">,</span> <span class="n">I</span> <span class="n">am</span> <span class="k">in</span> <span class="n">test_generator</span>
-</pre></div>
+<pre class="codehilite"><code>i: 0, I am in test_generator</code></pre>
 
 
 <p>说明这时候又跳转到了<code>test_generator</code>函数中去，下一行的输出是：</p>
-<div class="codehilite"><pre><span></span><span class="n">i</span><span class="o">:</span> <span class="mi">0</span><span class="o">,</span> <span class="n">after</span> <span class="n">yield</span>
-</pre></div>
+<pre class="codehilite"><code>i: 0, after yield</code></pre>
 
 
 <p>又跳转到了<code>simple_generator</code>函数中，如此循环往复在两个函数中交替跳转，直到<code>i=4</code>以后停止循环，程序的最后一行输出是：</p>
-<div class="codehilite"><pre><span></span>end test_generator
-</pre></div>
+<pre class="codehilite"><code>end test_generator</code></pre>
 
 
 <p>说明程序在<code>test_generator</code>函数中结束。我们在<a href="">这篇文章</a>中提到，for循环语句实际上是对迭代器做了简化的语法糖。我们可以用多次调用<code>next</code>方法的方式来查看generator函数的执行情况：</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; ge = simple_generator(0, 5)
+<pre class="codehilite"><code>&gt;&gt;&gt; ge = simple_generator(0, 5)
 &gt;&gt;&gt; type(ge)
-&lt;type &#39;generator&#39;&gt;
+&lt;type 'generator'&gt;
 &gt;&gt;&gt; ge.next()
 i: 0, before yield
 0
@@ -205,45 +191,41 @@ i: 4, after yield
 Traceback (most recent call last):
 File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
 StopIteration
-&gt;&gt;&gt;
-</pre></div>
+&gt;&gt;&gt;</code></pre>
 
 
 <p>可以看到，在调用<code>simple_generator</code>函数时，并没有执行任何print语句，而是仅仅返回了一个<code>generator</code>类型的值。在第一次调用<code>ge.next()</code>时，得到了如下输出：</p>
-<div class="codehilite"><pre><span></span><span class="n">i</span><span class="o">:</span> <span class="mi">0</span><span class="o">,</span> <span class="n">before</span> <span class="n">yield</span>
-<span class="mi">0</span>
-</pre></div>
+<pre class="codehilite"><code>i: 0, before yield
+0</code></pre>
 
 
 <p>输出的第一行<code>i: 0, before yield</code>，而看不到<code>i: 0, after yield</code>这样的输出，说明<code>simple_generator</code>函数执行到了<code>print 'i: %d, before yield' % i</code>语句之后，而在<code>print 'i: %d, after yield' % i</code>语句之前停止了。也就是说，函数执行到了<code>yield i</code>语句<sup id="fnref:note1"><a class="footnote-ref" href="#fn:note1" rel="footnote">1</a></sup>。第二行<code>0</code>则是<code>ge.next()</code>语句的返回值。</p>
 <p>再次执行<code>ge.next()</code>，得到输出：</p>
-<div class="codehilite"><pre><span></span><span class="n">i</span><span class="o">:</span> <span class="mi">0</span><span class="o">,</span> <span class="n">after</span> <span class="n">yield</span>
-<span class="n">i</span><span class="o">:</span> <span class="mi">1</span><span class="o">,</span> <span class="n">before</span> <span class="n">yield</span>
-<span class="mi">1</span>
-</pre></div>
+<pre class="codehilite"><code>i: 0, after yield
+i: 1, before yield
+1</code></pre>
 
 
 <p>输出的第一行<code>i: 0, after yield</code>，说明<code>simple_generator</code>函数接着上一次的<code>yield i</code>之后的语句<code>print 'i: %d, before yield' % i</code>继续执行，这时候<code>i</code>的值还是<code>0</code>。然后往下执行，由于当前语句在for循环内部，于是开始执行下一次for循环，这时候<code>i</code>的值变成了<code>1</code>，这时候会先执行<code>print 'i: %d, before yield' % i</code>，也就是输出的第二行<code>i: 1, before yield</code>，下一句又遇到了<code>yield i</code>语句，返回<code>i</code>的值之后停止执行。第三行的<code>1</code>是<code>ge.next()</code>语句的返回值。如此循环执行直到<code>i=4</code>之后，再次调用<code>ge.next()</code>，<code>simple_generator</code>函数输出<code>i: 4, after yield</code>之后，抛出异常<code>StopIteration</code>，迭代器停止。</p>
 <p>作为对比，我们把<code>my_iterator</code>同样做了改写，在类似的地方加入print语句：</p>
-<div class="codehilite"><pre><span></span>def my_iterator(start, end):
+<pre class="codehilite"><code>def my_iterator(start, end):
     foo = list()
     for i in range(start, end):
-        print &#39;i: %d, before append&#39; % i
+        print 'i: %d, before append' % i
         foo.append(i)
-        print &#39;i: %d, after append&#39; % i
+        print 'i: %d, after append' % i
     return iter(foo)
 
 def test_iterator():
-    print &#39;before test_iterator&#39;
+    print 'before test_iterator'
     it = my_iterator(0, 5)
     for i in it:
-        print &#39;i: %d, I am in test_iterator&#39; % i
-    print &#39;end test_iterator&#39;
-</pre></div>
+        print 'i: %d, I am in test_iterator' % i
+    print 'end test_iterator'</code></pre>
 
 
 <p>测试得到了如下的输出结果：</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; test_iterator()
+<pre class="codehilite"><code>&gt;&gt;&gt; test_iterator()
 before test_iterator
 i: 0, before append
 i: 0, after append
@@ -260,8 +242,7 @@ i: 1, I am in test_iterator
 i: 2, I am in test_iterator
 i: 3, I am in test_iterator
 i: 4, I am in test_iterator
-end test_iterator
-</pre></div>
+end test_iterator</code></pre>
 
 
 <p>可以看到，程序从<code>test_iterator</code>开始执行，在调用<code>my_iterator</code>函数时，<code>my_iterator</code>在for循环中执行完了所有的print语句，在输出<code>i: 4, after append</code>之后，程序才跳转到<code>test_iterator</code>函数，<code>test_iterator</code>函数也在自己的for循环中执行了所有自己的print语句，两个函数并没有交替执行。</p>
@@ -273,14 +254,12 @@ end test_iterator
 </ul>
 <p>yield这个词在英文里有“放弃、退让”的意思，也有“产生、带来”的意思。我们可以认为，在该语句出现的地方，generator函数生成一个值，把这个值和当前对CPU的控制权都交给迭代器的调用方（generator函数外部的代码）。</p>
 <h3>生成器表达式（generator expression）</h3>
-<div class="codehilite"><pre><span></span>foo = (i for i in os.walk(os.getcwd()))
-bar = [i for i in os.walk(os.getcwd())]
-</pre></div>
+<pre class="codehilite"><code>foo = (i for i in os.walk(os.getcwd()))
+bar = [i for i in os.walk(os.getcwd())]</code></pre>
 
 
 <p>我们在这里看到的所有yield关键字出现的代码，都是yield出现在代码行的左边，除此之外，yield还可以出现在语句的右边，并使用圆括号包起来，类似于下面这样的表达方式：</p>
-<div class="codehilite"><pre><span></span>n = (yield)
-</pre></div>
+<pre class="codehilite"><code>n = (yield)</code></pre>
 
 
 <p>以这种方式使用yield语句的函数称为协程（coroutine），这是一个更复杂的概念，参看我的<a href="20170502.0.html">这篇文章</a>。</p>

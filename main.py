@@ -40,23 +40,25 @@ def read_config(text):
         #         anchors.append((words[0], words[1]))
     return content, posttitle, anchors
 
+
 def get_anchors(text):
     anchors = list()
-    pat = re.compile(ur"<h\d\sid='(?P<href>\w+)'>(?P<title>.*)</h\d>")
+    pat = re.compile(r"<h\d\sid='(?P<href>\w+)'>(?P<title>.*)</h\d>")
     res = pat.findall(text)
     if res:
         for mat in res:
             anchors.append(mat)
     return anchors
 
+
 def createPost(post):
     text = codecs.open(contentpath + post, 'r', encoding='utf8').read()
     mkdtxt, posttitle, anchors = read_config(text)
     content = markdown.markdown(mkdtxt, \
-        extensions=['markdown.extensions.footnotes','markdown.extensions.codehilite'])
+                                extensions=['markdown.extensions.footnotes', 'markdown.extensions.codehilite'])
     t = codecs.open(postTemplatePath, 'r', encoding='utf8').read()
     html = Template(t).render(content=content, title=posttitle, \
-        blogtitle=blogtitle, baseurl=indexFileName, anchors=anchors)
+                              blogtitle=blogtitle, baseurl=indexFileName, anchors=anchors)
 
     outfile = postoutpath + os.path.splitext(post)[0] + '.html'
     output_file = codecs.open(outfile, "w", encoding="utf-8", errors="xmlcharrefreplace")
@@ -100,7 +102,7 @@ def main():
     for p in posts:
         if not check_file_ext(p, 'markdownmd'):
             continue
-        if os.path.isfile(contentpath+p):
+        if os.path.isfile(contentpath + p):
             url, title = createPost(p)
             postlinks.append({'title': title, 'url': url})
     pagefiles = os.listdir(pagespath)
@@ -132,6 +134,7 @@ def check_file_ext(fname, ext):
         if tlist[-1] == ext:
             return True
     return False
+
 
 def get_files():
     for dirpath, dirnames, filenames in os.walk('content'):

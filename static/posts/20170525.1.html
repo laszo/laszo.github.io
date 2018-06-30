@@ -27,26 +27,25 @@
 <h4 id='prep_config'>准备配置文件</h4>
 
 <p>最重要的是setup.py文件，以PWServer为例：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
-<span class="n">setup</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;pwserver&#39;</span><span class="p">,</span>
-    <span class="n">version</span><span class="o">=</span><span class="s1">&#39;0.1&#39;</span><span class="p">,</span>
-    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://github.com/laszo/PyWebServer/&quot;</span><span class="p">,</span>
-    <span class="n">author</span><span class="o">=</span><span class="s2">&quot;laszo&quot;</span><span class="p">,</span>
-    <span class="n">author_email</span><span class="o">=</span><span class="s2">&quot;lasologo@gmail.com&quot;</span><span class="p">,</span>
-    <span class="n">license</span><span class="o">=</span><span class="s1">&#39;MIT&#39;</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="o">=</span><span class="s1">&#39;wsgi server framework&#39;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;PyWebServer is a full Web application stack, </span><span class="se">\</span>
-<span class="s1">        including HTTP server,WSGI server and Web framework.&#39;</span><span class="p">,</span>
-    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pwserver&#39;</span><span class="p">],</span>
-    <span class="n">install_requires</span><span class="o">=</span><span class="p">[],</span>
-    <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;console_scripts&#39;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s1">&#39;pwserver=launch:run&#39;</span><span class="p">,</span>
-        <span class="p">],</span>
-    <span class="p">},</span>
-<span class="p">)</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">from distutils.core import setup
+setup(
+    name='pwserver',
+    version='0.1',
+    url=&quot;https://github.com/laszo/PyWebServer/&quot;,
+    author=&quot;laszo&quot;,
+    author_email=&quot;lasologo@gmail.com&quot;,
+    license='MIT',
+    keywords='wsgi server framework',
+    description='PyWebServer is a full Web application stack, \
+        including HTTP server,WSGI server and Web framework.',
+    packages=['pwserver'],
+    install_requires=[],
+    entry_points={
+        'console_scripts': [
+            'pwserver=launch:run',
+        ],
+    },
+)</code></pre>
 
 
 <p>name、version、url这些参数就不说了，就是纯粹的字符串或数字，下面几个是值得一提的参数：</p>
@@ -58,8 +57,7 @@
 <h4 id='exec_package'>执行打包</h4>
 
 <p>在根目录下执行：</p>
-<div class="codehilite"><pre><span></span>python setup.py sdist
-</pre></div>
+<pre class="codehilite"><code>python setup.py sdist</code></pre>
 
 
 <p>会得到文件<code>dist/pwserver-0.1.tar.gz</code></p>
@@ -67,15 +65,13 @@
 
 <p>首先需要在<a href="https://pypi.python.org/pypi?%3Aaction=register_form">Manual user registration</a>进行注册，然后在你的用户主目录新建<code>~/.pypirc</code>文件，
 填写你的用户名和密码：</p>
-<div class="codehilite"><pre><span></span><span class="k">[pypi]</span>
-<span class="na">username</span> <span class="o">=</span> <span class="s">&lt;username&gt;</span>
-<span class="na">password</span> <span class="o">=</span> <span class="s">&lt;password&gt;</span>
-</pre></div>
+<pre class="codehilite"><code>[pypi]
+username = &lt;username&gt;
+password = &lt;password&gt;</code></pre>
 
 
 <p>然后使用<code>twine</code>上传：</p>
-<div class="codehilite"><pre><span></span>twine upload dist/*
-</pre></div>
+<pre class="codehilite"><code>twine upload dist/*</code></pre>
 
 
 <h4 id='not_upload'>如果你不想上传至pypi</h4>

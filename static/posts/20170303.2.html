@@ -21,18 +21,16 @@
 
             <div class="post-content">
                 <p><a href="20170302.1.html">前文</a>说到，当我们运行</p>
-<div class="codehilite"><pre><span></span>python hello.py runserver
-</pre></div>
+<pre class="codehilite"><code>python hello.py runserver</code></pre>
 
 
 <p>时，这里的<code>runserver</code>其实是一个Django内置的命令，用于启动Django自带的HTTP服务器。</p>
 <p>查看完整的命令可以运行：</p>
-<div class="codehilite"><pre><span></span>python hello.py help
-</pre></div>
+<pre class="codehilite"><code>python hello.py help</code></pre>
 
 
 <p>默认会得到：</p>
-<div class="codehilite"><pre><span></span>Type &#39;hello.py help &lt;subcommand&gt;&#39; for help on a specific subcommand.
+<pre class="codehilite"><code>Type 'hello.py help &lt;subcommand&gt;' for help on a specific subcommand.
 
 Available subcommands:
 
@@ -60,8 +58,7 @@ Available subcommands:
     startapp
     startproject
     test
-    testserver
-</pre></div>
+    testserver</code></pre>
 
 
 <p>这是Django框架提供的一些列命令，具体含义可以查看<a href="https://docs.djangoproject.com/en/1.10/ref/django-admin/">django.core.management</a>。</p>
@@ -73,23 +70,20 @@ Available subcommands:
 <p>一试便知。把如下的代码保存为myhello.py文件，保存在
 “/Library/Python/2.7/site-packages/django/core/management/commands/”
 目录下。</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
+<pre class="codehilite"><code>from django.core.management.base import BaseCommand
 
-<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
-        <span class="k">print</span> <span class="s1">&#39;hello, my command&#39;</span>
-</pre></div>
+class Command(BaseCommand):
+    def handle(self, *args, **options):
+        print 'hello, my command'</code></pre>
 
 
 <p>然后我们运行</p>
-<div class="codehilite"><pre><span></span>python hello.py myhello
-</pre></div>
+<pre class="codehilite"><code>python hello.py myhello</code></pre>
 
 
 <p>果然得到了想要的结果：</p>
-<div class="codehilite"><pre><span></span>bash-3.2$ python hello.py myhello
-hello, my command
-</pre></div>
+<pre class="codehilite"><code>bash-3.2$ python hello.py myhello
+hello, my command</code></pre>
 
 
 <p>需要指出的是，由于我们直接把新命令添加在了Django框架的源代码目录中，这样的添加是全局的，

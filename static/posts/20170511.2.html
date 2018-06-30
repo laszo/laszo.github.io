@@ -21,70 +21,68 @@
 
             <div class="post-content">
                 <p>以如下代码当做一个最简单的HTTP服务器来使用：</p>
-<div class="codehilite"><pre><span></span><span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">HTTP/1.0 200 OK</span>
+<pre class="codehilite"><code class="language-python">G_content = &quot;&quot;&quot;
+HTTP/1.0 200 OK
 
-<span class="s2">&lt;head&gt;</span>
-<span class="s2">&lt;title&gt;Hello, world!&lt;/title&gt;</span>
-<span class="s2">&lt;/head&gt;</span>
-<span class="s2">&lt;body&gt;</span>
-<span class="s2">Hello, world!</span>
-<span class="s2">&lt;/body&gt;</span>
-<span class="s2">&quot;&quot;&quot;</span>
+&lt;head&gt;
+&lt;title&gt;Hello, world!&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+Hello, world!
+&lt;/body&gt;
+&quot;&quot;&quot;
 
-<span class="kn">import</span> <span class="nn">socket</span>
-<span class="k">def</span> <span class="nf">server2</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-        <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
-        <span class="n">raw_request</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
-        <span class="k">print</span> <span class="n">raw_request</span>
-        <span class="c1"># c.send(G_response)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_content</span><span class="p">)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+import socket
+def server2(address):
+    s = socket.socket()
+    s.bind(address)
+    s.listen(5)
+    while True:
+        c, a = s.accept()
+        print 'Connected from ', a
+        raw_request = c.recv(65537)
+        print raw_request
+        # c.send(G_response)
+        c.send(G_content)
+        c.close()
+    s.close()
 
-<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">9003</span><span class="p">)</span>
-    <span class="n">server2</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-</pre></div>
+if __name__== '__main__':
+    address = ('', 9003)
+    server2(address)</code></pre>
 
 
 <p>上述代码某些浏览器能正常打开，OS X下的Safari不能正常打开，因为<code>HTTP/1.0 200 OK</code>这一行应当紧跟<code>"""</code>字符串，才会被当做HTTP的首行、即状态行。</p>
 <p>如下代码使用浏览器不能正常打开：</p>
-<div class="codehilite"><pre><span></span><span class="n">G_response</span> <span class="o">=</span> <span class="s1">&#39;HTTP/1.0 200 OK&#39;</span>
+<pre class="codehilite"><code class="language-python">G_response = 'HTTP/1.0 200 OK'
 
-<span class="n">G_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">&lt;head&gt;</span>
-<span class="s2">&lt;title&gt;Hello, world!&lt;/title&gt;</span>
-<span class="s2">&lt;/head&gt;</span>
-<span class="s2">&lt;body&gt;</span>
-<span class="s2">Hello, world!</span>
-<span class="s2">&lt;/body&gt;</span>
-<span class="s2">&quot;&quot;&quot;</span>
+G_content = &quot;&quot;&quot;
+&lt;head&gt;
+&lt;title&gt;Hello, world!&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+Hello, world!
+&lt;/body&gt;
+&quot;&quot;&quot;
 
-<span class="kn">import</span> <span class="nn">socket</span>
-<span class="k">def</span> <span class="nf">server2</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">c</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-        <span class="k">print</span> <span class="s1">&#39;Connected from &#39;</span><span class="p">,</span> <span class="n">a</span>
-        <span class="n">raw_request</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">65537</span><span class="p">)</span>
-        <span class="k">print</span> <span class="n">raw_request</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_response</span><span class="p">)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">G_content</span><span class="p">)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+import socket
+def server2(address):
+    s = socket.socket()
+    s.bind(address)
+    s.listen(5)
+    while True:
+        c, a = s.accept()
+        print 'Connected from ', a
+        raw_request = c.recv(65537)
+        print raw_request
+        c.send(G_response)
+        c.send(G_content)
+        c.close()
+    s.close()
 
-<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">9003</span><span class="p">)</span>
-    <span class="n">server2</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-</pre></div>
+if __name__== '__main__':
+    address = ('', 9003)
+    server2(address)</code></pre>
 
 
 <p>原因是调用了两次<code>c.send</code>，正确的做法是把<code>G_response</code>和<code>G_content</code>的内容连在一起一次性发送。</p>

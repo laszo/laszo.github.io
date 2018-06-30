@@ -31,72 +31,64 @@
 <h4 id='blue_basic'>蓝图的基本使用</h4>
 
 <p>还是先从使用的角度来看它，假设你已经知道了一个最简单的Flask的demo怎么写：</p>
-<div class="codehilite"><pre><span></span><span class="c1"># app.py</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<pre class="codehilite"><code class="language-python"># app.py
+from flask import Flask
+app = Flask(__name__)
 
-<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
-</pre></div>
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'</code></pre>
 
 
 <p>写一个蓝图与写一个应用差不多，区别是用到了flask.Blueprint，而非flask.Flask：</p>
-<div class="codehilite"><pre><span></span><span class="c1"># book.py</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span>
+<pre class="codehilite"><code class="language-python"># book.py
+from flask import Blueprint
 
-<span class="n">book</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;book&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+book = Blueprint('book', __name__)
 
-<span class="nd">@book.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
-    <span class="k">return</span> <span class="s1">&#39;This is Book page.&#39;</span>
-</pre></div>
+@book.route('/')
+def show(page):
+    return 'This is Book page.'</code></pre>
 
 
 <p>创建一个Flask的实例需要：</p>
-<div class="codehilite"><pre><span></span>app = Flask(__name__)
-</pre></div>
+<pre class="codehilite"><code>app = Flask(__name__)</code></pre>
 
 
 <p>创建一个Blueprint的实例则需要：</p>
-<div class="codehilite"><pre><span></span>book = Blueprint(&#39;book&#39;, __name__)
-</pre></div>
+<pre class="codehilite"><code>book = Blueprint('book', __name__)</code></pre>
 
 
 <p>为你的函数注册路由需要装饰器：</p>
-<div class="codehilite"><pre><span></span>@app.route(&#39;/&#39;)
-</pre></div>
+<pre class="codehilite"><code>@app.route('/')</code></pre>
 
 
 <p>在蓝图中为你的函数添加注册路由则需要：</p>
-<div class="codehilite"><pre><span></span>@book.route(&#39;/&#39;)
-</pre></div>
+<pre class="codehilite"><code>@book.route('/')</code></pre>
 
 
 <p>然后我们把book.py放在项目根目录的book文件夹中，在book文件夹下面新建<code>__init__.py</code>的空文件。
 目前项目的结构像下面这样：</p>
-<div class="codehilite"><pre><span></span>.
+<pre class="codehilite"><code>.
 ├── app.py
 └── book
     ├── __init__.py
-    └── book.py
-</pre></div>
+    └── book.py</code></pre>
 
 
 <p>然后我们就可以在app.py中<span id='ref_book_blue'>注册book蓝图</span>了：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-<span class="kn">from</span> <span class="nn">book.book</span> <span class="kn">import</span> <span class="n">book</span>
+<pre class="codehilite"><code class="language-python">from flask import Flask
+from book.book import book
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+app = Flask(__name__)
+app.register_blueprint(book)
 
-<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</pre></div>
+if __name__ == '__main__':
+    app.run()</code></pre>
 
 
 <p>然后我们运行项目，用浏览器打开 <a href="http://127.0.0.1:5000">http://127.0.0.1:5000</a> 会发现，
@@ -107,8 +99,7 @@
 <li>项目整体的路由配置有冲突，book的路由覆盖（截获）了hello_world的路由</li>
 </ol>
 <p>为了解决第二个问题，我们需要给register_blueprint传递url_prefix参数，将注册路由的代码修改为：</p>
-<div class="codehilite"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/book&#39;</span><span class="p">)</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">app.register_blueprint(book, url_prefix='/book')</code></pre>
 
 
 <p>然后再次运行项目，可以发现得到了期望的结果：</p>
@@ -119,20 +110,19 @@
 <h4 id='comp_blu'>在蓝图中使用其他Flask功能</h4>
 
 <p>正常的项目当然不可能仅仅返回一个字符串，需要用到模板、静态文件等资源，你可以像在Flask应用级别中那样使用。下面是Flask项目源码中的例子<a href="https://github.com/pallets/flask/tree/master/examples/blueprintexample">blueprintexample</a>的simple_page.py代码：</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">abort</span>
-<span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">TemplateNotFound</span>
+<pre class="codehilite"><code class="language-python">from flask import Blueprint, render_template, abort
+from jinja2 import TemplateNotFound
 
-<span class="n">simple_page</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;simple_page&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span>
-                        <span class="n">template_folder</span><span class="o">=</span><span class="s1">&#39;templates&#39;</span><span class="p">)</span>
+simple_page = Blueprint('simple_page', __name__,
+                        template_folder='templates')
 
-<span class="nd">@simple_page.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="s1">&#39;index&#39;</span><span class="p">})</span>
-<span class="nd">@simple_page.route</span><span class="p">(</span><span class="s1">&#39;/&lt;page&gt;&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;pages/</span><span class="si">%s</span><span class="s1">.html&#39;</span> <span class="o">%</span> <span class="n">page</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">TemplateNotFound</span><span class="p">:</span>
-        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
-</pre></div>
+@simple_page.route('/', defaults={'page': 'index'})
+@simple_page.route('/&lt;page&gt;')
+def show(page):
+    try:
+        return render_template('pages/%s.html' % page)
+    except TemplateNotFound:
+        abort(404)</code></pre>
 
 
 <p>基本上，除了把Flask类改为了Blueprint类，其余地方并无太大区别。</p>
@@ -145,7 +135,7 @@
 </ul>
 <p>在功能式架构中，所有的模板、静态文件等资源放置在项目全局的文件夹内，仅蓝图中的函数代码本身放置在模块中。
 加入你的项目有admin、home、control_panel等模块，功能式架构的文件组织如下：</p>
-<div class="codehilite"><pre><span></span>yourapp/
+<pre class="codehilite"><code>yourapp/
     __init__.py
     static/
     templates/
@@ -157,12 +147,11 @@
         home.py
         control_panel.py
         admin.py
-    models.py
-</pre></div>
+    models.py</code></pre>
 
 
 <p>对应的，分区式架构中每一个蓝图都有自己的资源文件夹：</p>
-<div class="codehilite"><pre><span></span>yourapp/
+<pre class="codehilite"><code>yourapp/
     __init__.py
     admin/
         __init__.py
@@ -179,8 +168,7 @@
         views.py
         static/
         templates/
-    models.py
-</pre></div>
+    models.py</code></pre>
 
 
 <p>具体采用哪种方式，主要看这些蓝图之间的关系是否独立。如果你的网站整体使用同一的风格，所有的模板文件都拓展自一个基础的模板文件，可以采用功能式架构。相反，如果你的网站的子模块的外观不太相似，比如网站前台使用一种风格，后台管理界面使用另一种风格，就可以采用分区式架构，把这些资源文件放在各自蓝图下的文件夹，便于分开维护。分区式架构架构显然也便于蓝图在不同应用间的复用。</p>
@@ -196,63 +184,58 @@
 </li>
 </ul>
 <p>下面来看<a href="https://github.com/pallets/flask/blob/master/flask/blueprints.py">blueprints.py</a>的源码，从实现的角度去追踪：</p>
-<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Blueprint</span><span class="p">(</span><span class="n">_PackageBoundObject</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
-        <span class="o">...</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">deferred_functions</span> <span class="o">=</span> <span class="p">[]</span>
+<pre class="codehilite"><code class="language-python">class Blueprint(_PackageBoundObject):
+    def __init__(...):
+        ...
+        self.deferred_functions = []
 
-    <span class="k">def</span> <span class="nf">record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_got_registered_once</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">warn_on_modifications</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
-            <span class="n">warn</span><span class="p">(</span><span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;The blueprint was already registered once &#39;</span>
-                        <span class="s1">&#39;but is getting modified now.  These changes &#39;</span>
-                        <span class="s1">&#39;will not show up.&#39;</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">deferred_functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    def record(self, func):
+        if self._got_registered_once and self.warn_on_modifications:
+            from warnings import warn
+            warn(Warning('The blueprint was already registered once '
+                        'but is getting modified now.  These changes '
+                        'will not show up.'))
+        self.deferred_functions.append(func)
 
-    <span class="k">def</span> <span class="nf">record_once</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">first_registration</span><span class="p">:</span>
-                <span class="n">func</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="n">update_wrapper</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">func</span><span class="p">))</span>
-</pre></div>
+    def record_once(self, func):
+        def wrapper(state):
+            if state.first_registration:
+                func(state)
+        return self.record(update_wrapper(wrapper, func))</code></pre>
 
 
 <p>record方法用于向deferred_functions成员中添加func，record_once确保这种添加只执行一次。</p>
 <p>我们看Blueprint类的大部分方法的源码，会发现它都调用了record_once：</p>
-<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Blueprint</span><span class="p">(</span><span class="n">_PackageBoundObject</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">before_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">record_once</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">before_request_funcs</span>
-            <span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">f</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">class Blueprint(_PackageBoundObject):
+    ...
+    def before_request(self, f):
+        self.record_once(lambda s: s.app.before_request_funcs
+            .setdefault(self.name, []).append(f))
+        return f</code></pre>
 
 
 <p>也就是说，在执行Blueprint.before_request(f)时，实际做的动作是调用了record_once，
 最终把参数<code>f</code>添加到了deferred_functions成员中。</p>
 <p>那么这个deferred_functions成员是干什么用的呢？</p>
-<div class="codehilite"><pre><span></span><span class="c1"># blueprints.py</span>
-<span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">first_registration</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="k">for</span> <span class="n">deferred</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">deferred_functions</span><span class="p">:</span>
-        <span class="n">deferred</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python"># blueprints.py
+def register(self, app, options, first_registration=False):
+    ...
+    for deferred in self.deferred_functions:
+        deferred(state)</code></pre>
 
 
 <p>可以看到，deferred_functions保存的这些func，会在register方法中得到执行。
 再看<a href="https://github.com/pallets/flask/blob/master/flask/app.py">app.py</a>的源码发现，register方法会在Flask.register_blueprint方法中被调用：</p>
-<div class="codehilite"><pre><span></span><span class="c1"># app.py</span>
-<span class="k">class</span> <span class="nc">Flask</span><span class="p">(</span><span class="n">_PackageBoundObject</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">register_blueprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blueprint</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
-        <span class="o">...</span>
-        <span class="n">blueprint</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">first_registration</span><span class="p">)</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python"># app.py
+class Flask(_PackageBoundObject):
+    ...
+    def register_blueprint(self, blueprint, **options):
+        ...
+        blueprint.register(self, options, first_registration)</code></pre>
 
 
 <p>这里的register_blueprint方法就是我们在<a href="#ref_book_blue">注册book蓝图</a>中看到的代码：</p>
-<div class="codehilite"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
-</pre></div>
+<pre class="codehilite"><code class="language-python">app.register_blueprint(book)</code></pre>
 
 
 <h4 id='blue_all'>总结</h4>
