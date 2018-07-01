@@ -1,0 +1,93 @@
+---
+title: 'Flutter框架简单介绍'
+---
+
+探究一个新东西，比如一个新框架，我喜欢从最小规模着手。因为这样就可以了解使用它做点事情所需的必需步骤，
+一般来说，这也是该框架的本质功能的最核心的那一部分。
+
+
+来看一个Flutter生成的APP所需要的最小代码：
+
+`main.dart`
+
+    :::dart
+    import 'package:flutter/material.dart';
+
+    void main() => runApp(new MyApp());
+
+    class MyApp extends StatelessWidget {
+        @override
+        Widget build(BuildContext context) => new MaterialApp(
+                title: 'Flutter Demo',
+                home: new MyHomePage(),
+            );
+    }
+
+    class MyHomePage extends StatelessWidget {
+
+        @override
+        Widget build(BuildContext context) {
+            return new Text("hello, world!");
+        }
+    }
+
+
+1. 一个Flutter APP从`void main()`函数开始，该函数必需返回一个`Widget`。
+2. Widget有很多种，常见的有`StatelessWidget`和`StatefulWidget`两种，前者需要的代码较少，当然功能也较少。所以我们定义了一个`class MyApp`作为StatelessWidget的子类。`MyApp`可以称作我们的APP的`根Widget`(`root Widget`)
+3. 一个`root Widget`的build方法必须返回一个`MaterialApp`或`WidgetsAPP`。后者的使用非常麻烦，所以我们使用`MaterialApp`，只需要在它的构造函数里传入`home`字段的参数即可,该参数必须是一个`Widget`类型的对象.
+4. 所以需要再定义一个StatelessWidget的子类, 即`MyHomePage`. 在`build`方法里返回一个需要呈现的UI元素(当然这也是一个Widget)即可.
+
+至此就完成了一个最简的Flutter APP.由于前面三个步骤对于所有Flutter APP来说都是类似的,下面就不在赘述.只讨论变化的部分,即`MyHomePage`的`build`方法.
+
+## Scaffold
+
+`Scaffold`是一个非常重要的Widget. 提供了现代APP所需的基本样式等，作为容器使用. 我们的`MyHomePage`的`build`方法可以变成：
+
+    // in class MyHomePage
+    @override
+    Widget build(BuildContext context) {
+        return new Scaffold(
+            body: new Text("hello, world!")
+        );
+    }
+
+即原来的UI元素`Text`作为Scaffold的`body`属性。
+
+
+## 显示列表
+
+Flutter框架中，显示列表可以使用`ListView`或`GridView`。
+使用ListView，可以使用工厂方法`ListView.builder`:
+
+
+    //in class MyHomePage    
+    @override
+    Widget build(BuildContext context) {
+        return new Scaffold(
+            body: new ListView.builder(
+                itemCount: 8,
+                itemBuilder: (BuildContext c, int i) =>
+                    new Icon(Icons.account_balance)));
+    }
+
+ListView显示一个线性的一维列表，元素个数由`itemCount`控制。
+
+
+使用GridView，可以使用工厂方法`GridView.extend`:
+
+
+    // in class MyHomePage
+    @override
+    Widget build(BuildContext context) => new Scaffold(
+            body: new GridView.extent(
+            maxCrossAxisExtent: 120.0,
+            children: new List<Container>.generate(
+                12,
+                (int index) => new Container(
+                    child: new Icon(Icons.account_balance),
+                    )),
+        ));
+
+
+使用GridView可以在一行显示多个元素，通过指定`maxCrossAxisExtent`来规定每个元素的最大宽度。如果这个值小于设备屏幕的一半，每一行就会显示两个元素。可见，GridView比ListView更加灵活。
+
