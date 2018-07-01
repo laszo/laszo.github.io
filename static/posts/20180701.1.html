@@ -1,0 +1,91 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Flutter框架（Dart）中获取网络数据的两种方式：回调或异步 - Lv Xiaoyu `Site</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/mp.css?v=1" />
+    <link rel="stylesheet" href="../../static/css/codehilite.css?v=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <a href="../../index.html">
+                <h1>Lv Xiaoyu `Site</h1>
+            </a>
+        </div>
+
+        <div class="col-sm-9">
+            <h3 class="blog-post-title">Flutter框架（Dart）中获取网络数据的两种方式：回调或异步</h3>
+
+            <div class="post-content">
+                <p>开发APP免不得要访问网络数据，对于Flutter框架来说，使用的是http包，这是一个纯粹的dart package，
+在代码里做如下引用：</p>
+<pre class="codehilite"><code>import 'package:http/http.dart';</code></pre>
+
+
+<h3>回调</h3>
+<p>http包里提供了get方法，可以向如下代码这样使用：</p>
+<pre class="codehilite"><code>void myget_1(_url, _func) {
+    print('my get 1');
+    get(_url).then((Response resp) {
+        var data = resp.body;
+        _func(data);
+    });
+}</code></pre>
+
+
+<p>我们自定义一个函数<code>myget_1</code>，传入两个参数<code>_url</code>和<code>_func</code>。
+使用<code>get</code> API获取到<code>_url</code>指定地址的数据以后，调用回调函数<code>_func</code>处理数据。
+访问<code>myget_1</code>函数的代码可以如下：</p>
+<pre class="codehilite"><code>myget_1(url, (data){
+  print(data);
+});</code></pre>
+
+
+<p>显然，这个异步的处理过程。对于开发APP来说，我们需要在相关业务流程对应的逻辑里加入loading的提示，比如下拉刷新，
+提示用户需要等待网络请求。</p>
+<h3>异步</h3>
+<p>还有另外一种方法来使用<code>get</code>API, 即使用 dart 语言的 <code>async</code> <code>await</code>等关键字来定义异步方法:</p>
+<pre class="codehilite"><code>Future&lt;Object&gt; myget_2(_url) async{
+    var resp = await get(_url);
+    return resp.body;
+}</code></pre>
+
+
+<p><code>Future</code>类型在这里先不做介绍,只需要知道返回Future对象的函数必须使用<code>async</code>关键字做修饰, 称为异步函数. 
+而调用异步函数的代码必须使用<code>await</code>关键字。</p>
+<p>所以在我们的<code>MyHomePage</code>类里定义如下代码：</p>
+<pre class="codehilite"><code>// in class MyHomePage
+final _dataList = &lt;Map&lt;String, Object&gt;&gt;[];
+
+Future&lt;Null&gt; loadData() async {
+    var data = await myget_2(url);
+    for(var d in jsonDecode(data){
+        _dataList.add(d);
+    }
+    print(data);
+}</code></pre>
+
+
+<p>Flutter框架提供了<code>RefreshIndicator</code>、<code>FutureBuilder</code>等组件来配合异步函数的使用。</p>
+<p>我们的<code>MyHomePage</code>类的<code>build</code>方法做出调整：</p>
+<pre class="codehilite"><code>// in class MyHomePage
+@override
+Widget build(BuildContext context) =&gt; new RefreshIndicator(
+    child: new FutureBuilder(builder: _builder), onRefresh: loadData);</code></pre>
+            </div>
+        </div>
+        <div class="col-md-3" role="complementary">
+            <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix">
+                
+                <ul class="nav bs-docs-sidenav">
+                    
+                </ul>              
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>

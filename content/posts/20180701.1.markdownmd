@@ -1,0 +1,67 @@
+---
+title: 'Flutter框架（Dart）中获取网络数据的两种方式：回调或异步'
+---
+
+开发APP免不得要访问网络数据，对于Flutter框架来说，使用的是http包，这是一个纯粹的dart package，
+在代码里做如下引用：
+
+    import 'package:http/http.dart';
+
+### 回调
+
+http包里提供了get方法，可以向如下代码这样使用：
+
+    void myget_1(_url, _func) {
+        print('my get 1');
+        get(_url).then((Response resp) {
+            var data = resp.body;
+            _func(data);
+        });
+    }
+
+我们自定义一个函数`myget_1`，传入两个参数`_url`和`_func`。
+使用`get` API获取到`_url`指定地址的数据以后，调用回调函数`_func`处理数据。
+访问`myget_1`函数的代码可以如下：
+
+    myget_1(url, (data){
+      print(data);
+    });
+
+显然，这个异步的处理过程。对于开发APP来说，我们需要在相关业务流程对应的逻辑里加入loading的提示，比如下拉刷新，
+提示用户需要等待网络请求。
+
+
+### 异步
+
+还有另外一种方法来使用`get`API, 即使用 dart 语言的 `async` `await`等关键字来定义异步方法:
+
+    Future<Object> myget_2(_url) async{
+        var resp = await get(_url);
+        return resp.body;
+    }
+
+`Future`类型在这里先不做介绍,只需要知道返回Future对象的函数必须使用`async`关键字做修饰, 称为异步函数. 
+而调用异步函数的代码必须使用`await`关键字。
+
+所以在我们的`MyHomePage`类里定义如下代码：
+
+    // in class MyHomePage
+    final _dataList = <Map<String, Object>>[];
+
+    Future<Null> loadData() async {
+        var data = await myget_2(url);
+        for(var d in jsonDecode(data){
+            _dataList.add(d);
+        }
+        print(data);
+    }
+
+Flutter框架提供了`RefreshIndicator`、`FutureBuilder`等组件来配合异步函数的使用。
+
+我们的`MyHomePage`类的`build`方法做出调整：
+
+    // in class MyHomePage
+    @override
+    Widget build(BuildContext context) => new RefreshIndicator(
+        child: new FutureBuilder(builder: _builder), onRefresh: loadData);
+
