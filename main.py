@@ -95,12 +95,15 @@ def createBlogIndex(postlinks, pagelinks):
     output_file.write(html)
 
 
+_file_ext = 'markdownmd'
+
+
 def main():
     posts = os.listdir(contentpath)
     posts.reverse()
     postlinks = []
     for p in posts:
-        if not check_file_ext(p, 'markdownmd'):
+        if not check_file_ext(p, _file_ext):
             continue
         if os.path.isfile(contentpath + p):
             url, title = createPost(p)
@@ -108,7 +111,7 @@ def main():
     pagefiles = os.listdir(pagespath)
     temp_links = []
     for p in pagefiles:
-        if not check_file_ext(p, 'markdownmd'):
+        if not check_file_ext(p, _file_ext):
             continue
         text = codecs.open(pagespath + p, 'r', encoding='utf8').read()
         mkdtxt, title, anchors = read_config(text)
@@ -116,7 +119,7 @@ def main():
         temp_links.append({'title': title, 'url': url})
     pagelinks = []
     for p in pagefiles:
-        if not check_file_ext(p, 'markdownmd'):
+        if not check_file_ext(p, _file_ext):
             continue
         url, title = get_page_info(p)
         pagelinks.append({'title': title, 'url': url})
@@ -142,5 +145,17 @@ def get_files():
             yield os.path.join(dirpath, fn)
 
 
+def change_name():
+    for a, b, c in os.walk('content\\posts'):
+        for d in c:
+            d1 = d.replace('markdownmd', 'md')
+            f = os.path.join(a, d)
+            f1 = os.path.join(a, d1)
+            print(f)
+            print(f1)
+            os.rename(f, f1)
+
+
 if __name__ == '__main__':
-    main()
+    # main()
+    change_name()
